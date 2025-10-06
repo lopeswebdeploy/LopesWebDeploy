@@ -67,7 +67,7 @@ const ImageUpload = ({
 
     // Upload para Vercel Blob Storage
     setIsUploading(true);
-    const propertyId = Date.now().toString();
+    const propertyId = 'temp-' + Date.now().toString(); // ID temporário até salvar a propriedade
     const uploadType = type === 'floorplan' ? 'floorplan' : 'banner';
     
     ImageStorage.uploadPropertyImage(file, propertyId, uploadType)

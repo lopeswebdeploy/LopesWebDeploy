@@ -5,7 +5,7 @@ import { Database } from "@/lib/database";
 const STORAGE_KEY = 'lopes_properties';
 
 export class PropertyService {
-  // Carregar propriedades - PRIMEIRO do banco, depois localStorage, depois dados de exemplo
+  // Carregar propriedades - PRIMEIRO do banco, depois dados de exemplo
   static async loadProperties(): Promise<Property[]> {
     console.log('🔍 PropertyService.loadProperties - Carregando propriedades...');
     
@@ -17,24 +17,10 @@ export class PropertyService {
         return dbProperties;
       }
     } catch (error) {
-      console.log('⚠️ PropertyService.loadProperties - Erro no banco, tentando localStorage:', error);
+      console.log('⚠️ PropertyService.loadProperties - Erro no banco:', error);
     }
 
-    // Fallback para localStorage (desenvolvimento)
-    if (typeof window !== 'undefined') {
-      try {
-        const saved = localStorage.getItem(STORAGE_KEY);
-        if (saved) {
-          const properties = JSON.parse(saved);
-          console.log('🔍 PropertyService.loadProperties - Carregadas do localStorage:', properties.length, 'propriedades');
-          return properties;
-        }
-      } catch (error) {
-        console.error('❌ Erro ao carregar do localStorage:', error);
-      }
-    }
-
-    // Último fallback: dados de exemplo
+    // Fallback: dados de exemplo (apenas para desenvolvimento)
     console.log('🔍 PropertyService.loadProperties - Usando dados de exemplo');
     return sampleProperties;
   }
@@ -154,9 +140,9 @@ export class PropertyService {
     
     try {
       // Tentar salvar no banco de dados primeiro
+      const { id, ...propertyWithoutId } = property;
       const newProperty = await Database.addProperty({
-        ...property,
-        id: property.id || Date.now().toString(),
+        ...propertyWithoutId,
         createdAt: new Date(),
         updatedAt: new Date(),
       });
@@ -169,7 +155,7 @@ export class PropertyService {
       // Fallback para localStorage
       const newProperty = {
         ...property,
-        id: Date.now().toString(),
+        id: property.id || `temp-${Date.now()}`, // Usar ID existente ou gerar temporário
         createdAt: new Date(),
         updatedAt: new Date(),
       };

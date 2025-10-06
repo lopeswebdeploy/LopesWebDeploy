@@ -40,7 +40,7 @@ const BannerUpload = ({
 
     // Upload para Vercel Blob Storage
     setIsUploading(true);
-    const propertyId = Date.now().toString();
+    const propertyId = 'temp-' + Date.now().toString(); // ID temporário até salvar a propriedade
     
     ImageStorage.uploadPropertyImage(file, propertyId, 'banner')
       .then((imageUrl) => {

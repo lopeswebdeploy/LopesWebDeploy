@@ -76,11 +76,11 @@ export class Database {
   }
 
   // Adicionar nova propriedade
-  static async addProperty(property: Property): Promise<Property> {
+  static async addProperty(property: Omit<Property, 'id'>): Promise<Property> {
     try {
       const newProperty = await prisma.property.create({
         data: {
-          id: property.id || undefined,
+          // Sempre deixar o Prisma gerar o ID (cuid())
           title: property.title,
           description: property.description,
           fullDescription: property.fullDescription,
