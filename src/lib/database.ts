@@ -229,7 +229,7 @@ export class Database {
       });
       
       console.log(`📊 Carregados ${leads.length} leads do banco`);
-      return leads.map(lead => ({
+      return leads.map((lead: any) => ({
         ...lead,
         property_title: lead.property?.title
       }));
