@@ -57,15 +57,28 @@ const ImageManager = ({
       return;
     }
 
-    // Upload para Vercel Blob Storage
+    // Upload via API Route
     setIsUploading(true);
     const propertyId = 'temp-' + Date.now().toString(); // ID temporário até salvar a propriedade
     
-    ImageStorage.uploadPropertyImage(file, propertyId, 'gallery')
-      .then((imageUrl) => {
-        console.log("📸 ImageManager - Imagem enviada para Vercel Blob:", imageUrl);
-        const updatedImages = [...images, imageUrl];
-        onImagesChange(updatedImages);
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('propertyId', propertyId);
+    formData.append('type', 'gallery');
+    
+    fetch('/api/upload', {
+      method: 'POST',
+      body: formData,
+    })
+      .then(response => response.json())
+      .then(data => {
+        if (data.url) {
+          console.log("📸 ImageManager - Imagem enviada para Vercel Blob:", data.url);
+          const updatedImages = [...images, data.url];
+          onImagesChange(updatedImages);
+        } else {
+          throw new Error(data.error || 'Erro no upload');
+        }
         setIsUploading(false);
       })
       .catch((error) => {

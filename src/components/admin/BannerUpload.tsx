@@ -38,15 +38,28 @@ const BannerUpload = ({
       return;
     }
 
-    // Upload para Vercel Blob Storage
+    // Upload via API Route
     setIsUploading(true);
     const propertyId = 'temp-' + Date.now().toString(); // ID temporário até salvar a propriedade
     
-    ImageStorage.uploadPropertyImage(file, propertyId, 'banner')
-      .then((imageUrl) => {
-        console.log("🖼️ BannerUpload - Imagem enviada para Vercel Blob:", imageUrl);
-        setPreview(imageUrl);
-        onImageChange(imageUrl);
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('propertyId', propertyId);
+    formData.append('type', 'banner');
+    
+    fetch('/api/upload', {
+      method: 'POST',
+      body: formData,
+    })
+      .then(response => response.json())
+      .then(data => {
+        if (data.url) {
+          console.log("🖼️ BannerUpload - Imagem enviada para Vercel Blob:", data.url);
+          setPreview(data.url);
+          onImageChange(data.url);
+        } else {
+          throw new Error(data.error || 'Erro no upload');
+        }
         setIsUploading(false);
       })
       .catch((error) => {

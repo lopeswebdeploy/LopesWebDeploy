@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { ImageStorage } from '@/services/imageStorage';
+import { put } from '@vercel/blob';
 
 export async function POST(request: NextRequest) {
   try {
@@ -14,11 +14,24 @@ export async function POST(request: NextRequest) {
     
     console.log('📤 Upload iniciado:', { propertyId, type, fileName: file.name });
     
-    const imageUrl = await ImageStorage.uploadPropertyImage(file, propertyId, type);
+    // Verificar se o token está disponível
+    const token = process.env.BLOB_READ_WRITE_TOKEN;
+    if (!token) {
+      console.error('❌ BLOB_READ_WRITE_TOKEN não configurado');
+      return NextResponse.json({ error: 'Token não configurado' }, { status: 500 });
+    }
     
-    console.log('✅ Upload concluído:', imageUrl);
+    const filename = `properties/${propertyId}/${type}-${Date.now()}.jpg`;
     
-    return NextResponse.json({ url: imageUrl });
+    const blob = await put(filename, file, {
+      access: 'public',
+      contentType: 'image/jpeg',
+      token: token
+    });
+    
+    console.log('✅ Upload concluído:', blob.url);
+    
+    return NextResponse.json({ url: blob.url });
   } catch (error) {
     console.error('❌ Erro no upload:', error);
     return NextResponse.json({ error: 'Erro no upload' }, { status: 500 });

@@ -8,9 +8,16 @@ export class ImageStorage {
   ): Promise<string> {
     const filename = `properties/${propertyId}/${type}-${Date.now()}.jpg`;
     
+    // Usar token explícito para garantir que funcione
+    const token = process.env.BLOB_READ_WRITE_TOKEN;
+    if (!token) {
+      throw new Error('BLOB_READ_WRITE_TOKEN não configurado');
+    }
+    
     const blob = await put(filename, file, {
       access: 'public',
-      contentType: 'image/jpeg'
+      contentType: 'image/jpeg',
+      token: token
     });
     
     return blob.url; // https://blob.vercel-storage.com/...
