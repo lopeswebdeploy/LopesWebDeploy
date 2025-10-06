@@ -1,52 +1,48 @@
 import { Property } from "@/types/property";
 import { sampleProperties } from "@/data/admin-properties";
+import { Database } from "@/lib/database";
 
 const STORAGE_KEY = 'lopes_properties';
 
 export class PropertyService {
-  // Carregar propriedades - SEMPRE do localStorage, com fallback para dados de exemplo
-  static loadProperties(): Property[] {
+  // Carregar propriedades - PRIMEIRO do banco, depois localStorage, depois dados de exemplo
+  static async loadProperties(): Promise<Property[]> {
     console.log('🔍 PropertyService.loadProperties - Carregando propriedades...');
     
-    if (typeof window === 'undefined') {
-      console.log('🔍 PropertyService.loadProperties - Servidor, retornando dados de exemplo');
-      return sampleProperties;
-    }
-
     try {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) {
-        const properties = JSON.parse(saved);
-        console.log('🔍 PropertyService.loadProperties - Carregadas do localStorage:', properties.length, 'propriedades');
-        
-        // Log detalhado de cada propriedade
-        properties.forEach((prop: any, index: number) => {
-          console.log(`🔍 Propriedade ${index + 1}:`, {
-            id: prop.id,
-            title: prop.title,
-            bannerImage: prop.bannerImage ? `${prop.bannerImage.substring(0, 50)}...` : 'VAZIO',
-            bannerImageType: prop.bannerImage ? (prop.bannerImage.startsWith('data:') ? 'BASE64' : 'URL') : 'VAZIO',
-            images: prop.images?.length || 0,
-            imagesTypes: prop.images?.map((img: string) => img.startsWith('data:') ? 'BASE64' : 'URL') || [],
-            photoGallery: prop.photoGallery?.length || 0,
-            photoGalleryTypes: prop.photoGallery?.map((img: string) => img.startsWith('data:') ? 'BASE64' : 'URL') || [],
-            floorPlan: prop.floorPlan ? `${prop.floorPlan.substring(0, 50)}...` : 'VAZIO',
-            floorPlanType: prop.floorPlan ? (prop.floorPlan.startsWith('data:') ? 'BASE64' : 'URL') : 'VAZIO',
-            location: prop.location || 'VAZIO',
-            embedUrl: prop.embedUrl ? 'PRESENTE' : 'VAZIO'
-          });
-        });
-        
-        return properties;
-      } else {
-        console.log('🔍 PropertyService.loadProperties - Nenhum dado salvo, usando dados de exemplo');
-        return sampleProperties;
+      // Tentar carregar do banco de dados primeiro
+      const dbProperties = await Database.loadProperties();
+      if (dbProperties.length > 0) {
+        console.log('✅ PropertyService.loadProperties - Carregadas do banco:', dbProperties.length, 'propriedades');
+        return dbProperties;
       }
     } catch (error) {
-      console.error('❌ Erro ao carregar propriedades:', error);
-      console.log('🔍 PropertyService.loadProperties - Erro, usando dados de exemplo');
-      return sampleProperties;
+      console.log('⚠️ PropertyService.loadProperties - Erro no banco, tentando localStorage:', error);
     }
+
+    // Fallback para localStorage (desenvolvimento)
+    if (typeof window !== 'undefined') {
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) {
+          const properties = JSON.parse(saved);
+          console.log('🔍 PropertyService.loadProperties - Carregadas do localStorage:', properties.length, 'propriedades');
+          return properties;
+        }
+      } catch (error) {
+        console.error('❌ Erro ao carregar do localStorage:', error);
+      }
+    }
+
+    // Último fallback: dados de exemplo
+    console.log('🔍 PropertyService.loadProperties - Usando dados de exemplo');
+    return sampleProperties;
+  }
+
+  // Versão síncrona para compatibilidade (usa dados de exemplo)
+  static loadPropertiesSync(): Property[] {
+    console.log('🔍 PropertyService.loadPropertiesSync - Carregando dados de exemplo');
+    return sampleProperties;
   }
 
   // Salvar propriedades no localStorage - SIMPLES E DIRETO
@@ -156,96 +152,119 @@ export class PropertyService {
   static async addProperty(property: Property): Promise<Property> {
     console.log("💾 PropertyService.addProperty - Adicionando propriedade:", property.title);
     
-    const newProperty = {
-      ...property,
-      id: Date.now().toString(),
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    };
-    
-    // Carregar propriedades existentes
-    const existingProperties = this.loadProperties();
-    
-    // Adicionar nova propriedade
-    const updatedProperties = [...existingProperties, newProperty];
-    
-    // Salvar no localStorage
-    await this.saveProperties(updatedProperties);
-    
-    console.log("✅ PropertyService.addProperty - Propriedade adicionada com ID:", newProperty.id);
-    return newProperty;
+    try {
+      // Tentar salvar no banco de dados primeiro
+      const newProperty = await Database.addProperty({
+        ...property,
+        id: property.id || Date.now().toString(),
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      });
+      
+      console.log("✅ PropertyService.addProperty - Propriedade adicionada no banco com ID:", newProperty.id);
+      return newProperty;
+    } catch (error) {
+      console.log("⚠️ PropertyService.addProperty - Erro no banco, salvando no localStorage:", error);
+      
+      // Fallback para localStorage
+      const newProperty = {
+        ...property,
+        id: Date.now().toString(),
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+      
+      const existingProperties = this.loadPropertiesSync();
+      const updatedProperties = [...existingProperties, newProperty];
+      await this.saveProperties(updatedProperties);
+      
+      console.log("✅ PropertyService.addProperty - Propriedade adicionada no localStorage com ID:", newProperty.id);
+      return newProperty;
+    }
   }
 
   // Atualizar propriedade existente
   static async updateProperty(property: Property): Promise<Property> {
     console.log("💾 PropertyService.updateProperty - Atualizando propriedade:", property.id);
     
-    // Carregar propriedades existentes
-    const existingProperties = this.loadProperties();
-    
-    // Encontrar e atualizar propriedade
-    const updatedProperties = existingProperties.map(prop => 
-      prop.id === property.id 
-        ? { ...property, updatedAt: new Date() }
-        : prop
-    );
-    
-    // Salvar no localStorage
-    await this.saveProperties(updatedProperties);
-    
-    console.log("✅ PropertyService.updateProperty - Propriedade atualizada");
-    return property;
+    try {
+      // Tentar atualizar no banco de dados primeiro
+      const updatedProperty = await Database.updateProperty({
+        ...property,
+        updatedAt: new Date(),
+      });
+      
+      console.log("✅ PropertyService.updateProperty - Propriedade atualizada no banco");
+      return updatedProperty;
+    } catch (error) {
+      console.log("⚠️ PropertyService.updateProperty - Erro no banco, atualizando no localStorage:", error);
+      
+      // Fallback para localStorage
+      const existingProperties = this.loadPropertiesSync();
+      const updatedProperties = existingProperties.map(prop => 
+        prop.id === property.id 
+          ? { ...property, updatedAt: new Date() }
+          : prop
+      );
+      
+      await this.saveProperties(updatedProperties);
+      console.log("✅ PropertyService.updateProperty - Propriedade atualizada no localStorage");
+      return property;
+    }
   }
 
   // Excluir propriedade
   static async deleteProperty(id: string): Promise<void> {
     console.log("💾 PropertyService.deleteProperty - Excluindo propriedade:", id);
     
-    // Carregar propriedades existentes
-    const existingProperties = this.loadProperties();
-    
-    // Remover propriedade
-    const updatedProperties = existingProperties.filter(prop => prop.id !== id);
-    
-    // Salvar no localStorage
-    await this.saveProperties(updatedProperties);
-    
-    console.log("✅ PropertyService.deleteProperty - Propriedade excluída");
+    try {
+      // Tentar excluir do banco de dados primeiro
+      await Database.deleteProperty(id);
+      console.log("✅ PropertyService.deleteProperty - Propriedade excluída do banco");
+    } catch (error) {
+      console.log("⚠️ PropertyService.deleteProperty - Erro no banco, excluindo do localStorage:", error);
+      
+      // Fallback para localStorage
+      const existingProperties = this.loadPropertiesSync();
+      const updatedProperties = existingProperties.filter(prop => prop.id !== id);
+      await this.saveProperties(updatedProperties);
+      
+      console.log("✅ PropertyService.deleteProperty - Propriedade excluída do localStorage");
+    }
   }
 
   // Buscar propriedade por ID
-  static getPropertyById(id: string): Property | null {
+  static async getPropertyById(id: string): Promise<Property | null> {
     console.log("🔍 PropertyService.getPropertyById - Buscando ID:", id);
     
-    const properties = this.loadProperties();
-    console.log("🔍 PropertyService.getPropertyById - Total de propriedades:", properties.length);
-    console.log("🔍 PropertyService.getPropertyById - IDs disponíveis:", properties.map(p => p.id));
+    try {
+      // Tentar buscar no banco de dados primeiro
+      const property = await Database.getPropertyById(id);
+      if (property) {
+        console.log("✅ PropertyService.getPropertyById - Propriedade encontrada no banco:", property.title);
+        return property;
+      }
+    } catch (error) {
+      console.log("⚠️ PropertyService.getPropertyById - Erro no banco, buscando no localStorage:", error);
+    }
     
+    // Fallback para localStorage
+    const properties = this.loadPropertiesSync();
     const foundProperty = properties.find(p => p.id === id) || null;
     
-    console.log("🔍 PropertyService.getPropertyById:", {
-      id,
-      totalProperties: properties.length,
-      found: !!foundProperty,
-      propertyData: foundProperty ? {
-        title: foundProperty.title,
-        bannerImage: foundProperty.bannerImage ? `${foundProperty.bannerImage.substring(0, 50)}...` : "VAZIO",
-        images: foundProperty.images?.length || 0,
-        photoGallery: foundProperty.photoGallery?.length || 0
-      } : null
-    });
-    
-    if (!foundProperty) {
+    if (foundProperty) {
+      console.log("✅ PropertyService.getPropertyById - Propriedade encontrada no localStorage:", foundProperty.title);
+    } else {
       console.log("❌ PropertyService.getPropertyById - Propriedade não encontrada!");
-      console.log("❌ ID buscado:", id);
-      console.log("❌ IDs disponíveis:", properties.map(p => ({ id: p.id, title: p.title })));
-      console.log("❌ Comparação de tipos:", {
-        buscado: typeof id,
-        disponiveis: properties.map(p => ({ id: p.id, tipo: typeof p.id }))
-      });
     }
     
     return foundProperty;
+  }
+
+  // Versão síncrona para compatibilidade
+  static getPropertyByIdSync(id: string): Property | null {
+    const properties = this.loadPropertiesSync();
+    return properties.find(p => p.id === id) || null;
   }
 
   // Limpar todos os dados

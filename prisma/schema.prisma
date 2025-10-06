@@ -1,0 +1,98 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("POSTGRES_PRISMA_URL")
+}
+
+model Property {
+  id                String   @id @default(cuid())
+  title             String
+  description       String?
+  fullDescription   String?  @map("full_description")
+  category          String   @default("venda")
+  type              String?
+  propertyType      String   @map("property_type")
+  
+  // Localização
+  location          String?
+  state             String   @default("Goiânia")
+  address           String?
+  coordinates       Json?
+  embedUrl          String?  @map("embed_url")
+  
+  // Características físicas
+  bedrooms          Int      @default(0)
+  bathrooms         Int      @default(0)
+  suites            Int      @default(0)
+  parking           Int      @default(0)
+  area              String?
+  balconyTypes      Json     @default("[]") @map("balcony_types")
+  
+  // Financeiro
+  price             String?
+  apartmentOptions  Json     @default("[]") @map("apartment_options")
+  
+  // Empreendimento
+  developer         String?
+  deliveryDate      String?  @map("delivery_date")
+  availability      String?
+  
+  // Imagens
+  bannerImage       String?  @map("banner_image")
+  images            Json     @default("[]")
+  photoGallery      Json     @default("[]") @map("photo_gallery")
+  floorPlan         String?  @map("floor_plan")
+  
+  // Detalhes
+  characteristics   Json     @default("[]")
+  locationBenefits  Json     @default("[]") @map("location_benefits")
+  differentials     Json     @default("[]")
+  
+  // Controle
+  status            String   @default("ativo")
+  isFeatured        Boolean  @default(false) @map("is_featured")
+  isVisible         Boolean  @default(true) @map("is_visible")
+  
+  // Timestamps
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
+  
+  // Relacionamentos
+  leads             Lead[]
+  
+  @@map("properties")
+}
+
+model Lead {
+  id          Int      @id @default(autoincrement())
+  name        String
+  phone       String
+  email       String?
+  propertyId  String?  @map("property_id")
+  source      String   @default("website")
+  status      String   @default("novo")
+  notes       String?
+  whatsappSent Boolean @default(false) @map("whatsapp_sent")
+  createdAt   DateTime @default(now()) @map("created_at")
+  
+  // Relacionamentos
+  property    Property? @relation(fields: [propertyId], references: [id], onDelete: SetNull)
+  
+  @@map("leads")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  name      String
+  role      String   @default("admin")
+  createdAt DateTime @default(now()) @map("created_at")
+  
+  @@map("users")
+}

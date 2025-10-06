@@ -23,27 +23,40 @@ const Admin = () => {
   const [filterCategory, setFilterCategory] = useState("all");
   const [filterLocation, setFilterLocation] = useState("all");
 
-  // Carregar propriedades do localStorage
+  // Carregar propriedades do banco de dados
   useEffect(() => {
-    const loadedProperties = PropertyService.loadProperties();
-    console.log("🔍 Admin - Propriedades carregadas:", loadedProperties.length);
-    
-    // Debug detalhado de cada propriedade
-    loadedProperties.forEach((prop, index) => {
-      console.log(`🔍 Admin - Propriedade ${index + 1}:`, {
-        title: prop.title,
-        bannerImage: prop.bannerImage ? `${prop.bannerImage.substring(0, 50)}...` : 'VAZIO',
-        images: prop.images?.length || 0,
-        imagesArray: prop.images,
-        photoGallery: prop.photoGallery?.length || 0,
-        photoGalleryArray: prop.photoGallery,
-        floorPlan: prop.floorPlan ? `${prop.floorPlan.substring(0, 50)}...` : 'VAZIO'
-      });
-    });
-    
-    setProperties(loadedProperties);
-    setFilteredProperties(loadedProperties);
-    setLoading(false);
+    const loadProperties = async () => {
+      try {
+        const loadedProperties = await PropertyService.loadProperties();
+        console.log("🔍 Admin - Propriedades carregadas:", loadedProperties.length);
+        
+        // Debug detalhado de cada propriedade
+        loadedProperties.forEach((prop, index) => {
+          console.log(`🔍 Admin - Propriedade ${index + 1}:`, {
+            title: prop.title,
+            bannerImage: prop.bannerImage ? `${prop.bannerImage.substring(0, 50)}...` : 'VAZIO',
+            images: prop.images?.length || 0,
+            imagesArray: prop.images,
+            photoGallery: prop.photoGallery?.length || 0,
+            photoGalleryArray: prop.photoGallery,
+            floorPlan: prop.floorPlan ? `${prop.floorPlan.substring(0, 50)}...` : 'VAZIO'
+          });
+        });
+        
+        setProperties(loadedProperties);
+        setFilteredProperties(loadedProperties);
+      } catch (error) {
+        console.error('Erro ao carregar propriedades:', error);
+        // Fallback para dados de exemplo
+        const fallbackProperties = PropertyService.loadPropertiesSync();
+        setProperties(fallbackProperties);
+        setFilteredProperties(fallbackProperties);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadProperties();
   }, []);
 
   // Monitorar mudanças na lista de propriedades

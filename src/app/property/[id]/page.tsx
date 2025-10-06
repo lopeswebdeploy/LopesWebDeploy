@@ -12,17 +12,27 @@ export default function PropertyPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Buscar propriedade pelo ID usando o PropertyService
-    if (params?.id) {
-      console.log("🔍 PropertyPage - Buscando propriedade com ID:", params.id);
-      const foundProperty = PropertyService.getPropertyById(params.id as string);
-      console.log("🔍 PropertyPage - Propriedade encontrada:", !!foundProperty);
-      if (foundProperty) {
-        console.log("🔍 PropertyPage - Título da propriedade:", foundProperty.title);
+    const loadProperty = async () => {
+      if (params?.id) {
+        try {
+          console.log("🔍 PropertyPage - Buscando propriedade com ID:", params.id);
+          const foundProperty = await PropertyService.getPropertyById(params.id as string);
+          console.log("🔍 PropertyPage - Propriedade encontrada:", !!foundProperty);
+          if (foundProperty) {
+            console.log("🔍 PropertyPage - Título da propriedade:", foundProperty.title);
+          }
+          setProperty(foundProperty);
+        } catch (error) {
+          console.error('Erro ao carregar propriedade:', error);
+          // Fallback para busca síncrona
+          const fallbackProperty = PropertyService.getPropertyByIdSync(params.id as string);
+          setProperty(fallbackProperty);
+        }
       }
-      setProperty(foundProperty);
-    }
-    setLoading(false);
+      setLoading(false);
+    };
+
+    loadProperty();
   }, [params?.id]);
 
   if (loading) {

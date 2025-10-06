@@ -13,10 +13,23 @@ export default function PropertiesPageClient() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const loadedProperties = PropertyService.loadProperties();
-    setProperties(loadedProperties);
-    setFilteredProperties(loadedProperties);
-    setLoading(false);
+    const loadProperties = async () => {
+      try {
+        const loadedProperties = await PropertyService.loadProperties();
+        setProperties(loadedProperties);
+        setFilteredProperties(loadedProperties);
+      } catch (error) {
+        console.error('Erro ao carregar propriedades:', error);
+        // Fallback para dados de exemplo
+        const fallbackProperties = PropertyService.loadPropertiesSync();
+        setProperties(fallbackProperties);
+        setFilteredProperties(fallbackProperties);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadProperties();
   }, []);
 
   const handleFilterChange = (filters: any) => {

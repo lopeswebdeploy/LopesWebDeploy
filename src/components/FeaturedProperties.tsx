@@ -27,9 +27,21 @@ const FeaturedProperties = () => {
   ];
 
   useEffect(() => {
-    const loadedProperties = PropertyService.loadProperties();
-    setAllProperties(loadedProperties);
-    setLoading(false);
+    const loadProperties = async () => {
+      try {
+        const loadedProperties = await PropertyService.loadProperties();
+        setAllProperties(loadedProperties);
+      } catch (error) {
+        console.error('Erro ao carregar propriedades:', error);
+        // Fallback para dados de exemplo
+        const fallbackProperties = PropertyService.loadPropertiesSync();
+        setAllProperties(fallbackProperties);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadProperties();
   }, []);
 
   useEffect(() => {
