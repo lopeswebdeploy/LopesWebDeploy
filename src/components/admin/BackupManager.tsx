@@ -34,7 +34,7 @@ const BackupManager = () => {
     }
   };
 
-  const handleImport = () => {
+  const handleImport = async () => {
     if (!importData.trim()) {
       alert('Por favor, cole os dados JSON para importar');
       return;
@@ -42,7 +42,7 @@ const BackupManager = () => {
 
     setIsImporting(true);
     try {
-      const success = PropertyService.importData(importData);
+      const success = await PropertyService.importData(importData);
       if (success) {
         alert('Dados importados com sucesso! A página será recarregada.');
         window.location.reload();
