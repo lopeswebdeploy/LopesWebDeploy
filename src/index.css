@@ -1,0 +1,236 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Luxury Real Estate Design System - Lopes Imóveis
+All colors, gradients, fonts, and styles for luxury real estate brand
+All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    /* Base colors - Luxury palette */
+    --background: 0 0% 98%;
+    --foreground: 0 0% 12%;
+
+    /* Card system */
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 12%;
+
+    /* Interactive elements */
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 12%;
+
+    /* Primary / Highlight - Vermelho principal */
+    --highlight: 351 83% 48%; /* vermelho #e21337 */
+    --highlight-foreground: 0 0% 98%;
+    --primary: var(--highlight);
+    --primary-foreground: var(--highlight-foreground);
+
+    /* Secondary - Clean White */
+    --secondary: 0 0% 100%;
+    --secondary-foreground: 351 83% 61%;
+
+    /* Brand tokens - Vermelho principal com variações */
+    --brand-coral: var(--highlight);
+    --brand-coral-light: 351 83% 58%;
+    --brand-coral-dark: 351 83% 38%;
+    --brand-navy: 0 0% 20%; /* cinza escuro para contraste */
+    --brand-navy-light: 0 0% 30%;
+
+    /* Muted tones */
+    --muted: 0 0% 96%;
+    --muted-foreground: 0 0% 45%;
+
+    /* Accent - neutro claro */
+    --accent: 0 0% 94%;
+    --accent-foreground: 0 0% 12%;
+
+    /* States */
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+
+    /* Borders and inputs */
+    --border: 0 0% 90%;
+    --input: 0 0% 100%;
+    --ring: var(--highlight);
+
+    /* Design tokens */
+    --radius: 0.75rem;
+
+    /* Modern gradients */
+    --gradient-luxury: linear-gradient(135deg, hsl(var(--highlight)), hsl(351 83% 38%));
+    --gradient-hero: linear-gradient(135deg, hsla(0 0% 12% / 0.7), hsla(0 0% 12% / 0.4));
+    --gradient-card: linear-gradient(145deg, hsla(0 0% 100% / 0.95), hsla(0 0% 98% / 0.95));
+
+    /* Modern shadows */
+    --shadow-luxury: 0 25px 50px -12px hsla(351 83% 48% / 0.25);
+    --shadow-card: 0 10px 30px -10px hsla(0 0% 12% / 0.08);
+    --shadow-hero: 0 0 100px hsla(0 0% 12% / 0.3);
+
+    /* Typography scale */
+    --font-luxury: 'Playfair Display', serif;
+    --font-body: 'Inter', sans-serif;
+
+    /* Spacing scale for luxury layouts */
+    --space-luxury: 6rem;
+    --space-section: 4rem;
+
+    /* Sidebar (if needed) */
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 0 0% 12%;
+    --sidebar-primary: 43 74% 49%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 0 0% 96%;
+    --sidebar-accent-foreground: 0 0% 12%;
+    --sidebar-border: 0 0% 90%;
+    --sidebar-ring: 43 74% 49%;
+  }
+
+  .dark {
+    /* Dark mode for luxury brand - keep sophisticated */
+    --background: 0 0% 8%;
+    --foreground: 0 0% 98%;
+
+    --card: 0 0% 12%;
+    --card-foreground: 0 0% 98%;
+
+    --popover: 0 0% 12%;
+    --popover-foreground: 0 0% 98%;
+
+    --highlight: 351 83% 58%;
+    --highlight-foreground: 0 0% 98%;
+    --primary: var(--highlight);
+    --primary-foreground: var(--highlight-foreground);
+
+    --secondary: 0 0% 16%;
+    --secondary-foreground: 0 0% 98%;
+
+    --brand-coral: var(--highlight);
+    --brand-coral-light: 351 83% 68%;
+    --brand-coral-dark: 351 83% 48%;
+    --brand-navy: 0 0% 80%;
+    --brand-navy-light: 0 0% 70%;
+
+    --muted: 0 0% 16%;
+    --muted-foreground: 0 0% 65%;
+
+    --accent: 0 0% 16%;
+    --accent-foreground: 0 0% 98%;
+
+    --destructive: 0 62% 50%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 0 0% 20%;
+    --input: 0 0% 16%;
+    --ring: var(--highlight);
+
+    --gradient-luxury: linear-gradient(135deg, hsl(var(--highlight)), hsl(351 83% 48%));
+    --gradient-hero: linear-gradient(135deg, hsla(0 0% 8% / 0.9), hsla(0 0% 8% / 0.6));
+    --gradient-card: linear-gradient(145deg, hsla(0 0% 16% / 0.9), hsla(0 0% 12% / 0.9));
+
+    --shadow-luxury: 0 25px 50px -12px hsla(351 83% 58% / 0.3);
+    --shadow-card: 0 10px 30px -10px hsla(0 0% 0% / 0.3);
+
+    --sidebar-background: 0 0% 12%;
+    --sidebar-foreground: 0 0% 98%;
+    --sidebar-primary: var(--highlight);
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 0 0% 16%;
+    --sidebar-accent-foreground: 0 0% 98%;
+    --sidebar-border: 0 0% 20%;
+    --sidebar-ring: var(--highlight);
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-body antialiased;
+  }
+
+  /* Luxury typography */
+  .font-luxury {
+    font-family: var(--font-luxury);
+  }
+
+  .font-body {
+    font-family: var(--font-body);
+  }
+
+  /* Smooth scrolling */
+  html {
+    scroll-behavior: smooth;
+  }
+
+  /* Custom scrollbar for modern feel */
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-muted;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--gradient-luxury);
+    @apply rounded-full;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--highlight));
+  }
+}
+
+@layer components {
+  /* Hero section styles */
+  .hero-overlay {
+    background: var(--gradient-hero);
+  }
+
+  /* Modern button styles */
+  .btn-modern {
+    background: var(--gradient-luxury);
+    @apply text-white font-semibold px-8 py-4 rounded-lg transition-all duration-300 hover:shadow-luxury hover:scale-105;
+  }
+
+  /* Card hover effects */
+  .card-luxury {
+    background: var(--gradient-card);
+    @apply rounded-xl p-6 transition-all duration-300 hover:shadow-card hover:-translate-y-1;
+  }
+
+  /* Section spacing */
+  .section-luxury {
+    @apply py-20 lg:py-32;
+  }
+
+  /* Text effects */
+  .text-brand {
+    background: var(--gradient-luxury);
+    @apply bg-clip-text text-transparent font-luxury;
+  }
+
+  /* Animations */
+  .fade-in-up {
+    @apply opacity-0 translate-y-8 transition-all duration-700 ease-out;
+  }
+
+  .fade-in-up.animate {
+    @apply opacity-100 translate-y-0;
+  }
+
+  /* Luxury shadows and effects */
+  .glow-luxury {
+    box-shadow: var(--shadow-luxury);
+  }
+
+  .glass-effect {
+    @apply bg-white/80 backdrop-blur-md border border-white/20;
+  }
+}
