@@ -12,10 +12,13 @@ const Properties = () => {
   const [properties, setProperties] = useState<Property[]>([]);
 
   useEffect(() => {
-    const loadedProperties = PropertyService.loadProperties();
-    // Filtrar apenas propriedades visíveis
-    const visibleProperties = loadedProperties.filter(property => property.isVisible !== false);
-    setProperties(visibleProperties);
+    const loadProperties = async () => {
+      const loadedProperties = await PropertyService.loadProperties();
+      // Filtrar apenas propriedades visíveis
+      const visibleProperties = loadedProperties.filter(property => property.isVisible !== false);
+      setProperties(visibleProperties);
+    };
+    loadProperties();
   }, []);
 
   const handleFilterChange = (filters: any) => {

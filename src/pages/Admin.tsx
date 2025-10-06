@@ -68,9 +68,9 @@ const Admin = () => {
   }, [properties]);
 
   // Função de teste para verificar propriedades
-  const testPropertySearch = () => {
+  const testPropertySearch = async () => {
     console.log("🧪 Testando busca de propriedades...");
-    const allProperties = PropertyService.loadProperties();
+    const allProperties = await PropertyService.loadProperties();
     console.log("🧪 Total de propriedades carregadas:", allProperties.length);
     
     allProperties.forEach((prop, index) => {
@@ -119,7 +119,7 @@ const Admin = () => {
       console.log("✅ Admin - Propriedade adicionada:", newProperty.id);
       
       // Forçar recarregamento da lista
-      const updatedProperties = PropertyService.loadProperties();
+      const updatedProperties = await PropertyService.loadProperties();
       console.log("🔄 Admin - Propriedades carregadas:", updatedProperties.length);
       console.log("🔄 Admin - Última propriedade:", updatedProperties[updatedProperties.length - 1]?.title);
       
@@ -138,7 +138,7 @@ const Admin = () => {
   const handleEditProperty = async (property: Property) => {
     try {
       await PropertyService.updateProperty(property);
-      const updatedProperties = PropertyService.loadProperties();
+      const updatedProperties = await PropertyService.loadProperties();
       setProperties(updatedProperties);
       setFilteredProperties(updatedProperties);
       setEditingProperty(null);
@@ -155,7 +155,7 @@ const Admin = () => {
     if (confirm(`⚠️ Tem certeza que deseja excluir "${propertyName}"?\n\nEsta ação não pode ser desfeita!`)) {
       try {
         await PropertyService.deleteProperty(id);
-        const updatedProperties = PropertyService.loadProperties();
+        const updatedProperties = await PropertyService.loadProperties();
         setProperties(updatedProperties);
         setFilteredProperties(updatedProperties);
         console.log("✅ Admin - Propriedade excluída:", id);
@@ -166,10 +166,10 @@ const Admin = () => {
     }
   };
 
-  const handleResetData = () => {
+  const handleResetData = async () => {
     if (confirm(`⚠️ Tem certeza que deseja resetar todos os dados?\n\nIsso irá:\n- Limpar todas as propriedades criadas\n- Restaurar os dados de exemplo\n- Perder todas as imagens enviadas\n\nEsta ação não pode ser desfeita!`)) {
       PropertyService.forceSampleData();
-      const updatedProperties = PropertyService.loadProperties();
+      const updatedProperties = await PropertyService.loadProperties();
       setProperties(updatedProperties);
       setFilteredProperties(updatedProperties);
       console.log("✅ Admin - Dados resetados para dados de exemplo");
@@ -177,7 +177,7 @@ const Admin = () => {
     }
   };
 
-  const handleToggleFeatured = (id: string) => {
+  const handleToggleFeatured = async (id: string) => {
     const property = properties.find(p => p.id === id);
     if (!property) return;
 
@@ -190,18 +190,18 @@ const Admin = () => {
 
     const updatedProperty = { ...property, isFeatured: !property.isFeatured };
     PropertyService.updateProperty(updatedProperty);
-    const updatedProperties = PropertyService.loadProperties();
+    const updatedProperties = await PropertyService.loadProperties();
     setProperties(updatedProperties);
     setFilteredProperties(updatedProperties);
   };
 
-  const handleToggleVisibility = (id: string) => {
+  const handleToggleVisibility = async (id: string) => {
     const property = properties.find(p => p.id === id);
     if (!property) return;
 
     const updatedProperty = { ...property, isVisible: !property.isVisible };
     PropertyService.updateProperty(updatedProperty);
-    const updatedProperties = PropertyService.loadProperties();
+    const updatedProperties = await PropertyService.loadProperties();
     setProperties(updatedProperties);
     setFilteredProperties(updatedProperties);
   };
@@ -225,9 +225,9 @@ const Admin = () => {
       const reader = new FileReader();
       reader.onload = (e) => {
         const content = e.target?.result as string;
-        PropertyService.importData(content).then((success) => {
+        PropertyService.importData(content).then(async (success) => {
           if (success) {
-            setProperties(PropertyService.loadProperties());
+            setProperties(await PropertyService.loadProperties());
             alert('Dados importados com sucesso!');
           } else {
             alert('Erro ao importar dados. Verifique o arquivo.');
@@ -238,10 +238,10 @@ const Admin = () => {
     }
   };
 
-  const handleClearAllData = () => {
+  const handleClearAllData = async () => {
     if (confirm('Tem certeza que deseja limpar todos os dados? Esta ação não pode ser desfeita.')) {
       PropertyService.clearAllData();
-      setProperties(PropertyService.loadProperties());
+      setProperties(await PropertyService.loadProperties());
       alert('Todos os dados foram limpos.');
     }
   };

@@ -5,10 +5,11 @@ import { Property } from '@/types/property';
 // GET - Buscar propriedade por ID
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const property = await Database.getPropertyById(params.id);
+    const { id } = await params;
+    const property = await Database.getPropertyById(id);
     
     if (!property) {
       return NextResponse.json(
@@ -30,11 +31,12 @@ export async function GET(
 // PUT - Atualizar propriedade
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const property: Property = await request.json();
-    property.id = params.id; // Garantir que o ID seja o correto
+    property.id = id; // Garantir que o ID seja o correto
     
     const updatedProperty = await Database.updateProperty(property);
     return NextResponse.json(updatedProperty);
@@ -50,10 +52,11 @@ export async function PUT(
 // DELETE - Excluir propriedade
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    await Database.deleteProperty(params.id);
+    const { id } = await params;
+    await Database.deleteProperty(id);
     return NextResponse.json({ message: 'Propriedade excluída com sucesso' });
   } catch (error) {
     console.error('❌ Erro ao excluir propriedade:', error);
