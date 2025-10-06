@@ -79,8 +79,18 @@ const ImageUpload = ({
       method: 'POST',
       body: formData,
     })
-      .then(response => response.json())
+      .then(response => {
+        console.log('📤 Response status:', response.status);
+        console.log('📤 Response headers:', response.headers);
+        
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+        
+        return response.json();
+      })
       .then(data => {
+        console.log('📤 Response data:', data);
         if (data.url) {
           console.log(`🖼️ ImageUpload - Imagem ${type} enviada para Vercel Blob:`, data.url);
           setPreview(data.url);
@@ -92,7 +102,7 @@ const ImageUpload = ({
       })
       .catch((error) => {
         console.error("❌ Erro ao fazer upload:", error);
-        alert('Erro ao fazer upload da imagem. Tente novamente.');
+        alert(`Erro ao fazer upload da imagem: ${error.message}`);
         setIsUploading(false);
       });
   };

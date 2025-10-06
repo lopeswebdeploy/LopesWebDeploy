@@ -1,6 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { put } from '@vercel/blob';
 
+// GET - Testar se a API está funcionando
+export async function GET() {
+  return NextResponse.json({ 
+    message: 'API de upload funcionando',
+    timestamp: new Date().toISOString(),
+    token: process.env.BLOB_READ_WRITE_TOKEN ? 'Configurado' : 'Não configurado'
+  });
+}
+
 export async function POST(request: NextRequest) {
   try {
     const formData = await request.formData();
@@ -23,6 +32,7 @@ export async function POST(request: NextRequest) {
     
     const filename = `properties/${propertyId}/${type}-${Date.now()}.jpg`;
     
+    // Upload direto com token (Vercel Blob v2.0.0)
     const blob = await put(filename, file, {
       access: 'public',
       contentType: 'image/jpeg',
