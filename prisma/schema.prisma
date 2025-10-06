@@ -19,6 +19,10 @@ model Property {
   type              String?
   propertyType      String   @map("property_type")
   
+  // Propriedade do corretor
+  ownerId           String?  @map("owner_id")
+  owner             User?    @relation("PropertyOwner", fields: [ownerId], references: [id])
+  
   // Localização
   location          String?
   state             String   @default("Goiânia")
@@ -75,6 +79,7 @@ model Lead {
   phone       String
   email       String?
   propertyId  String?  @map("property_id")
+  ownerId     String?  @map("owner_id") // Corretor responsável pelo lead
   source      String   @default("website")
   status      String   @default("novo")
   notes       String?
@@ -83,16 +88,25 @@ model Lead {
   
   // Relacionamentos
   property    Property? @relation(fields: [propertyId], references: [id], onDelete: SetNull)
+  owner       User?     @relation("LeadOwner", fields: [ownerId], references: [id])
   
   @@map("leads")
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
+  id        String   @id @default(cuid())
   email     String   @unique
   name      String
-  role      String   @default("admin")
+  role      String   @default("corretor") // "admin" ou "corretor"
+  phone     String?
+  avatar    String?
+  isActive  Boolean  @default(true) @map("is_active")
   createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  
+  // Relacionamentos
+  properties Property[] @relation("PropertyOwner")
+  leads      Lead[]     @relation("LeadOwner")
   
   @@map("users")
 }

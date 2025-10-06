@@ -1,9 +1,10 @@
 export interface Property {
   // Identificação
-  id: string;
+  id?: string;
   status: 'ativo' | 'inativo';
   isFeatured?: boolean; // Para destaque (máximo 6)
   isVisible?: boolean; // Para visibilidade nas páginas públicas
+  ownerId?: string; // ID do corretor proprietário
   createdAt?: Date;
   updatedAt?: Date;
 

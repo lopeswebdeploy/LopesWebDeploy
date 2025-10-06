@@ -6,7 +6,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, Eye, Edit, Trash2, Download, Upload, Trash, Search, Filter, Star, EyeOff } from "lucide-react";
+import { Plus, Eye, Edit, Trash2, Download, Upload, Trash, Search, Filter, Star, EyeOff, LogOut, User } from "lucide-react";
+import { AuthService } from "@/lib/auth";
 import PropertyFormNew from "@/components/admin/PropertyFormNew";
 import PropertyPreview from "@/components/admin/PropertyPreview";
 import BackupManager from "@/components/admin/BackupManager";
@@ -268,8 +269,31 @@ const Admin = () => {
               <p className="text-gray-600">
                 Gerencie as propriedades e apartamentos do site
               </p>
+              {AuthService.getCurrentUser() && (
+                <div className="mt-2 flex items-center gap-2">
+                  <User className="h-4 w-4 text-gray-500" />
+                  <span className="text-sm text-gray-600">
+                    {AuthService.getCurrentUser()?.name} 
+                    <span className="ml-2 px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">
+                      {AuthService.getCurrentUser()?.role === 'admin' ? 'Admin Master' : 'Corretor'}
+                    </span>
+                  </span>
+                </div>
+              )}
             </div>
             <div className="flex gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  AuthService.logout();
+                  window.location.href = '/login';
+                }}
+                className="flex items-center gap-2"
+              >
+                <LogOut className="h-4 w-4" />
+                Sair
+              </Button>
               <Button
                 variant="outline"
                 size="sm"

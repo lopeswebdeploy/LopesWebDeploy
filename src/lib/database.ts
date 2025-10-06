@@ -16,11 +16,19 @@ export class Database {
     }
   }
 
-  // Carregar todas as propriedades
-  static async loadProperties(): Promise<Property[]> {
+  // Carregar todas as propriedades (com filtro por usuário)
+  static async loadProperties(userId?: string, userRole?: string): Promise<Property[]> {
     try {
+      let whereClause: any = { isVisible: true };
+      
+      // Se for corretor, só mostrar suas propriedades
+      if (userRole === 'corretor' && userId) {
+        whereClause.ownerId = userId;
+      }
+      // Se for admin, mostrar todas (não adicionar filtro)
+      
       const properties = await prisma.property.findMany({
-        where: { isVisible: true },
+        where: whereClause,
         orderBy: { createdAt: 'desc' }
       });
       
@@ -112,7 +120,8 @@ export class Database {
           differentials: property.differentials as any,
           status: property.status,
           isFeatured: property.isFeatured,
-          isVisible: property.isVisible
+          isVisible: property.isVisible,
+          ownerId: property.ownerId
         }
       });
       

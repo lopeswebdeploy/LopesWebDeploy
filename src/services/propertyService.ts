@@ -1,6 +1,7 @@
 import { Property } from "@/types/property";
 import { sampleProperties } from "@/data/admin-properties";
 import { Database } from "@/lib/database";
+import { AuthService } from "@/lib/auth";
 
 const STORAGE_KEY = 'lopes_properties';
 
@@ -10,8 +11,13 @@ export class PropertyService {
     console.log('🔍 PropertyService.loadProperties - Carregando propriedades...');
     
     try {
+      // Obter informações do usuário atual
+      const currentUser = AuthService.getCurrentUser();
+      const userId = currentUser?.id;
+      const userRole = currentUser?.role;
+      
       // Tentar carregar do banco de dados primeiro
-      const dbProperties = await Database.loadProperties();
+      const dbProperties = await Database.loadProperties(userId, userRole);
       if (dbProperties.length > 0) {
         console.log('✅ PropertyService.loadProperties - Carregadas do banco:', dbProperties.length, 'propriedades');
         return dbProperties;
@@ -141,8 +147,11 @@ export class PropertyService {
     try {
       // Tentar salvar no banco de dados primeiro
       const { id, ...propertyWithoutId } = property;
+      const currentUser = AuthService.getCurrentUser();
+      
       const newProperty = await Database.addProperty({
         ...propertyWithoutId,
+        ownerId: currentUser?.id, // Associar propriedade ao usuário atual
         createdAt: new Date(),
         updatedAt: new Date(),
       });
