@@ -81,8 +81,6 @@ const PropertyFormUnified = ({
     balconyTypes: [],
     apartmentOptions: [],
     coordinates: { lat: -16.6869, lng: -49.2648 },
-    bannerImage: "",
-    floorPlan: "",
     photoGallery: [],
     isFeatured: false,
     isVisible: true
@@ -139,7 +137,6 @@ const PropertyFormUnified = ({
       features: [],
       unitType: "",
       description: "",
-      floorPlan: ""
     };
     handleInputChange("apartmentOptions", [...(formData.apartmentOptions || []), newOption]);
   };
@@ -191,10 +188,8 @@ const PropertyFormUnified = ({
         developer: formData.developer || '',
         deliveryDate: formData.deliveryDate || '',
         availability: formData.availability || '',
-        bannerImage: formData.bannerImage || '',
         images: formData.images || [],
         photoGallery: formData.photoGallery || [],
-        floorPlan: formData.floorPlan || '',
         characteristics: formData.characteristics || [],
         locationBenefits: formData.locationBenefits || [],
         differentials: formData.differentials || [],
@@ -567,16 +562,6 @@ const PropertyFormUnified = ({
               <TabsContent value="3" className="space-y-6">
                 {formData.id && (
                   <>
-                    {/* Banner */}
-                    <ImageUploadSystem
-                      propertyId={formData.id}
-                      type="banner"
-                      label="Imagem do Banner"
-                      description="Imagem principal que aparece no topo da página (proporção 2:1)"
-                      currentImage={formData.bannerImage}
-                      onImageChange={(url) => handleInputChange("bannerImage", url)}
-                    />
-
                     {/* Galeria */}
                     <ImageUploadSystem
                       propertyId={formData.id}
@@ -587,16 +572,6 @@ const PropertyFormUnified = ({
                       maxImages={20}
                       currentImages={formData.photoGallery || []}
                       onImagesChange={(urls) => handleInputChange("photoGallery", urls)}
-                    />
-
-                    {/* Planta Baixa */}
-                    <ImageUploadSystem
-                      propertyId={formData.id}
-                      type="floorplan"
-                      label="Planta Baixa Geral"
-                      description="Planta baixa do empreendimento ou unidade"
-                      currentImage={formData.floorPlan}
-                      onImageChange={(url) => handleInputChange("floorPlan", url)}
                     />
                   </>
                 )}

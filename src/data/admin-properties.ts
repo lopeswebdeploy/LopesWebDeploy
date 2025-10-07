@@ -47,7 +47,6 @@ export const sampleProperties: Property[] = [
         price: "R$ 1.450.000",
         floor: 3,
         available: true,
-        floorPlan: "https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=600",
         features: ["Varanda gourmet", "Cozinha americana", "Suíte master", "2 vagas"],
         description: "Apartamento moderno com excelente layout e acabamento premium."
       },
@@ -62,7 +61,6 @@ export const sampleProperties: Property[] = [
         price: "R$ 1.850.000",
         floor: 8,
         available: true,
-        floorPlan: "https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=600",
         features: ["Varanda gourmet", "Terraço", "2 suítes", "3 vagas", "Escritório"],
         description: "Planta ampla com escritório, ideal para home office e vida familiar."
       },
@@ -77,7 +75,6 @@ export const sampleProperties: Property[] = [
         price: "R$ 2.100.000",
         floor: 12,
         available: false,
-        floorPlan: "https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=600",
         features: ["Varanda gourmet", "Terraço premium", "2 suítes", "3 vagas", "Lavabo"],
         description: "Unidade de cobertura com acabamento de luxo e vista panorâmica."
       }
@@ -94,8 +91,6 @@ export const sampleProperties: Property[] = [
       "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=800",
       "https://images.unsplash.com/photo-1484154218962-a197022b5858?w=800"
     ],
-    bannerImage: "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=1200",
-    floorPlan: "https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=800",
     photoGallery: [
       "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=800",
       "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=800",
@@ -183,8 +178,6 @@ export const sampleProperties: Property[] = [
       "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=800",
       "https://images.unsplash.com/photo-1560448075-bb485b067938?w=800"
     ],
-    bannerImage: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=1200",
-    floorPlan: "https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=800",
     photoGallery: [
       "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=800",
       "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=800",
@@ -262,7 +255,6 @@ export const sampleProperties: Property[] = [
         price: "R$ 650.000",
         floor: 4,
         available: true,
-        floorPlan: "https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=600",
         features: ["Smart home", "Varanda integrada", "1 suíte", "1 vaga"],
         description: "Apartamento compacto e inteligente, perfeito para jovens profissionais."
       },
@@ -277,7 +269,6 @@ export const sampleProperties: Property[] = [
         price: "R$ 850.000",
         floor: 8,
         available: true,
-        floorPlan: "https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=600",
         features: ["Smart home", "Terraço gourmet", "1 suíte", "2 vagas"],
         description: "Apartamento com terraço gourmet e tecnologia smart home integrada."
       },
@@ -292,7 +283,6 @@ export const sampleProperties: Property[] = [
         price: "R$ 980.000",
         floor: 12,
         available: true,
-        floorPlan: "https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=600",
         features: ["Smart home", "Terraço premium", "2 suítes", "2 vagas"],
         description: "Apartamento familiar com automação completa e espaços amplos."
       }
@@ -307,8 +297,6 @@ export const sampleProperties: Property[] = [
       "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800",
       "https://images.unsplash.com/photo-1582063289852-62e3ba2747f8?w=800"
     ],
-    bannerImage: "https://images.unsplash.com/photo-1551816230-ef5deaed4a26?w=1200",
-    floorPlan: "https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=800",
     photoGallery: [
       "https://images.unsplash.com/photo-1551816230-ef5deaed4a26?w=800",
       "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800",
@@ -395,8 +383,6 @@ export const sampleProperties: Property[] = [
       "https://images.unsplash.com/photo-1542621334-a254cf47733d?w=800",
       "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=800"
     ],
-    bannerImage: "https://images.unsplash.com/photo-1449844908441-8829872d2607?w=1200",
-    floorPlan: "https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=800",
     photoGallery: [
       "https://images.unsplash.com/photo-1449844908441-8829872d2607?w=800",
       "https://images.unsplash.com/photo-1542621334-a254cf47733d?w=800",
@@ -501,8 +487,6 @@ export const sampleProperties: Property[] = [
       "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800",
       "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=800"
     ],
-    bannerImage: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=1200",
-    floorPlan: "https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=800",
     photoGallery: [
       "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=800",
       "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800",

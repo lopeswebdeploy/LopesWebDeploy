@@ -37,7 +37,7 @@ const PropertyFullPage = ({ property }: PropertyFullPageProps) => {
   // Debug: verificar dados da propriedade na página completa
   console.log("🏠 PropertyFullPage - Dados recebidos:", {
     title: property.title,
-    bannerImage: property.bannerImage ? property.bannerImage.substring(0, 50) + "..." : "VAZIO",
+    bannerImage: property.images?.[0] ? property.images[0].substring(0, 50) + "..." : "VAZIO",
     images: property.images?.length || 0,
     photoGallery: property.photoGallery?.length || 0,
     currentImageIndex
@@ -92,10 +92,10 @@ const PropertyFullPage = ({ property }: PropertyFullPageProps) => {
     <div className="min-h-screen bg-gray-50">
       {/* Header com Banner */}
       <div className="relative h-[500px] bg-gray-900">
-        {property.bannerImage && (
+        {property.images && property.images.length > 0 && (
           <>
             <img
-              src={property.bannerImage}
+              src={property.images[0]}
               alt={property.title}
               className="absolute inset-0 w-full h-full object-cover"
               onError={(e) => {

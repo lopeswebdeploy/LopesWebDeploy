@@ -10,7 +10,6 @@ const PropertyCard = ({
   id,
   images,
   photoGallery,
-  bannerImage,
   price,
   title,
   location,
