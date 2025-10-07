@@ -92,8 +92,8 @@ const Admin = () => {
     if (searchTerm) {
       filtered = filtered.filter(property =>
         property.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        property.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        property.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (property.description && property.description.toLowerCase().includes(searchTerm.toLowerCase())) ||
+        (property.location && property.location.toLowerCase().includes(searchTerm.toLowerCase())) ||
         property.developer?.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }

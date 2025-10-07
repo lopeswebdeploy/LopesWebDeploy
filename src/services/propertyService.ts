@@ -1,5 +1,4 @@
 import { Property } from "@/types/property";
-import { sampleProperties } from "@/data/admin-properties";
 import { Database } from "@/lib/database";
 import { AuthService } from "@/lib/auth";
 import { ImageReorganizer } from "./imageReorganizer";
@@ -7,9 +6,9 @@ import { ImageReorganizer } from "./imageReorganizer";
 const STORAGE_KEY = 'lopes_properties';
 
 export class PropertyService {
-  // Carregar propriedades - PRIMEIRO do banco, depois dados de exemplo
+  // Carregar propriedades - APENAS do banco de dados
   static async loadProperties(): Promise<Property[]> {
-    console.log('🔍 PropertyService.loadProperties - Carregando propriedades...');
+    console.log('🔍 PropertyService.loadProperties - Carregando propriedades do banco...');
     
     try {
       // Obter informações do usuário atual
@@ -17,25 +16,22 @@ export class PropertyService {
       const userId = currentUser?.id;
       const userRole = currentUser?.role;
       
-      // Tentar carregar do banco de dados primeiro
+      // Carregar do banco de dados
       const dbProperties = await Database.loadProperties(userId, userRole);
-      if (dbProperties.length > 0) {
-        console.log('✅ PropertyService.loadProperties - Carregadas do banco:', dbProperties.length, 'propriedades');
-        return dbProperties;
-      }
+      console.log('✅ PropertyService.loadProperties - Carregadas do banco:', dbProperties.length, 'propriedades');
+      return dbProperties;
+      
     } catch (error) {
-      console.log('⚠️ PropertyService.loadProperties - Erro no banco:', error);
+      console.error('❌ PropertyService.loadProperties - Erro no banco:', error);
+      // Retornar array vazio em caso de erro - SEM FALLBACK
+      return [];
     }
+  }
 
-    // Fallback: dados de exemplo (apenas para desenvolvimento)
-    console.log('🔍 PropertyService.loadProperties - Usando dados de exemplo');
-      return sampleProperties;
-    }
-
-  // Versão síncrona para compatibilidade (usa dados de exemplo)
+  // Versão síncrona para compatibilidade (retorna vazio - use loadProperties async)
   static loadPropertiesSync(): Property[] {
-    console.log('🔍 PropertyService.loadPropertiesSync - Carregando dados de exemplo');
-    return sampleProperties;
+    console.log('🔍 PropertyService.loadPropertiesSync - Retornando array vazio (use loadProperties async)');
+    return [];
   }
 
   // Salvar propriedades no localStorage - SIMPLES E DIRETO
@@ -153,8 +149,8 @@ export class PropertyService {
       const newProperty = await Database.addProperty({
         ...propertyWithoutId,
         ownerId: currentUser?.id, // Associar propriedade ao usuário atual
-        createdAt: new Date(),
-        updatedAt: new Date(),
+      createdAt: new Date(),
+      updatedAt: new Date(),
       }, currentUser?.id || 'temp-user-id');
       
       console.log("✅ PropertyService.addProperty - Propriedade adicionada no banco com ID:", newProperty.id);
@@ -166,22 +162,8 @@ export class PropertyService {
       
       return newProperty;
     } catch (error) {
-      console.log("⚠️ PropertyService.addProperty - Erro no banco, salvando no localStorage:", error);
-      
-      // Fallback para localStorage
-    const newProperty = {
-      ...property,
-        id: property.id || `temp-${Date.now()}`, // Usar ID existente ou gerar temporário
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    };
-    
-      const existingProperties = this.loadPropertiesSync();
-    const updatedProperties = [...existingProperties, newProperty];
-    await this.saveProperties(updatedProperties);
-    
-      console.log("✅ PropertyService.addProperty - Propriedade adicionada no localStorage com ID:", newProperty.id);
-    return newProperty;
+      console.error("❌ PropertyService.addProperty - Erro no banco:", error);
+      throw new Error("Não foi possível adicionar a propriedade. Verifique a conexão com o banco de dados.");
     }
   }
   
@@ -280,19 +262,8 @@ export class PropertyService {
       console.log("✅ PropertyService.updateProperty - Propriedade atualizada no banco");
       return updatedProperty;
     } catch (error) {
-      console.log("⚠️ PropertyService.updateProperty - Erro no banco, atualizando no localStorage:", error);
-      
-      // Fallback para localStorage
-      const existingProperties = this.loadPropertiesSync();
-    const updatedProperties = existingProperties.map(prop => 
-      prop.id === property.id 
-        ? { ...property, updatedAt: new Date() }
-        : prop
-    );
-    
-    await this.saveProperties(updatedProperties);
-      console.log("✅ PropertyService.updateProperty - Propriedade atualizada no localStorage");
-    return property;
+      console.error("❌ PropertyService.updateProperty - Erro no banco:", error);
+      throw new Error("Não foi possível atualizar a propriedade. Verifique a conexão com o banco de dados.");
     }
   }
 
@@ -306,14 +277,8 @@ export class PropertyService {
       await Database.deleteProperty(id, currentUser?.id || 'temp-user-id', currentUser?.role || 'admin');
       console.log("✅ PropertyService.deleteProperty - Propriedade excluída do banco");
     } catch (error) {
-      console.log("⚠️ PropertyService.deleteProperty - Erro no banco, excluindo do localStorage:", error);
-      
-      // Fallback para localStorage
-      const existingProperties = this.loadPropertiesSync();
-    const updatedProperties = existingProperties.filter(prop => prop.id !== id);
-    await this.saveProperties(updatedProperties);
-    
-      console.log("✅ PropertyService.deleteProperty - Propriedade excluída do localStorage");
+      console.error("❌ PropertyService.deleteProperty - Erro no banco:", error);
+      throw new Error("Não foi possível excluir a propriedade. Verifique a conexão com o banco de dados.");
     }
   }
 
@@ -329,20 +294,12 @@ export class PropertyService {
         return property;
       }
     } catch (error) {
-      console.log("⚠️ PropertyService.getPropertyById - Erro no banco, buscando no localStorage:", error);
+      console.error("❌ PropertyService.getPropertyById - Erro no banco:", error);
+      return null;
     }
     
-    // Fallback para localStorage
-    const properties = this.loadPropertiesSync();
-    const foundProperty = properties.find(p => p.id === id) || null;
-    
-    if (foundProperty) {
-      console.log("✅ PropertyService.getPropertyById - Propriedade encontrada no localStorage:", foundProperty.title);
-    } else {
-      console.log("❌ PropertyService.getPropertyById - Propriedade não encontrada!");
-    }
-    
-    return foundProperty;
+    console.log("❌ PropertyService.getPropertyById - Propriedade não encontrada no banco!");
+    return null;
   }
 
   // Versão síncrona para compatibilidade

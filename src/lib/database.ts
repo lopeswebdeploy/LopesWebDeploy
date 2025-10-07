@@ -159,8 +159,6 @@ export class Database {
           developer: property.developer,
           deliveryDate: property.deliveryDate,
           availability: property.availability,
-          bannerImage: property.bannerImage,
-          floorPlan: property.floorPlan,
           characteristics: property.characteristics as any,
           locationBenefits: property.locationBenefits as any,
           differentials: property.differentials as any,
@@ -220,8 +218,6 @@ export class Database {
           developer: property.developer,
           deliveryDate: property.deliveryDate,
           availability: property.availability,
-          bannerImage: property.bannerImage,
-          floorPlan: property.floorPlan,
           characteristics: property.characteristics as any,
           locationBenefits: property.locationBenefits as any,
           differentials: property.differentials as any,
@@ -387,8 +383,8 @@ export class Database {
     // Separar imagens por tipo
     const images = prismaProperty.images || [];
     const galleryImages = images.filter((img: any) => img.type === 'gallery').map((img: any) => img.url);
-    const bannerImage = images.find((img: any) => img.type === 'banner')?.url || prismaProperty.bannerImage;
-    const floorPlan = images.find((img: any) => img.type === 'floorplan')?.url || prismaProperty.floorPlan;
+    const bannerImage = images.find((img: any) => img.type === 'banner')?.url;
+    const floorPlan = images.find((img: any) => img.type === 'floorplan')?.url;
     
     return {
       id: prismaProperty.id,

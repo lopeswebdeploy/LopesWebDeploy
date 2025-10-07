@@ -48,9 +48,7 @@ model Property {
   deliveryDate      String?    @map("delivery_date")
   availability      String?
   
-  // Imagens (mantido para compatibilidade temporária)
-  bannerImage       String?    @map("banner_image")
-  floorPlan         String?    @map("floor_plan")
+  // Imagens gerenciadas pelo sistema Image[]
   
   // Detalhes
   characteristics   Json       @default("[]")

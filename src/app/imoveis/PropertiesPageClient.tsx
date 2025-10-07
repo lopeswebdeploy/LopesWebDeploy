@@ -39,7 +39,7 @@ export default function PropertiesPageClient() {
     if (filters.search) {
       filtered = filtered.filter(property =>
         property.title.toLowerCase().includes(filters.search.toLowerCase()) ||
-        property.location.toLowerCase().includes(filters.search.toLowerCase()) ||
+        (property.location && property.location.toLowerCase().includes(filters.search.toLowerCase())) ||
         property.description?.toLowerCase().includes(filters.search.toLowerCase())
       );
     }
@@ -68,10 +68,7 @@ export default function PropertiesPageClient() {
     // Filtro por quartos
     if (filters.bedrooms && filters.bedrooms !== 'all') {
       filtered = filtered.filter(property => {
-        const bedrooms = typeof property.bedrooms === 'string' 
-          ? parseInt(property.bedrooms.split('-')[0]) 
-          : property.bedrooms;
-        return bedrooms >= parseInt(filters.bedrooms);
+        return property.bedrooms >= parseInt(filters.bedrooms);
       });
     }
 
@@ -90,8 +87,9 @@ export default function PropertiesPageClient() {
     }
 
     // Filtro por faixa de preço
-    if (filters.priceRange) {
+    if (filters.priceRange && filters.priceRange.length === 2) {
       filtered = filtered.filter(property => {
+        if (!property.price) return false;
         const price = parseFloat(property.price.replace(/[^\d]/g, ''));
         return price >= filters.priceRange[0] && price <= filters.priceRange[1];
       });

@@ -1,42 +1,42 @@
 export interface Property {
   // Identificação
-  id?: string;
-  status: 'ativo' | 'inativo';
-  isFeatured?: boolean; // Para destaque (máximo 6)
-  isVisible?: boolean; // Para visibilidade nas páginas públicas
+  id: string;
+  status: string;
+  isFeatured: boolean;
+  isVisible: boolean;
   ownerId?: string; // ID do corretor proprietário
-  createdAt?: Date;
-  updatedAt?: Date;
+  createdAt: Date;
+  updatedAt: Date;
 
   // Informações Básicas
   title: string;
-  description: string;
+  description?: string;
   fullDescription?: string;
-  category: 'venda' | 'investimento' | 'aluguel';
-  type: string;
-  propertyType: 'apartamento' | 'casa' | 'cobertura' | 'loft';
+  category: string;
+  type?: string;
+  propertyType: string;
 
   // Localização
-  location: string;
+  location?: string;
   state: string;
   address?: string;
   coordinates?: {
     lat: number;
     lng: number;
   };
-  embedUrl?: string; // URL do iframe do Google Maps
+  embedUrl?: string;
 
   // Características Físicas
-  bedrooms: number | string;
+  bedrooms: number;
   bathrooms: number;
-  suites?: number;
+  suites: number;
   parking: number;
-  area: string;
-  balconyTypes?: string[];
+  area?: string;
+  balconyTypes: string[];
 
   // Financeiro
-  price: string;
-  apartmentOptions?: ApartmentOption[];
+  price?: string;
+  apartmentOptions: ApartmentOption[];
 
   // Empreendimento
   developer?: string;
@@ -45,14 +45,12 @@ export interface Property {
 
   // Mídia
   images: string[];
-  bannerImage?: string;
-  floorPlan?: string;
-  photoGallery?: string[];
+  photoGallery: string[];
 
   // Detalhes
-  characteristics?: string[];
-  locationBenefits?: string[];
-  differentials?: string[];
+  characteristics: string[];
+  locationBenefits: string[];
+  differentials: string[];
 }
 
 export interface ApartmentOption {

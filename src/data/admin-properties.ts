@@ -5,6 +5,8 @@ export const sampleProperties: Property[] = [
     // 1. APARTAMENTO PREMIUM - SETOR OESTE
     id: "1",
     status: "ativo",
+    isFeatured: true,
+    isVisible: true,
     createdAt: new Date("2024-10-01"),
     updatedAt: new Date("2024-10-01"),
 
@@ -134,6 +136,8 @@ export const sampleProperties: Property[] = [
     // 2. COBERTURA EXCLUSIVA - SETOR MARISTA
     id: "2",
     status: "ativo",
+    isFeatured: true,
+    isVisible: true,
     createdAt: new Date("2024-10-01"),
     updatedAt: new Date("2024-10-01"),
 
@@ -220,6 +224,8 @@ export const sampleProperties: Property[] = [
     // 3. LANÇAMENTO MODERNO - SETOR BUENO
     id: "3",
     status: "ativo",
+    isFeatured: false,
+    isVisible: true,
     createdAt: new Date("2024-10-01"),
     updatedAt: new Date("2024-10-01"),
 
@@ -342,6 +348,8 @@ export const sampleProperties: Property[] = [
     // 4. CASA DE ALTO PADRÃO - JARDIM EUROPA
     id: "4",
     status: "ativo",
+    isFeatured: true,
+    isVisible: true,
     createdAt: new Date("2024-10-01"),
     updatedAt: new Date("2024-10-01"),
 
@@ -428,6 +436,8 @@ export const sampleProperties: Property[] = [
     // 5. LOFT MODERNO - SETOR UNIVERSITÁRIO  
     id: "5",
     status: "ativo",
+    isFeatured: false,
+    isVisible: true,
     createdAt: new Date("2024-10-01"),
     updatedAt: new Date("2024-10-01"),
 
