@@ -29,8 +29,8 @@ export class PropertyService {
 
     // Fallback: dados de exemplo (apenas para desenvolvimento)
     console.log('🔍 PropertyService.loadProperties - Usando dados de exemplo');
-    return sampleProperties;
-  }
+      return sampleProperties;
+    }
 
   // Versão síncrona para compatibilidade (usa dados de exemplo)
   static loadPropertiesSync(): Property[] {
@@ -155,7 +155,7 @@ export class PropertyService {
         ownerId: currentUser?.id, // Associar propriedade ao usuário atual
         createdAt: new Date(),
         updatedAt: new Date(),
-      });
+      }, currentUser?.id || 'temp-user-id');
       
       console.log("✅ PropertyService.addProperty - Propriedade adicionada no banco com ID:", newProperty.id);
       
@@ -169,19 +169,19 @@ export class PropertyService {
       console.log("⚠️ PropertyService.addProperty - Erro no banco, salvando no localStorage:", error);
       
       // Fallback para localStorage
-      const newProperty = {
-        ...property,
+    const newProperty = {
+      ...property,
         id: property.id || `temp-${Date.now()}`, // Usar ID existente ou gerar temporário
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      };
-      
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+    
       const existingProperties = this.loadPropertiesSync();
-      const updatedProperties = [...existingProperties, newProperty];
-      await this.saveProperties(updatedProperties);
-      
+    const updatedProperties = [...existingProperties, newProperty];
+    await this.saveProperties(updatedProperties);
+    
       console.log("✅ PropertyService.addProperty - Propriedade adicionada no localStorage com ID:", newProperty.id);
-      return newProperty;
+    return newProperty;
     }
   }
   
@@ -254,7 +254,8 @@ export class PropertyService {
       };
       
       // Atualizar no banco
-      await Database.updateProperty(updatedProperty);
+      const currentUser = AuthService.getCurrentUser();
+      await Database.updateProperty(updatedProperty, currentUser?.id || 'temp-user-id', currentUser?.role || 'admin');
       
       console.log("✅ PropertyService - Imagens reorganizadas e propriedade atualizada!");
       
@@ -270,10 +271,11 @@ export class PropertyService {
     
     try {
       // Tentar atualizar no banco de dados primeiro
+      const currentUser = AuthService.getCurrentUser();
       const updatedProperty = await Database.updateProperty({
         ...property,
         updatedAt: new Date(),
-      });
+      }, currentUser?.id || 'temp-user-id', currentUser?.role || 'admin');
       
       console.log("✅ PropertyService.updateProperty - Propriedade atualizada no banco");
       return updatedProperty;
@@ -282,15 +284,15 @@ export class PropertyService {
       
       // Fallback para localStorage
       const existingProperties = this.loadPropertiesSync();
-      const updatedProperties = existingProperties.map(prop => 
-        prop.id === property.id 
-          ? { ...property, updatedAt: new Date() }
-          : prop
-      );
-      
-      await this.saveProperties(updatedProperties);
+    const updatedProperties = existingProperties.map(prop => 
+      prop.id === property.id 
+        ? { ...property, updatedAt: new Date() }
+        : prop
+    );
+    
+    await this.saveProperties(updatedProperties);
       console.log("✅ PropertyService.updateProperty - Propriedade atualizada no localStorage");
-      return property;
+    return property;
     }
   }
 
@@ -300,16 +302,17 @@ export class PropertyService {
     
     try {
       // Tentar excluir do banco de dados primeiro
-      await Database.deleteProperty(id);
+      const currentUser = AuthService.getCurrentUser();
+      await Database.deleteProperty(id, currentUser?.id || 'temp-user-id', currentUser?.role || 'admin');
       console.log("✅ PropertyService.deleteProperty - Propriedade excluída do banco");
     } catch (error) {
       console.log("⚠️ PropertyService.deleteProperty - Erro no banco, excluindo do localStorage:", error);
       
       // Fallback para localStorage
       const existingProperties = this.loadPropertiesSync();
-      const updatedProperties = existingProperties.filter(prop => prop.id !== id);
-      await this.saveProperties(updatedProperties);
-      
+    const updatedProperties = existingProperties.filter(prop => prop.id !== id);
+    await this.saveProperties(updatedProperties);
+    
       console.log("✅ PropertyService.deleteProperty - Propriedade excluída do localStorage");
     }
   }

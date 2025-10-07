@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Plus, Eye, Edit, Trash2, Download, Upload, Trash, Search, Filter, Star, EyeOff, LogOut, User } from "lucide-react";
 import { AuthService } from "@/lib/auth";
-import PropertyFormNew from "@/components/admin/PropertyFormNew";
+import PropertyFormUnified from "@/components/admin/PropertyFormUnified";
 import PropertyPreview from "@/components/admin/PropertyPreview";
 import BackupManager from "@/components/admin/BackupManager";
 import { Property } from "@/types/property";
@@ -556,9 +556,11 @@ const Admin = () => {
                 </Button>
               </div>
             </div>
-                <PropertyFormNew 
+                <PropertyFormUnified 
                   onSubmit={handleAddProperty}
                   onCancel={() => setCurrentTab("properties")}
+                  user={AuthService.getCurrentUser()!}
+                  mode="create"
                 />
           </TabsContent>
 
@@ -581,10 +583,12 @@ const Admin = () => {
                     Fechar
                   </Button>
                 </div>
-                    <PropertyFormNew 
+                    <PropertyFormUnified 
                       property={editingProperty}
                       onSubmit={handleEditProperty}
                       onCancel={() => setEditingProperty(null)}
+                      user={AuthService.getCurrentUser()!}
+                      mode="edit"
                     />
               </div>
             </div>

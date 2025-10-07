@@ -9,6 +9,7 @@ export async function GET(
 ) {
   try {
     const { id } = await params;
+    // TODO: Implementar autenticação para obter userId e userRole
     const property = await Database.getPropertyById(id);
     
     if (!property) {
@@ -38,7 +39,8 @@ export async function PUT(
     const property: Property = await request.json();
     property.id = id; // Garantir que o ID seja o correto
     
-    const updatedProperty = await Database.updateProperty(property);
+    // TODO: Implementar autenticação para obter userId e userRole
+    const updatedProperty = await Database.updateProperty(property, 'temp-user-id', 'admin');
     return NextResponse.json(updatedProperty);
   } catch (error) {
     console.error('❌ Erro ao atualizar propriedade:', error);
@@ -56,7 +58,8 @@ export async function DELETE(
 ) {
   try {
     const { id } = await params;
-    await Database.deleteProperty(id);
+    // TODO: Implementar autenticação para obter userId e userRole
+    await Database.deleteProperty(id, 'temp-user-id', 'admin');
     return NextResponse.json({ message: 'Propriedade excluída com sucesso' });
   } catch (error) {
     console.error('❌ Erro ao excluir propriedade:', error);

@@ -1,10 +1,10 @@
-import { PrismaClient, User } from '@prisma/client';
-import { Property } from '@/types/property';
+import { PrismaClient, User, Property, Image, Lead } from '@prisma/client';
+import { Property as PropertyType } from '@/types/property';
 
 const prisma = new PrismaClient();
 
 export class Database {
-  // Testar conexão com o banco
+  // ==================== CONEXÃO ====================
   static async testConnection(): Promise<boolean> {
     try {
       await prisma.$connect();
@@ -16,7 +16,7 @@ export class Database {
     }
   }
 
-  // Buscar usuário por email
+  // ==================== USUÁRIOS ====================
   static async getUserByEmail(email: string): Promise<User | null> {
     try {
       const user = await prisma.user.findUnique({
@@ -35,7 +35,6 @@ export class Database {
     }
   }
 
-  // Criar usuário
   static async createUser(userData: {
     email: string;
     name: string;
@@ -62,23 +61,41 @@ export class Database {
     }
   }
 
-  // Carregar todas as propriedades (com filtro por usuário)
-  static async loadProperties(userId?: string, userRole?: string): Promise<Property[]> {
+  static async getAllUsers(): Promise<User[]> {
+    try {
+      return await prisma.user.findMany({
+        orderBy: { createdAt: 'desc' }
+      });
+    } catch (error) {
+      console.error('❌ Erro ao buscar usuários:', error);
+      return [];
+    }
+  }
+
+  // ==================== PROPRIEDADES ====================
+  static async loadProperties(userId?: string, userRole?: string): Promise<PropertyType[]> {
     try {
       let whereClause: any = { isVisible: true };
       
-      // Se for corretor, só mostrar suas propriedades
+      // Se for corretor, só pode ver suas próprias propriedades
       if (userRole === 'corretor' && userId) {
-        whereClause.ownerId = userId;
+        whereClause.authorId = userId;
       }
-      // Se for admin, mostrar todas (não adicionar filtro)
+      // Admin vê todas as propriedades
       
       const properties = await prisma.property.findMany({
         where: whereClause,
+        include: {
+          images: true,
+          author: true,
+          _count: {
+            select: { leads: true }
+          }
+        },
         orderBy: { createdAt: 'desc' }
       });
       
-      console.log(`📊 Carregadas ${properties.length} propriedades do banco`);
+      console.log(`✅ Carregadas ${properties.length} propriedades do banco`);
       return properties.map(this.mapPrismaToProperty);
     } catch (error) {
       console.error('❌ Erro ao carregar propriedades:', error);
@@ -86,55 +103,40 @@ export class Database {
     }
   }
 
-  // Carregar propriedades em destaque
-  static async loadFeaturedProperties(): Promise<Property[]> {
+  static async getPropertyById(id: string, userId?: string, userRole?: string): Promise<PropertyType | null> {
     try {
-      const properties = await prisma.property.findMany({
-        where: { 
-          isVisible: true, 
-          isFeatured: true 
-        },
-        orderBy: { createdAt: 'desc' },
-        take: 6
-      });
+      let whereClause: any = { id };
       
-      console.log(`⭐ Carregadas ${properties.length} propriedades em destaque`);
-      return properties.map(this.mapPrismaToProperty);
-    } catch (error) {
-      console.error('❌ Erro ao carregar propriedades em destaque:', error);
-      return [];
-    }
-  }
-
-  // Buscar propriedade por ID
-  static async getPropertyById(id: string): Promise<Property | null> {
-    try {
+      // Se for corretor, só pode ver suas próprias propriedades
+      if (userRole === 'corretor' && userId) {
+        whereClause.authorId = userId;
+      }
+      
       const property = await prisma.property.findFirst({
-        where: { 
-          id: id,
-          isVisible: true 
+        where: whereClause,
+        include: {
+          images: true,
+          author: true,
+          leads: true
         }
       });
       
-      if (!property) {
-        console.log(`❌ Propriedade ${id} não encontrada`);
-        return null;
+      if (property) {
+        console.log(`✅ Propriedade ${id} encontrada`);
+        return this.mapPrismaToProperty(property);
       }
       
-      console.log(`✅ Propriedade ${id} encontrada`);
-      return this.mapPrismaToProperty(property);
+      return null;
     } catch (error) {
       console.error('❌ Erro ao buscar propriedade:', error);
       return null;
     }
   }
 
-  // Adicionar nova propriedade
-  static async addProperty(property: Omit<Property, 'id'>): Promise<Property> {
+  static async addProperty(property: Omit<PropertyType, 'id'>, authorId: string): Promise<PropertyType> {
     try {
       const newProperty = await prisma.property.create({
         data: {
-          // Sempre deixar o Prisma gerar o ID (cuid())
           title: property.title,
           description: property.description,
           fullDescription: property.fullDescription,
@@ -158,8 +160,6 @@ export class Database {
           deliveryDate: property.deliveryDate,
           availability: property.availability,
           bannerImage: property.bannerImage,
-          images: property.images as any,
-          photoGallery: property.photoGallery as any,
           floorPlan: property.floorPlan,
           characteristics: property.characteristics as any,
           locationBenefits: property.locationBenefits as any,
@@ -167,21 +167,34 @@ export class Database {
           status: property.status,
           isFeatured: property.isFeatured,
           isVisible: property.isVisible,
-          ownerId: property.ownerId
+          authorId: authorId // Associar ao criador
         }
       });
       
-      console.log(`✅ Propriedade ${newProperty.id} adicionada ao banco`);
+      console.log(`✅ Propriedade ${newProperty.id} criada por usuário ${authorId}`);
       return this.mapPrismaToProperty(newProperty);
     } catch (error) {
-      console.error('❌ Erro ao adicionar propriedade:', error);
+      console.error('❌ Erro ao criar propriedade:', error);
       throw error;
     }
   }
 
-  // Atualizar propriedade
-  static async updateProperty(property: Property): Promise<Property> {
+  static async updateProperty(property: PropertyType, userId: string, userRole: string): Promise<PropertyType> {
     try {
+      // Verificar permissões
+      const existingProperty = await prisma.property.findUnique({
+        where: { id: property.id }
+      });
+
+      if (!existingProperty) {
+        throw new Error('Propriedade não encontrada');
+      }
+
+      // Corretor só pode editar suas próprias propriedades
+      if (userRole === 'corretor' && existingProperty.authorId !== userId) {
+        throw new Error('Sem permissão para editar esta propriedade');
+      }
+
       const updatedProperty = await prisma.property.update({
         where: { id: property.id },
         data: {
@@ -208,19 +221,22 @@ export class Database {
           deliveryDate: property.deliveryDate,
           availability: property.availability,
           bannerImage: property.bannerImage,
-          images: property.images as any,
-          photoGallery: property.photoGallery as any,
           floorPlan: property.floorPlan,
           characteristics: property.characteristics as any,
           locationBenefits: property.locationBenefits as any,
           differentials: property.differentials as any,
           status: property.status,
           isFeatured: property.isFeatured,
-          isVisible: property.isVisible
+          isVisible: property.isVisible,
+          updatedAt: new Date()
+        },
+        include: {
+          images: true,
+          author: true
         }
       });
       
-      console.log(`✅ Propriedade ${property.id} atualizada no banco`);
+      console.log(`✅ Propriedade ${property.id} atualizada`);
       return this.mapPrismaToProperty(updatedProperty);
     } catch (error) {
       console.error('❌ Erro ao atualizar propriedade:', error);
@@ -228,97 +244,152 @@ export class Database {
     }
   }
 
-  // Excluir propriedade
-  static async deleteProperty(id: string): Promise<void> {
+  static async deleteProperty(id: string, userId: string, userRole: string): Promise<boolean> {
     try {
+      // Verificar permissões
+      const property = await prisma.property.findUnique({
+        where: { id }
+      });
+
+      if (!property) {
+        throw new Error('Propriedade não encontrada');
+      }
+
+      // Corretor só pode deletar suas próprias propriedades
+      if (userRole === 'corretor' && property.authorId !== userId) {
+        throw new Error('Sem permissão para deletar esta propriedade');
+      }
+
+      // Deletar imagens relacionadas primeiro
+      await prisma.image.deleteMany({
+        where: { propertyId: id }
+      });
+
+      // Deletar propriedade
       await prisma.property.delete({
         where: { id }
       });
-      console.log(`✅ Propriedade ${id} excluída do banco`);
+      
+      console.log(`✅ Propriedade ${id} deletada`);
+      return true;
     } catch (error) {
-      console.error('❌ Erro ao excluir propriedade:', error);
+      console.error('❌ Erro ao deletar propriedade:', error);
       throw error;
     }
   }
 
-  // Adicionar lead
-  static async addLead(lead: {
-    name: string;
-    phone: string;
-    email?: string;
-    propertyId?: string;
-    source?: string;
-    notes?: string;
-  }): Promise<void> {
+  // ==================== IMAGENS ====================
+  static async addImage(imageData: {
+    url: string;
+    type: string;
+    propertyId: string;
+    apartmentId?: string;
+  }): Promise<Image> {
     try {
-      await prisma.lead.create({
+      const image = await prisma.image.create({
         data: {
-          name: lead.name,
-          phone: lead.phone,
-          email: lead.email,
-          propertyId: lead.propertyId,
-          source: lead.source || 'website',
-          notes: lead.notes
+          url: imageData.url,
+          type: imageData.type,
+          propertyId: imageData.propertyId
         }
       });
       
-      console.log(`✅ Lead adicionado: ${lead.name} - ${lead.phone}`);
+      console.log(`✅ Imagem ${image.id} adicionada à propriedade ${imageData.propertyId}`);
+      return image;
     } catch (error) {
-      console.error('❌ Erro ao adicionar lead:', error);
+      console.error('❌ Erro ao adicionar imagem:', error);
       throw error;
     }
   }
 
-  // Carregar leads
-  static async loadLeads(): Promise<any[]> {
+  static async getPropertyImages(propertyId: string): Promise<Image[]> {
     try {
-      const leads = await prisma.lead.findMany({
-        include: {
-          property: {
-            select: {
-              title: true
-            }
-          }
-        },
-        orderBy: { createdAt: 'desc' }
+      return await prisma.image.findMany({
+        where: { propertyId },
+        orderBy: { createdAt: 'asc' }
       });
-      
-      console.log(`📊 Carregados ${leads.length} leads do banco`);
-      return leads.map((lead: any) => ({
-        ...lead,
-        property_title: lead.property?.title
-      }));
     } catch (error) {
-      console.error('❌ Erro ao carregar leads:', error);
+      console.error('❌ Erro ao buscar imagens:', error);
       return [];
     }
   }
 
-  // Migrar propriedades de exemplo
-  static async migrateSampleProperties(): Promise<void> {
+  static async deleteImage(imageId: string): Promise<boolean> {
     try {
-      const { sampleProperties } = await import('@/data/admin-properties');
+      await prisma.image.delete({
+        where: { id: imageId }
+      });
       
-      console.log(`🔄 Migrando ${sampleProperties.length} propriedades de exemplo...`);
-      
-      for (const property of sampleProperties) {
-        try {
-          await this.addProperty(property);
-          console.log(`✅ Migrada: ${property.title}`);
-        } catch (error) {
-          console.error(`❌ Erro ao migrar ${property.title}:`, error);
-        }
-      }
-      
-      console.log('🎉 Migração concluída!');
+      console.log(`✅ Imagem ${imageId} deletada`);
+      return true;
     } catch (error) {
-      console.error('❌ Erro durante a migração:', error);
+      console.error('❌ Erro ao deletar imagem:', error);
       throw error;
     }
   }
 
-  // Mapear dados do Prisma para interface Property
-  private static mapPrismaToProperty(prismaProperty: any): Property {
+  // ==================== LEADS ====================
+  static async addLead(leadData: {
+    name: string;
+    phone: string;
+    email?: string;
+    propertyId?: string;
+    ownerId?: string;
+    source?: string;
+    notes?: string;
+  }): Promise<Lead> {
+    try {
+      const lead = await prisma.lead.create({
+        data: {
+          name: leadData.name,
+          phone: leadData.phone,
+          email: leadData.email,
+          propertyId: leadData.propertyId,
+          ownerId: leadData.ownerId,
+          source: leadData.source || 'website',
+          notes: leadData.notes
+        }
+      });
+      
+      console.log(`✅ Lead ${lead.id} criado`);
+      return lead;
+    } catch (error) {
+      console.error('❌ Erro ao criar lead:', error);
+      throw error;
+    }
+  }
+
+  static async getLeads(userId?: string, userRole?: string): Promise<Lead[]> {
+    try {
+      let whereClause: any = {};
+      
+      // Se for corretor, só pode ver seus próprios leads
+      if (userRole === 'corretor' && userId) {
+        whereClause.ownerId = userId;
+      }
+      
+      return await prisma.lead.findMany({
+        where: whereClause,
+        include: {
+          property: true,
+          owner: true
+        },
+        orderBy: { createdAt: 'desc' }
+      });
+    } catch (error) {
+      console.error('❌ Erro ao buscar leads:', error);
+      return [];
+    }
+  }
+
+  // ==================== UTILITÁRIOS ====================
+  private static mapPrismaToProperty(prismaProperty: any): PropertyType {
+    // Separar imagens por tipo
+    const images = prismaProperty.images || [];
+    const galleryImages = images.filter((img: any) => img.type === 'gallery').map((img: any) => img.url);
+    const bannerImage = images.find((img: any) => img.type === 'banner')?.url || prismaProperty.bannerImage;
+    const floorPlan = images.find((img: any) => img.type === 'floorplan')?.url || prismaProperty.floorPlan;
+    
     return {
       id: prismaProperty.id,
       title: prismaProperty.title,
@@ -343,18 +414,63 @@ export class Database {
       developer: prismaProperty.developer,
       deliveryDate: prismaProperty.deliveryDate,
       availability: prismaProperty.availability,
-      bannerImage: prismaProperty.bannerImage,
-      images: prismaProperty.images,
-      photoGallery: prismaProperty.photoGallery,
-      floorPlan: prismaProperty.floorPlan,
+      bannerImage: bannerImage,
+      images: images.map((img: any) => img.url), // Todas as imagens
+      photoGallery: galleryImages, // Apenas galeria
+      floorPlan: floorPlan,
       characteristics: prismaProperty.characteristics,
       locationBenefits: prismaProperty.locationBenefits,
       differentials: prismaProperty.differentials,
       status: prismaProperty.status,
       isFeatured: prismaProperty.isFeatured,
       isVisible: prismaProperty.isVisible,
+      ownerId: prismaProperty.authorId, // Mapear authorId para ownerId
       createdAt: prismaProperty.createdAt,
       updatedAt: prismaProperty.updatedAt
     };
+  }
+
+  // ==================== ESTATÍSTICAS ====================
+  static async getStats(userId?: string, userRole?: string): Promise<{
+    totalProperties: number;
+    visibleProperties: number;
+    featuredProperties: number;
+    totalLeads: number;
+    totalImages: number;
+  }> {
+    try {
+      let propertyWhere: any = {};
+      let leadWhere: any = {};
+      
+      if (userRole === 'corretor' && userId) {
+        propertyWhere.authorId = userId;
+        leadWhere.ownerId = userId;
+      }
+      
+      const [totalProperties, visibleProperties, featuredProperties, totalLeads, totalImages] = await Promise.all([
+        prisma.property.count({ where: propertyWhere }),
+        prisma.property.count({ where: { ...propertyWhere, isVisible: true } }),
+        prisma.property.count({ where: { ...propertyWhere, isFeatured: true } }),
+        prisma.lead.count({ where: leadWhere }),
+        prisma.image.count({ where: propertyWhere })
+      ]);
+      
+      return {
+        totalProperties,
+        visibleProperties,
+        featuredProperties,
+        totalLeads,
+        totalImages
+      };
+    } catch (error) {
+      console.error('❌ Erro ao buscar estatísticas:', error);
+      return {
+        totalProperties: 0,
+        visibleProperties: 0,
+        featuredProperties: 0,
+        totalLeads: 0,
+        totalImages: 0
+      };
+    }
   }
 }

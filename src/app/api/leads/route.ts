@@ -4,7 +4,7 @@ import { Database } from '@/lib/database';
 // GET - Listar todos os leads
 export async function GET() {
   try {
-    const leads = await Database.loadLeads();
+    const leads = await Database.getLeads();
     return NextResponse.json(leads);
   } catch (error) {
     console.error('❌ Erro ao carregar leads:', error);

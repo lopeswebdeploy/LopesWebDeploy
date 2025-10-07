@@ -29,7 +29,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const newProperty = await Database.addProperty(property);
+    // TODO: Implementar autenticação para obter userId
+    const newProperty = await Database.addProperty(property, 'temp-user-id');
     return NextResponse.json(newProperty, { status: 201 });
   } catch (error) {
     console.error('❌ Erro ao criar propriedade:', error);
