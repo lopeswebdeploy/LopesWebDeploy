@@ -2,6 +2,7 @@ import { Property } from "@/types/property";
 import { sampleProperties } from "@/data/admin-properties";
 import { Database } from "@/lib/database";
 import { AuthService } from "@/lib/auth";
+import { ImageReorganizer } from "./imageReorganizer";
 
 const STORAGE_KEY = 'lopes_properties';
 
@@ -157,6 +158,12 @@ export class PropertyService {
       });
       
       console.log("✅ PropertyService.addProperty - Propriedade adicionada no banco com ID:", newProperty.id);
+      
+      // 🔄 REORGANIZAR IMAGENS COM ID REAL
+      if (newProperty.id) {
+        await this.reorganizePropertyImages(property, newProperty.id);
+      }
+      
       return newProperty;
     } catch (error) {
       console.log("⚠️ PropertyService.addProperty - Erro no banco, salvando no localStorage:", error);
@@ -175,6 +182,85 @@ export class PropertyService {
       
       console.log("✅ PropertyService.addProperty - Propriedade adicionada no localStorage com ID:", newProperty.id);
       return newProperty;
+    }
+  }
+  
+  // Reorganizar imagens da propriedade com ID real
+  private static async reorganizePropertyImages(originalProperty: Property, realPropertyId: string): Promise<void> {
+    try {
+      console.log("🔄 PropertyService - Reorganizando imagens para ID real:", realPropertyId);
+      
+      const imagesToReorganize: { url: string; type: 'banner' | 'gallery' | 'floorplan' }[] = [];
+      
+      // Coletar todas as imagens que precisam ser reorganizadas
+      if (originalProperty.bannerImage && originalProperty.bannerImage.includes('temp-')) {
+        imagesToReorganize.push({ url: originalProperty.bannerImage, type: 'banner' });
+      }
+      
+      if (originalProperty.floorPlan && originalProperty.floorPlan.includes('temp-')) {
+        imagesToReorganize.push({ url: originalProperty.floorPlan, type: 'floorplan' });
+      }
+      
+      if (originalProperty.photoGallery) {
+        originalProperty.photoGallery.forEach(url => {
+          if (url.includes('temp-')) {
+            imagesToReorganize.push({ url, type: 'gallery' });
+          }
+        });
+      }
+      
+      if (originalProperty.images) {
+        originalProperty.images.forEach(url => {
+          if (url.includes('temp-')) {
+            imagesToReorganize.push({ url, type: 'gallery' });
+          }
+        });
+      }
+      
+      if (imagesToReorganize.length === 0) {
+        console.log("✅ PropertyService - Nenhuma imagem temporária encontrada");
+        return;
+      }
+      
+      console.log(`🔄 PropertyService - Reorganizando ${imagesToReorganize.length} imagens...`);
+      
+      // Reorganizar cada imagem
+      const reorganizedUrls: string[] = [];
+      for (const { url, type } of imagesToReorganize) {
+        const newUrl = await ImageReorganizer.reorganizeSingleImage(url, realPropertyId, type);
+        reorganizedUrls.push(newUrl);
+      }
+      
+      // Atualizar propriedade no banco com URLs reorganizadas
+      const updatedProperty = {
+        ...originalProperty,
+        id: realPropertyId,
+        bannerImage: originalProperty.bannerImage?.includes('temp-') 
+          ? reorganizedUrls.find(url => url.includes('banner')) || originalProperty.bannerImage
+          : originalProperty.bannerImage,
+        floorPlan: originalProperty.floorPlan?.includes('temp-')
+          ? reorganizedUrls.find(url => url.includes('floorplan')) || originalProperty.floorPlan
+          : originalProperty.floorPlan,
+        photoGallery: originalProperty.photoGallery?.map(url => 
+          url.includes('temp-') 
+            ? reorganizedUrls.find(newUrl => newUrl.includes('gallery')) || url
+            : url
+        ) || [],
+        images: originalProperty.images?.map(url => 
+          url.includes('temp-') 
+            ? reorganizedUrls.find(newUrl => newUrl.includes('gallery')) || url
+            : url
+        ) || []
+      };
+      
+      // Atualizar no banco
+      await Database.updateProperty(updatedProperty);
+      
+      console.log("✅ PropertyService - Imagens reorganizadas e propriedade atualizada!");
+      
+    } catch (error) {
+      console.error("❌ PropertyService - Erro ao reorganizar imagens:", error);
+      // Não falhar a criação da propriedade por causa das imagens
     }
   }
 

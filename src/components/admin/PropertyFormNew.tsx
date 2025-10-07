@@ -536,6 +536,7 @@ const PropertyFormNew = ({ property, onSubmit, onCancel }: PropertyFormProps) =>
                 description="Imagem principal que aparece no topo da página (formato 2:1)"
                 onImageChange={(url) => handleInputChange("bannerImage", url)}
                 currentImage={formData.bannerImage}
+                propertyId={formData.id}
               />
 
               <ImageUpload
@@ -544,6 +545,7 @@ const PropertyFormNew = ({ property, onSubmit, onCancel }: PropertyFormProps) =>
                 onImageChange={(url) => handleInputChange("floorPlan", url)}
                 currentImage={formData.floorPlan}
                 type="floorplan"
+                propertyId={formData.id}
               />
             </div>
 
@@ -558,6 +560,7 @@ const PropertyFormNew = ({ property, onSubmit, onCancel }: PropertyFormProps) =>
               }}
               title="Galeria de Fotos"
               description="Adicione fotos do empreendimento, apartamentos, áreas comuns, etc. (formato quadrado)"
+              propertyId={formData.id}
             />
 
             {/* Empreendimento */}
