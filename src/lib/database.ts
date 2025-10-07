@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, User } from '@prisma/client';
 import { Property } from '@/types/property';
 
 const prisma = new PrismaClient();
@@ -13,6 +13,52 @@ export class Database {
     } catch (error) {
       console.error('❌ Erro na conexão com banco:', error);
       return false;
+    }
+  }
+
+  // Buscar usuário por email
+  static async getUserByEmail(email: string): Promise<User | null> {
+    try {
+      const user = await prisma.user.findUnique({
+        where: { email }
+      });
+      
+      if (user) {
+        console.log(`👤 Usuário encontrado: ${user.name} (${user.role})`);
+        return user;
+      }
+      
+      return null;
+    } catch (error) {
+      console.error('❌ Erro ao buscar usuário:', error);
+      return null;
+    }
+  }
+
+  // Criar usuário
+  static async createUser(userData: {
+    email: string;
+    name: string;
+    role: 'admin' | 'corretor';
+    phone?: string;
+    isActive?: boolean;
+  }): Promise<User> {
+    try {
+      const user = await prisma.user.create({
+        data: {
+          email: userData.email,
+          name: userData.name,
+          role: userData.role,
+          phone: userData.phone,
+          isActive: userData.isActive ?? true
+        }
+      });
+      
+      console.log(`✅ Usuário criado: ${user.name} (${user.role})`);
+      return user;
+    } catch (error) {
+      console.error('❌ Erro ao criar usuário:', error);
+      throw error;
     }
   }
 

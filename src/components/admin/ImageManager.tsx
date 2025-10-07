@@ -14,6 +14,7 @@ interface ImageManagerProps {
   title: string;
   description?: string;
   maxImages?: number;
+  propertyId?: string; // ID da propriedade para organizar uploads
 }
 
 const ImageManager = ({
@@ -21,7 +22,8 @@ const ImageManager = ({
   onImagesChange,
   title,
   description,
-  maxImages = 10
+  maxImages = 10,
+  propertyId
 }: ImageManagerProps) => {
   const [newImageUrl, setNewImageUrl] = useState("");
   const [dragActive, setDragActive] = useState(false);
@@ -59,11 +61,11 @@ const ImageManager = ({
 
     // Upload via API Route
     setIsUploading(true);
-    const propertyId = 'temp-' + Date.now().toString(); // ID temporário até salvar a propriedade
+    const uploadPropertyId = propertyId || 'temp-' + Date.now().toString(); // ID temporário até salvar a propriedade
     
     const formData = new FormData();
     formData.append('file', file);
-    formData.append('propertyId', propertyId);
+    formData.append('propertyId', uploadPropertyId);
     formData.append('type', 'gallery');
     
     fetch('/api/upload', {

@@ -12,6 +12,7 @@ interface BannerUploadProps {
   onImageChange: (imageUrl: string) => void;
   currentImage?: string;
   maxSize?: number; // em MB
+  propertyId?: string; // ID da propriedade para organizar uploads
 }
 
 const BannerUpload = ({
@@ -19,7 +20,8 @@ const BannerUpload = ({
   description,
   onImageChange,
   currentImage,
-  maxSize = 10
+  maxSize = 10,
+  propertyId
 }: BannerUploadProps) => {
   const [preview, setPreview] = useState<string | null>(currentImage || null);
   const [isUploading, setIsUploading] = useState(false);
@@ -40,11 +42,11 @@ const BannerUpload = ({
 
     // Upload via API Route
     setIsUploading(true);
-    const propertyId = 'temp-' + Date.now().toString(); // ID temporário até salvar a propriedade
+    const uploadPropertyId = propertyId || 'temp-' + Date.now().toString(); // ID temporário até salvar a propriedade
     
     const formData = new FormData();
     formData.append('file', file);
-    formData.append('propertyId', propertyId);
+    formData.append('propertyId', uploadPropertyId);
     formData.append('type', 'banner');
     
     fetch('/api/upload', {

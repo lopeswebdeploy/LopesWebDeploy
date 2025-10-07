@@ -1,34 +1,60 @@
 import { User, AuthUser } from '@/types/user';
+import { Database } from './database';
 
-// Simulação de autenticação (substituir por NextAuth ou similar)
+// Sistema de autenticação com banco de dados
 export class AuthService {
   private static currentUser: AuthUser | null = null;
 
-  // Login (simulado)
+  // Login com banco de dados
   static async login(email: string, password: string): Promise<AuthUser | null> {
-    // TODO: Implementar autenticação real
-    // Por enquanto, simular login
-    if (email === 'admin@lopes.com' && password === 'admin123') {
-      this.currentUser = {
-        id: 'admin-1',
-        email: 'admin@lopes.com',
-        name: 'Admin Master',
-        role: 'admin'
+    try {
+      // Buscar usuário no banco de dados
+      const user = await Database.getUserByEmail(email);
+      
+      if (!user) {
+        console.log('❌ Usuário não encontrado:', email);
+        return null;
+      }
+      
+      if (!user.isActive) {
+        console.log('❌ Usuário inativo:', email);
+        return null;
+      }
+      
+      // Verificar senha (simulação - em produção usar hash)
+      const validPassword = this.validatePassword(email, password);
+      if (!validPassword) {
+        console.log('❌ Senha inválida para:', email);
+        return null;
+      }
+      
+      // Converter para AuthUser
+      const authUser: AuthUser = {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        role: user.role as 'admin' | 'corretor'
       };
-      return this.currentUser;
+      
+      this.currentUser = authUser;
+      this.saveUser(authUser);
+      console.log('✅ Login bem-sucedido:', user.name, user.role);
+      return authUser;
+      
+    } catch (error) {
+      console.error('❌ Erro no login:', error);
+      return null;
     }
+  }
+  
+  private static validatePassword(email: string, password: string): boolean {
+    // Senhas padrão para desenvolvimento
+    const defaultPasswords: { [key: string]: string } = {
+      'admin@lopes.com': 'admin123',
+      'corretor@lopes.com': 'corretor123',
+    };
     
-    if (email === 'corretor@lopes.com' && password === 'corretor123') {
-      this.currentUser = {
-        id: 'corretor-1',
-        email: 'corretor@lopes.com',
-        name: 'João Corretor',
-        role: 'corretor'
-      };
-      return this.currentUser;
-    }
-
-    return null;
+    return defaultPasswords[email] === password;
   }
 
   // Logout

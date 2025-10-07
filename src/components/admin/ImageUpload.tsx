@@ -16,6 +16,7 @@ interface ImageUploadProps {
   accept?: string;
   maxSize?: number; // em MB
   type?: 'general' | 'floorplan'; // Tipo de redimensionamento
+  propertyId?: string; // ID da propriedade para organizar uploads
 }
 
 const ImageUpload = ({ 
@@ -25,7 +26,8 @@ const ImageUpload = ({
   currentImage,
   accept = "image/*",
   maxSize = 5,
-  type = 'general'
+  type = 'general',
+  propertyId
 }: ImageUploadProps) => {
   const [dragActive, setDragActive] = useState(false);
   const [preview, setPreview] = useState<string | null>(currentImage || null);
@@ -67,12 +69,14 @@ const ImageUpload = ({
 
     // Upload via API Route
     setIsUploading(true);
-    const propertyId = 'temp-' + Date.now().toString(); // ID temporário até salvar a propriedade
+    
+    // Usar ID real da propriedade se disponível, senão usar temp
+    const uploadPropertyId = propertyId || 'temp-' + Date.now().toString();
     const uploadType = type === 'floorplan' ? 'floorplan' : 'banner';
     
     const formData = new FormData();
     formData.append('file', file);
-    formData.append('propertyId', propertyId);
+    formData.append('propertyId', uploadPropertyId);
     formData.append('type', uploadType);
     
     fetch('/api/upload', {
