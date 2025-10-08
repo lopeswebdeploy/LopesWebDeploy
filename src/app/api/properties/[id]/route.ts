@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { Database } from '@/lib/database';
-import { Property } from '@/types/property';
+import { PrismaClient } from '@prisma/client';
+
+const prisma = new PrismaClient();
 
 // GET - Buscar propriedade por ID
 export async function GET(
@@ -9,8 +10,13 @@ export async function GET(
 ) {
   try {
     const { id } = await params;
-    // TODO: Implementar autenticação para obter userId e userRole
-    const property = await Database.getPropertyById(id);
+    const property = await prisma.property.findUnique({
+      where: { id: parseInt(id) },
+      include: {
+        author: true,
+        leads: true
+      }
+    });
     
     if (!property) {
       return NextResponse.json(
@@ -36,11 +42,26 @@ export async function PUT(
 ) {
   try {
     const { id } = await params;
-    const property: Property = await request.json();
-    property.id = id; // Garantir que o ID seja o correto
+    const data = await request.json();
     
-    // TODO: Implementar autenticação para obter userId e userRole
-    const updatedProperty = await Database.updateProperty(property, 'temp-user-id', 'admin');
+    const updatedProperty = await prisma.property.update({
+      where: { id: parseInt(id) },
+      data: {
+        title: data.title,
+        description: data.description,
+        price: parseFloat(data.price),
+        status: data.status,
+        featured: data.featured,
+        bannerImage: data.bannerImage,
+        galleryImages: data.galleryImages || [],
+        floorPlans: data.floorPlans || [],
+        updatedAt: new Date()
+      },
+      include: {
+        author: true
+      }
+    });
+    
     return NextResponse.json(updatedProperty);
   } catch (error) {
     console.error('❌ Erro ao atualizar propriedade:', error);
@@ -58,8 +79,10 @@ export async function DELETE(
 ) {
   try {
     const { id } = await params;
-    // TODO: Implementar autenticação para obter userId e userRole
-    await Database.deleteProperty(id, 'temp-user-id', 'admin');
+    await prisma.property.delete({
+      where: { id: parseInt(id) }
+    });
+    
     return NextResponse.json({ message: 'Propriedade excluída com sucesso' });
   } catch (error) {
     console.error('❌ Erro ao excluir propriedade:', error);

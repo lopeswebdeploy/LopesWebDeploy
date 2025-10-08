@@ -1,11 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { Database } from '@/lib/database';
-import { Property } from '@/types/property';
+import { PrismaClient } from '@prisma/client';
+
+const prisma = new PrismaClient();
 
 // GET - Listar todas as propriedades
 export async function GET() {
   try {
-    const properties = await Database.loadProperties();
+    const properties = await prisma.property.findMany({
+      include: {
+        author: true,
+        _count: {
+          select: { leads: true }
+        }
+      },
+      orderBy: { createdAt: 'desc' }
+    });
+
     return NextResponse.json(properties);
   } catch (error) {
     console.error('❌ Erro ao carregar propriedades:', error);
@@ -19,18 +29,33 @@ export async function GET() {
 // POST - Criar nova propriedade
 export async function POST(request: NextRequest) {
   try {
-    const property: Property = await request.json();
+    const data = await request.json();
     
     // Validar dados obrigatórios
-    if (!property.title || !property.location || !property.price) {
+    if (!data.title || !data.price) {
       return NextResponse.json(
-        { error: 'Dados obrigatórios não fornecidos' }, 
+        { error: 'Título e preço são obrigatórios' }, 
         { status: 400 }
       );
     }
 
-    // TODO: Implementar autenticação para obter userId
-    const newProperty = await Database.addProperty(property, 'temp-user-id');
+    const newProperty = await prisma.property.create({
+      data: {
+        title: data.title,
+        description: data.description,
+        price: parseFloat(data.price),
+        status: data.status || 'draft',
+        featured: data.featured || false,
+        authorId: data.authorId || 1, // TODO: Obter do auth
+        bannerImage: data.bannerImage,
+        galleryImages: data.galleryImages || [],
+        floorPlans: data.floorPlans || []
+      },
+      include: {
+        author: true
+      }
+    });
+
     return NextResponse.json(newProperty, { status: 201 });
   } catch (error) {
     console.error('❌ Erro ao criar propriedade:', error);

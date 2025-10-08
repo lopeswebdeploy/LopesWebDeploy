@@ -410,10 +410,8 @@ export class Database {
       developer: prismaProperty.developer,
       deliveryDate: prismaProperty.deliveryDate,
       availability: prismaProperty.availability,
-      bannerImage: bannerImage,
       images: images.map((img: any) => img.url), // Todas as imagens
       photoGallery: galleryImages, // Apenas galeria
-      floorPlan: floorPlan,
       characteristics: prismaProperty.characteristics,
       locationBenefits: prismaProperty.locationBenefits,
       differentials: prismaProperty.differentials,

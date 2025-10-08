@@ -13,7 +13,7 @@ export async function POST(
     
     // Verificar se property existe
     const property = await prisma.property.findUnique({
-      where: { id: propertyId }
+      where: { id: parseInt(propertyId) }
     });
 
     if (!property) {
@@ -52,20 +52,41 @@ export async function POST(
       token: token
     });
 
-    // Salvar no banco
-    const image = await prisma.image.create({
-      data: {
-        url: blob.url,
-        type: type,
-        propertyId: propertyId,
-      },
-    });
+    // Atualizar property no banco com a nova imagem
+    let updatedProperty;
+    
+    if (type === 'banner') {
+      updatedProperty = await prisma.property.update({
+        where: { id: parseInt(propertyId) },
+        data: { bannerImage: blob.url }
+      });
+    } else if (type === 'gallery') {
+      // Adicionar ao array de gallery
+      updatedProperty = await prisma.property.update({
+        where: { id: parseInt(propertyId) },
+        data: { 
+          galleryImages: { 
+            push: blob.url 
+          } 
+        }
+      });
+    } else if (type === 'floorplan') {
+      // Adicionar ao array de floor plans
+      updatedProperty = await prisma.property.update({
+        where: { id: parseInt(propertyId) },
+        data: { 
+          floorPlans: { 
+            push: blob.url 
+          } 
+        }
+      });
+    }
 
     return NextResponse.json({
-      id: image.id,
-      url: image.url,
-      type: image.type,
-      propertyId: image.propertyId
+      success: true,
+      url: blob.url,
+      type: type,
+      propertyId: parseInt(propertyId)
     });
     
   } catch (error) {

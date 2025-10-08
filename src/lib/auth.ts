@@ -1,60 +1,45 @@
-import { User, AuthUser } from '@/types/user';
-import { Database } from './database';
+import { compare, hash } from 'bcryptjs';
 
-// Sistema de autenticação com banco de dados
+export async function hashPassword(password: string) {
+  return await hash(password, 12);
+}
+
+export async function verifyPassword(password: string, hashedPassword: string) {
+  return await compare(password, hashedPassword);
+}
+
+// Session simples com cookies
+export function createSession(user: any) {
+  const session = { userId: user.id, role: user.role };
+  // Implemente com cookies ou JWT
+  return session;
+}
+
+// Sistema de autenticação simplificado
 export class AuthService {
-  private static currentUser: AuthUser | null = null;
+  private static currentUser: any = null;
 
   // Login com banco de dados
-  static async login(email: string, password: string): Promise<AuthUser | null> {
+  static async login(email: string, password: string): Promise<any> {
     try {
-      // Buscar usuário no banco de dados
-      const user = await Database.getUserByEmail(email);
-      
-      if (!user) {
-        console.log('❌ Usuário não encontrado:', email);
-        return null;
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
+
+      if (response.ok) {
+        const user = await response.json();
+        this.currentUser = user;
+        this.saveUser(user);
+        return user;
       }
       
-      if (!user.isActive) {
-        console.log('❌ Usuário inativo:', email);
-        return null;
-      }
-      
-      // Verificar senha (simulação - em produção usar hash)
-      const validPassword = this.validatePassword(email, password);
-      if (!validPassword) {
-        console.log('❌ Senha inválida para:', email);
-        return null;
-      }
-      
-      // Converter para AuthUser
-      const authUser: AuthUser = {
-        id: user.id,
-        email: user.email,
-        name: user.name,
-        role: user.role as 'admin' | 'corretor'
-      };
-      
-      this.currentUser = authUser;
-      this.saveUser(authUser);
-      console.log('✅ Login bem-sucedido:', user.name, user.role);
-      return authUser;
-      
+      return null;
     } catch (error) {
       console.error('❌ Erro no login:', error);
       return null;
     }
-  }
-  
-  private static validatePassword(email: string, password: string): boolean {
-    // Senhas padrão para desenvolvimento
-    const defaultPasswords: { [key: string]: string } = {
-      'admin@lopes.com': 'admin123',
-      'corretor@lopes.com': 'corretor123',
-    };
-    
-    return defaultPasswords[email] === password;
   }
 
   // Logout
@@ -66,7 +51,7 @@ export class AuthService {
   }
 
   // Obter usuário atual
-  static getCurrentUser(): AuthUser | null {
+  static getCurrentUser(): any {
     if (typeof window !== 'undefined') {
       const stored = localStorage.getItem('auth_user');
       if (stored) {
@@ -89,32 +74,16 @@ export class AuthService {
   }
 
   // Obter ID do usuário atual
-  static getCurrentUserId(): string | null {
+  static getCurrentUserId(): number | null {
     const user = this.getCurrentUser();
     return user?.id || null;
   }
 
   // Salvar usuário no localStorage
-  static saveUser(user: AuthUser): void {
+  static saveUser(user: any): void {
     this.currentUser = user;
     if (typeof window !== 'undefined') {
       localStorage.setItem('auth_user', JSON.stringify(user));
     }
-  }
-
-  // Verificar se pode acessar propriedade
-  static canAccessProperty(propertyOwnerId?: string): boolean {
-    const user = this.getCurrentUser();
-    if (!user) return false;
-    
-    // Admin pode acessar todas
-    if (user.role === 'admin') return true;
-    
-    // Corretor só pode acessar suas próprias
-    if (user.role === 'corretor') {
-      return propertyOwnerId === user.id;
-    }
-    
-    return false;
   }
 }

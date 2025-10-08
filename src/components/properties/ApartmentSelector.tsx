@@ -126,24 +126,6 @@ const ApartmentSelector = ({
                   )}
                 </div>
 
-                {/* Planta Baixa Preview */}
-                {apartment.floorPlan && (
-                  <div className="mb-3">
-                    <div className="relative h-24 bg-gray-100 rounded-md overflow-hidden">
-                      <Image
-                        src={apartment.floorPlan}
-                        alt={`Planta ${apartment.unitType || apartment.area}`}
-                        fill
-                        className="object-cover"
-                      />
-                      <div className="absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-10 transition-all duration-300 flex items-center justify-center">
-                        <span className="text-white text-xs opacity-0 hover:opacity-100 transition-opacity">
-                          Ver Planta
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                )}
 
                 {/* Features */}
                 {apartment.features && apartment.features.length > 0 && (
@@ -194,7 +176,7 @@ const ApartmentSelector = ({
                     {formatPrice(selectedApartment.price)}
                   </p>
                 </div>
-                {selectedApartment.floorPlan && (
+                {false && (
                   <Button 
                     variant="outline" 
                     size="sm"
@@ -208,18 +190,18 @@ const ApartmentSelector = ({
           </Card>
 
           {/* Área da Planta - Separada e Destacada */}
-          {selectedApartment.floorPlan && showDetails && (
+          {false && showDetails && (
             <Card className="mb-6">
               <CardContent className="p-6">
                 <h3 className="text-xl font-semibold mb-4 flex items-center gap-2">
                   <Maximize2 className="h-5 w-5 text-brand-coral" />
-                  Planta Baixa - {selectedApartment.unitType || selectedApartment.area}
+                  Planta Baixa - {selectedApartment?.unitType || selectedApartment?.area}
                 </h3>
                 
                 <div className="relative bg-gray-50 rounded-lg overflow-hidden">
                   <img
-                    src={selectedApartment.floorPlan}
-                    alt={`Planta ${selectedApartment.unitType || selectedApartment.area}`}
+                    src=""
+                    alt={`Planta ${selectedApartment?.unitType || selectedApartment?.area}`}
                     className="w-full h-auto max-h-96 object-contain"
                     style={{ minHeight: '200px' }}
                   />
@@ -229,26 +211,26 @@ const ApartmentSelector = ({
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
                   <div className="text-center p-3 bg-white rounded-lg border">
                     <Bed className="h-6 w-6 text-brand-coral mx-auto mb-1" />
-                    <div className="text-sm font-medium">{selectedApartment.bedrooms}</div>
-                    <div className="text-xs text-gray-600">Quarto{selectedApartment.bedrooms > 1 ? 's' : ''}</div>
+                    <div className="text-sm font-medium">{selectedApartment?.bedrooms}</div>
+                    <div className="text-xs text-gray-600">Quarto{(selectedApartment?.bedrooms || 0) > 1 ? 's' : ''}</div>
                   </div>
-                  {selectedApartment.bathrooms && (
+                  {selectedApartment?.bathrooms && (
                     <div className="text-center p-3 bg-white rounded-lg border">
                       <Bath className="h-6 w-6 text-brand-coral mx-auto mb-1" />
-                      <div className="text-sm font-medium">{selectedApartment.bathrooms}</div>
-                      <div className="text-xs text-gray-600">Banheiro{selectedApartment.bathrooms > 1 ? 's' : ''}</div>
+                      <div className="text-sm font-medium">{selectedApartment?.bathrooms}</div>
+                      <div className="text-xs text-gray-600">Banheiro{(selectedApartment?.bathrooms || 0) > 1 ? 's' : ''}</div>
                     </div>
                   )}
                   <div className="text-center p-3 bg-white rounded-lg border">
                     <Maximize2 className="h-6 w-6 text-brand-coral mx-auto mb-1" />
-                    <div className="text-sm font-medium">{selectedApartment.area}</div>
+                    <div className="text-sm font-medium">{selectedApartment?.area}</div>
                     <div className="text-xs text-gray-600">Área Total</div>
                   </div>
-                  {selectedApartment.parking && (
+                  {selectedApartment?.parking && (
                     <div className="text-center p-3 bg-white rounded-lg border">
                       <Car className="h-6 w-6 text-brand-coral mx-auto mb-1" />
-                      <div className="text-sm font-medium">{selectedApartment.parking}</div>
-                      <div className="text-xs text-gray-600">Vaga{selectedApartment.parking > 1 ? 's' : ''}</div>
+                      <div className="text-sm font-medium">{selectedApartment?.parking}</div>
+                      <div className="text-xs text-gray-600">Vaga{(selectedApartment?.parking || 0) > 1 ? 's' : ''}</div>
                     </div>
                   )}
                 </div>

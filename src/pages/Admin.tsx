@@ -35,12 +35,12 @@ const Admin = () => {
         loadedProperties.forEach((prop, index) => {
           console.log(`🔍 Admin - Propriedade ${index + 1}:`, {
             title: prop.title,
-            bannerImage: prop.bannerImage ? `${prop.bannerImage.substring(0, 50)}...` : 'VAZIO',
+            bannerImage: prop.images?.[0] ? `${prop.images[0].substring(0, 50)}...` : 'VAZIO',
             images: prop.images?.length || 0,
             imagesArray: prop.images,
             photoGallery: prop.photoGallery?.length || 0,
             photoGalleryArray: prop.photoGallery,
-            floorPlan: prop.floorPlan ? `${prop.floorPlan.substring(0, 50)}...` : 'VAZIO'
+            floorPlan: prop.images?.find(img => img.includes('floorplan')) ? `${prop.images.find(img => img.includes('floorplan'))?.substring(0, 50)}...` : 'VAZIO'
           });
         });
         
@@ -79,7 +79,7 @@ const Admin = () => {
         id: prop.id,
         title: prop.title,
         hasImages: !!(prop.images && prop.images.length > 0),
-        hasBanner: !!prop.bannerImage
+         hasBanner: !!(prop.images && prop.images.length > 0)
       });
     });
   };

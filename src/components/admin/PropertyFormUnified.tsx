@@ -56,22 +56,15 @@ const PropertyFormUnified = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [formData, setFormData] = useState<Partial<Property>>({
-    images: [],
-    price: "",
-    title: "",
-    description: "",
-    location: "",
-    state: "Goiânia",
-    bedrooms: 2,
-    bathrooms: 2,
-    parking: 1,
-    area: "",
-    category: "venda",
-    type: "Premium",
-    status: "ativo",
-    propertyType: "apartamento",
-    developer: "",
-    deliveryDate: "",
+    title: property?.title || "",
+    description: property?.description || "",
+    price: property?.price || 0,
+    status: property?.status || "draft",
+    featured: property?.featured || false,
+    authorId: user.id,
+    bannerImage: property?.bannerImage || "",
+    galleryImages: property?.galleryImages || [],
+    floorPlans: property?.floorPlans || [],
     fullDescription: "",
     address: "",
     suites: 0,
@@ -570,8 +563,8 @@ const PropertyFormUnified = ({
                       description="Adicione fotos do empreendimento, apartamentos, áreas comuns, etc."
                       multiple={true}
                       maxImages={20}
-                      currentImages={formData.photoGallery || []}
-                      onImagesChange={(urls) => handleInputChange("photoGallery", urls)}
+                      currentImages={formData.galleryImages || []}
+                      onImagesChange={(urls) => handleInputChange("galleryImages", urls)}
                     />
                   </>
                 )}

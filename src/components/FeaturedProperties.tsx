@@ -45,14 +45,14 @@ const FeaturedProperties = () => {
   }, []);
 
   useEffect(() => {
-    // Primeiro filtrar por propriedades em destaque e visíveis
+    // Primeiro filtrar por propriedades em destaque
     let filtered = allProperties.filter(property => 
-      property.isFeatured && (property.isVisible !== false)
+      property.featured
     );
     
-    // Se não houver propriedades em destaque, usar as primeiras 6 visíveis
+    // Se não houver propriedades em destaque, usar as primeiras 6
     if (filtered.length === 0) {
-      filtered = allProperties.filter(property => property.isVisible !== false).slice(0, 6);
+      filtered = allProperties.slice(0, 6);
     }
     
     // Filtrar por setor

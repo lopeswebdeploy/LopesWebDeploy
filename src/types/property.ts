@@ -1,56 +1,26 @@
 export interface Property {
   // Identificação
-  id: string;
-  status: string;
-  isFeatured: boolean;
-  isVisible: boolean;
-  ownerId?: string; // ID do corretor proprietário
-  createdAt: Date;
-  updatedAt: Date;
-
-  // Informações Básicas
+  id: number;
   title: string;
   description?: string;
-  fullDescription?: string;
-  category: string;
-  type?: string;
-  propertyType: string;
-
-  // Localização
-  location?: string;
-  state: string;
-  address?: string;
-  coordinates?: {
-    lat: number;
-    lng: number;
+  price?: number;
+  status: string;
+  featured: boolean;
+  authorId: number;
+  bannerImage?: string;
+  galleryImages: string[];
+  floorPlans: string[];
+  createdAt: Date;
+  updatedAt: Date;
+  
+  // Relacionamentos
+  author?: {
+    id: number;
+    name: string;
+    email: string;
+    role: string;
   };
-  embedUrl?: string;
-
-  // Características Físicas
-  bedrooms: number;
-  bathrooms: number;
-  suites: number;
-  parking: number;
-  area?: string;
-  balconyTypes: string[];
-
-  // Financeiro
-  price?: string;
-  apartmentOptions: ApartmentOption[];
-
-  // Empreendimento
-  developer?: string;
-  deliveryDate?: string;
-  availability?: string;
-
-  // Mídia
-  images: string[];
-  photoGallery: string[];
-
-  // Detalhes
-  characteristics: string[];
-  locationBenefits: string[];
-  differentials: string[];
+  leads?: any[];
 }
 
 export interface ApartmentOption {

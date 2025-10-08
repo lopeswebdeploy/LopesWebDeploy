@@ -10,112 +10,56 @@ datasource db {
   url      = env("POSTGRES_URL")
 }
 
-model Property {
-  id                String   @id @default(cuid())
-  title             String
-  description       String?
-  fullDescription   String?  @map("full_description")
-  category          String   @default("venda")
-  type              String?
-  propertyType      String   @map("property_type")
-  
-  // RELACIONAMENTOS CORRETOS:
-  images            Image[]    // Um property tem MUITAS images
-  author            User       @relation("PropertyAuthor", fields: [authorId], references: [id])
-  authorId          String     @map("author_id")
-  
-  // Localização
-  location          String?
-  state             String     @default("Goiânia")
-  address           String?
-  coordinates       Json?
-  embedUrl          String?    @map("embed_url")
-  
-  // Características físicas
-  bedrooms          Int        @default(0)
-  bathrooms         Int        @default(0)
-  suites            Int        @default(0)
-  parking           Int        @default(0)
-  area              String?
-  balconyTypes      Json       @default("[]") @map("balcony_types")
-  
-  // Financeiro
-  price             String?
-  apartmentOptions  Json       @default("[]") @map("apartment_options")
-  
-  // Empreendimento
-  developer         String?
-  deliveryDate      String?    @map("delivery_date")
-  availability      String?
-  
-  // Imagens gerenciadas pelo sistema Image[]
-  
-  // Detalhes
-  characteristics   Json       @default("[]")
-  locationBenefits  Json       @default("[]") @map("location_benefits")
-  differentials     Json       @default("[]")
-  
-  // Controle
-  status            String     @default("ativo")
-  isFeatured        Boolean    @default(false) @map("is_featured")
-  isVisible         Boolean    @default(true) @map("is_visible")
-  
-  // Timestamps
-  createdAt         DateTime   @default(now()) @map("created_at")
-  updatedAt         DateTime   @updatedAt @map("updated_at")
-  
-  // Relacionamentos
-  leads             Lead[]
-  
-  @@map("properties")
-}
-
-model Image {
-  id          String   @id @default(cuid())
-  url         String   // URL do Vercel Blob
-  type        String   @default("gallery") // banner, gallery, floorplan
-  property    Property @relation(fields: [propertyId], references: [id])
-  propertyId  String   @map("property_id") // Foreign key CORRETA
-  
-  createdAt   DateTime @default(now()) @map("created_at")
-  
-  @@map("images")
-}
-
-model Lead {
-  id          Int      @id @default(autoincrement())
-  name        String
-  phone       String
-  email       String?
-  propertyId  String?  @map("property_id")
-  ownerId     String?  @map("owner_id") // Corretor responsável pelo lead
-  source      String   @default("website")
-  status      String   @default("novo")
-  notes       String?
-  whatsappSent Boolean @default(false) @map("whatsapp_sent")
-  createdAt   DateTime @default(now()) @map("created_at")
-  
-  // Relacionamentos
-  property    Property? @relation(fields: [propertyId], references: [id], onDelete: SetNull)
-  owner       User?     @relation("LeadOwner", fields: [ownerId], references: [id])
-  
-  @@map("leads")
-}
-
 model User {
-  id        String   @id @default(cuid())
-  email     String   @unique
+  id        Int      @id @default(autoincrement())
   name      String
-  role      String   @default("corretor") // "admin" ou "corretor"
-  phone     String?
-  avatar    String?
-  isActive  Boolean  @default(true) @map("is_active")
+  email     String   @unique
+  password  String
+  role      String   @default("corretor")
+  active    Boolean  @default(false)
   createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
   
   // Relacionamentos
   properties Property[] @relation("PropertyAuthor")
   leads      Lead[]     @relation("LeadOwner")
   
-  @@map("users")
+  @@map("User")
+}
+
+model Property {
+  id            Int      @id @default(autoincrement())
+  title         String
+  description   String?
+  price         Decimal? @db.Decimal(12, 2)
+  status        String   @default("draft")
+  featured      Boolean  @default(false)
+  authorId      Int      @map("author_id")
+  bannerImage   String?  @map("banner_image")
+  galleryImages String[] @map("gallery_images")
+  floorPlans    String[] @map("floor_plans")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @default(now()) @map("updated_at")
+  
+  // Relacionamentos
+  author User   @relation("PropertyAuthor", fields: [authorId], references: [id])
+  leads  Lead[]
+  
+  @@map("Property")
+}
+
+model Lead {
+  id         Int      @id @default(autoincrement())
+  name       String
+  phone      String
+  email      String?
+  propertyId Int?     @map("property_id")
+  ownerId    Int?     @map("owner_id")
+  status     String   @default("new")
+  createdAt  DateTime @default(now()) @map("created_at")
+  
+  // Relacionamentos
+  property Property? @relation(fields: [propertyId], references: [id])
+  owner    User?     @relation("LeadOwner", fields: [ownerId], references: [id])
+  
+  @@map("Lead")
 }

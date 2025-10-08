@@ -1,17 +1,16 @@
 export interface User {
-  id: string;
+  id: number;
   email: string;
   name: string;
   role: 'admin' | 'corretor';
   phone?: string;
   avatar?: string;
-  isActive: boolean;
+  active: boolean;
   createdAt: Date;
-  updatedAt: Date;
 }
 
 export interface AuthUser {
-  id: string;
+  id: number;
   email: string;
   name: string;
   role: 'admin' | 'corretor';

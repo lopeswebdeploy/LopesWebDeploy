@@ -8,18 +8,10 @@ interface PropertyCardProps extends Property {}
 
 const PropertyCard = ({
   id,
-  images,
-  photoGallery,
+  bannerImage,
+  galleryImages,
   price,
   title,
-  location,
-  state,
-  bedrooms,
-  bathrooms,
-  parking,
-  area,
-  type,
-  category,
   description,
 }: PropertyCardProps) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -28,24 +20,15 @@ const PropertyCard = ({
   const safeProperty = {
     title: title || "Sem título",
     description: description || "",
-    location: location || "",
-    state: state || "Goiânia",
-    bedrooms: bedrooms || 0,
-    bathrooms: bathrooms || 0,
-    parking: parking || 0,
-    area: area || "",
-    price: price || "R$ 0",
-    category: category || "venda",
-    // Usar a galeria de fotos (photoGallery) ou images como fallback
-    images: images || photoGallery || []
+    price: price || 0,
+    // Usar bannerImage ou galleryImages
+    images: bannerImage ? [bannerImage, ...galleryImages] : galleryImages || []
   };
 
   // Debug: verificar imagens
   console.log("🔍 PropertyCard - Propriedade:", {
     title: safeProperty.title,
     images: safeProperty.images,
-    photoGallery: photoGallery,
-    imagesOriginal: images,
     imagesLength: safeProperty.images?.length || 0
   });
 
@@ -90,31 +73,6 @@ const PropertyCard = ({
     }
   };
 
-  const getCategoryColor = (category: string) => {
-    switch (category) {
-      case 'venda':
-        return 'bg-green-500';
-      case 'investimento':
-        return 'bg-blue-500';
-      case 'aluguel':
-        return 'bg-purple-500';
-      default:
-        return 'bg-gray-500';
-    }
-  };
-
-  const getCategoryLabel = (category: string) => {
-    switch (category) {
-      case 'venda':
-        return 'Venda';
-      case 'investimento':
-        return 'Investimento';
-      case 'aluguel':
-        return 'Aluguel';
-      default:
-        return category;
-    }
-  };
 
   const handleViewDetails = () => {
     console.log("🔍 PropertyCard - handleViewDetails chamado");
@@ -212,8 +170,8 @@ const PropertyCard = ({
         )}
 
         <div className="absolute top-4 left-4">
-          <Badge className={`${getCategoryColor(safeProperty.category)} text-white font-semibold`}>
-            {getCategoryLabel(safeProperty.category)}
+          <Badge className="bg-brand-coral text-white font-semibold">
+            Venda
           </Badge>
         </div>
         <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
@@ -223,7 +181,7 @@ const PropertyCard = ({
       <div className="p-6">
         <div className="mb-4">
           <div className="text-2xl font-semibold text-brand-coral mb-2">
-            A partir de {safeProperty.price}
+            R$ {safeProperty.price?.toLocaleString()}
           </div>
           <h3 className="text-xl font-semibold text-foreground mb-2 group-hover:text-brand-coral transition-colors">
             {safeProperty.title}
@@ -235,7 +193,7 @@ const PropertyCard = ({
           )}
           <div className="flex items-center text-muted-foreground">
             <MapPin className="h-4 w-4 mr-2" />
-            <span>{safeProperty.location}, {safeProperty.state}</span>
+            <span>Goiânia, GO</span>
           </div>
         </div>
         
@@ -243,18 +201,18 @@ const PropertyCard = ({
         <div className="flex items-center justify-between mb-6 text-sm text-muted-foreground">
           <div className="flex items-center">
             <Bed className="h-4 w-4 mr-1" />
-            <span>{safeProperty.bedrooms}</span>
+            <span>3</span>
           </div>
           <div className="flex items-center">
             <Bath className="h-4 w-4 mr-1" />
-            <span>{safeProperty.bathrooms}</span>
+            <span>2</span>
           </div>
           <div className="flex items-center">
             <Car className="h-4 w-4 mr-1" />
-            <span>{safeProperty.parking}</span>
+            <span>1</span>
           </div>
           <div className="font-medium">
-            {safeProperty.area}
+            120m²
           </div>
         </div>
         

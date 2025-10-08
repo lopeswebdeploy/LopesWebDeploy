@@ -227,13 +227,13 @@ const PropertyFullPage = ({ property }: PropertyFullPageProps) => {
             )}
 
             {/* Planta Baixa */}
-            {property.floorPlan && (
+            {property.images && property.images.some(img => img.includes('floorplan')) && (
               <Card>
                 <CardContent className="p-6">
                   <h3 className="text-xl font-semibold mb-4">Planta Baixa</h3>
                   <div className="bg-gray-100 rounded-lg p-4">
                     <img
-                      src={property.floorPlan}
+                      src={property.images.find(img => img.includes('floorplan')) || property.images[0]}
                       alt="Planta baixa"
                       className="w-full h-auto rounded-lg"
                       onError={(e) => {

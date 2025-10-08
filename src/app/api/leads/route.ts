@@ -1,10 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { Database } from '@/lib/database';
+import { PrismaClient } from '@prisma/client';
+
+const prisma = new PrismaClient();
 
 // GET - Listar todos os leads
 export async function GET() {
   try {
-    const leads = await Database.getLeads();
+    const leads = await prisma.lead.findMany({
+      include: {
+        property: true
+      },
+      orderBy: { createdAt: 'desc' }
+    });
+    
     return NextResponse.json(leads);
   } catch (error) {
     console.error('❌ Erro ao carregar leads:', error);
@@ -28,14 +36,17 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Adicionar lead ao banco
-    await Database.addLead({
-      name: leadData.name,
-      phone: leadData.phone,
-      email: leadData.email,
-      propertyId: leadData.propertyId,
-      source: leadData.source || 'website',
-      notes: leadData.notes
+    const newLead = await prisma.lead.create({
+      data: {
+        name: leadData.name,
+        phone: leadData.phone,
+        email: leadData.email,
+        propertyId: leadData.propertyId ? parseInt(leadData.propertyId) : null,
+        status: leadData.status || 'new'
+      },
+      include: {
+        property: true
+      }
     });
 
     // TODO: Integrar com WhatsApp aqui
@@ -45,10 +56,7 @@ export async function POST(request: NextRequest) {
       property: leadData.propertyId
     });
 
-    return NextResponse.json(
-      { message: 'Lead criado com sucesso' }, 
-      { status: 201 }
-    );
+    return NextResponse.json(newLead, { status: 201 });
   } catch (error) {
     console.error('❌ Erro ao criar lead:', error);
     return NextResponse.json(
