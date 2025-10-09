@@ -39,58 +39,57 @@ export default function PropertiesPageClient() {
     if (filters.search) {
       filtered = filtered.filter(property =>
         property.title.toLowerCase().includes(filters.search.toLowerCase()) ||
-        (property.location && property.location.toLowerCase().includes(filters.search.toLowerCase())) ||
         property.description?.toLowerCase().includes(filters.search.toLowerCase())
       );
     }
 
-    // Filtro por localização
-    if (filters.location && filters.location !== 'all') {
-      filtered = filtered.filter(property =>
-        property.location === filters.location
-      );
-    }
+    // Filtro por localização (removido - campo não existe no schema atual)
+    // if (filters.location && filters.location !== 'all') {
+    //   filtered = filtered.filter(property =>
+    //     property.location === filters.location
+    //   );
+    // }
 
-    // Filtro por categoria
-    if (filters.category && filters.category !== 'all') {
-      filtered = filtered.filter(property =>
-        property.category === filters.category
-      );
-    }
+    // Filtro por categoria (removido - campo não existe no schema atual)
+    // if (filters.category && filters.category !== 'all') {
+    //   filtered = filtered.filter(property =>
+    //     property.category === filters.category
+    //   );
+    // }
 
-    // Filtro por tipo
-    if (filters.type && filters.type !== 'all') {
-      filtered = filtered.filter(property =>
-        property.type === filters.type
-      );
-    }
+    // Filtro por tipo (removido - campo não existe no schema atual)
+    // if (filters.type && filters.type !== 'all') {
+    //   filtered = filtered.filter(property =>
+    //     property.type === filters.type
+    //   );
+    // }
 
-    // Filtro por quartos
-    if (filters.bedrooms && filters.bedrooms !== 'all') {
-      filtered = filtered.filter(property => {
-        return property.bedrooms >= parseInt(filters.bedrooms);
-      });
-    }
+    // Filtro por quartos (removido - campo não existe no schema atual)
+    // if (filters.bedrooms && filters.bedrooms !== 'all') {
+    //   filtered = filtered.filter(property => {
+    //     return property.bedrooms >= parseInt(filters.bedrooms);
+    //   });
+    // }
 
-    // Filtro por banheiros
-    if (filters.bathrooms && filters.bathrooms !== 'all') {
-      filtered = filtered.filter(property =>
-        property.bathrooms >= parseInt(filters.bathrooms)
-      );
-    }
+    // Filtro por banheiros (removido - campo não existe no schema atual)
+    // if (filters.bathrooms && filters.bathrooms !== 'all') {
+    //   filtered = filtered.filter(property =>
+    //     property.bathrooms >= parseInt(filters.bathrooms)
+    //   );
+    // }
 
-    // Filtro por vagas
-    if (filters.parking && filters.parking !== 'all') {
-      filtered = filtered.filter(property =>
-        property.parking >= parseInt(filters.parking)
-      );
-    }
+    // Filtro por vagas (removido - campo não existe no schema atual)
+    // if (filters.parking && filters.parking !== 'all') {
+    //   filtered = filtered.filter(property =>
+    //     property.parking >= parseInt(filters.parking)
+    //   );
+    // }
 
     // Filtro por faixa de preço
     if (filters.priceRange && filters.priceRange.length === 2) {
       filtered = filtered.filter(property => {
         if (!property.price) return false;
-        const price = parseFloat(property.price.replace(/[^\d]/g, ''));
+        const price = Number(property.price);
         return price >= filters.priceRange[0] && price <= filters.priceRange[1];
       });
     }

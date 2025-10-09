@@ -61,8 +61,8 @@ export function UserManagement({ currentUser }: UserManagementProps) {
                          user.email.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesRole = filterRole === 'all' || user.role === filterRole;
     const matchesStatus = filterStatus === 'all' || 
-                         (filterStatus === 'active' && user.isActive) ||
-                         (filterStatus === 'inactive' && !user.isActive);
+                         (filterStatus === 'active' && user.active) ||
+                         (filterStatus === 'inactive' && !user.active);
     
     return matchesSearch && matchesRole && matchesStatus;
   });
@@ -97,8 +97,8 @@ export function UserManagement({ currentUser }: UserManagementProps) {
     return <Badge className="bg-blue-100 text-blue-800">Corretor</Badge>;
   };
 
-  const getStatusBadge = (isActive: boolean) => {
-    if (isActive) {
+  const getStatusBadge = (active: boolean) => {
+    if (active) {
       return <Badge className="bg-green-100 text-green-800">Ativo</Badge>;
     }
     return <Badge className="bg-gray-100 text-gray-800">Inativo</Badge>;
@@ -204,12 +204,12 @@ export function UserManagement({ currentUser }: UserManagementProps) {
                       <Mail className="h-4 w-4" />
                       {user.email}
                     </div>
-                    {user.phone && (
+                    {/* {user.phone && (
                       <div className="flex items-center gap-2 text-sm text-gray-600">
                         <Phone className="h-4 w-4" />
                         {user.phone}
                       </div>
-                    )}
+                    )} */}
                   </div>
                 </div>
                 
@@ -217,7 +217,7 @@ export function UserManagement({ currentUser }: UserManagementProps) {
                   <div className="text-right">
                     <div className="flex items-center gap-2 mb-1">
                       {getRoleBadge(user.role)}
-                      {getStatusBadge(user.isActive)}
+                      {getStatusBadge(user.active)}
                     </div>
                     <p className="text-xs text-gray-500">
                       Criado em {new Date(user.createdAt).toLocaleDateString('pt-BR')}
@@ -228,11 +228,11 @@ export function UserManagement({ currentUser }: UserManagementProps) {
                     {/* Ativar/Desativar */}
                     <Button
                       size="sm"
-                      variant={user.isActive ? "destructive" : "default"}
-                      onClick={() => toggleUserStatus(user.id, user.isActive)}
-                      title={user.isActive ? "Desativar usuário" : "Ativar usuário"}
+                      variant={user.active ? "destructive" : "default"}
+                      onClick={() => toggleUserStatus(user.id.toString(), user.active)}
+                      title={user.active ? "Desativar usuário" : "Ativar usuário"}
                     >
-                      {user.isActive ? <UserX className="h-4 w-4" /> : <UserCheck className="h-4 w-4" />}
+                      {user.active ? <UserX className="h-4 w-4" /> : <UserCheck className="h-4 w-4" />}
                     </Button>
                     
                     {/* Alterar Role */}
@@ -240,7 +240,7 @@ export function UserManagement({ currentUser }: UserManagementProps) {
                       <Button
                         size="sm"
                         variant="outline"
-                        onClick={() => changeUserRole(user.id, 'admin')}
+                        onClick={() => changeUserRole(user.id.toString(), 'admin')}
                         title="Promover a Admin"
                       >
                         <Shield className="h-4 w-4" />
@@ -249,7 +249,7 @@ export function UserManagement({ currentUser }: UserManagementProps) {
                       <Button
                         size="sm"
                         variant="outline"
-                        onClick={() => changeUserRole(user.id, 'corretor')}
+                        onClick={() => changeUserRole(user.id.toString(), 'corretor')}
                         title="Rebaixar a Corretor"
                       >
                         <ShieldCheck className="h-4 w-4" />
@@ -306,7 +306,7 @@ export function UserManagement({ currentUser }: UserManagementProps) {
         <Card>
           <CardContent className="p-4 text-center">
             <UserCheck className="h-8 w-8 text-green-600 mx-auto mb-2" />
-            <p className="text-2xl font-bold">{users.filter(u => u.isActive).length}</p>
+            <p className="text-2xl font-bold">{users.filter(u => u.active).length}</p>
             <p className="text-sm text-gray-600">Usuários Ativos</p>
           </CardContent>
         </Card>

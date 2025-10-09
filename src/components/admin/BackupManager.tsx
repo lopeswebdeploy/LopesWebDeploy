@@ -13,10 +13,12 @@ const BackupManager = () => {
   const [isExporting, setIsExporting] = useState(false);
   const [isImporting, setIsImporting] = useState(false);
 
-  const handleExport = () => {
+  const handleExport = async () => {
     setIsExporting(true);
     try {
-      const data = PropertyService.exportData();
+      const response = await fetch('/api/properties');
+      const properties = await response.json();
+      const data = JSON.stringify(properties, null, 2);
       const blob = new Blob([data], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -42,13 +44,9 @@ const BackupManager = () => {
 
     setIsImporting(true);
     try {
-      const success = await PropertyService.importData(importData);
-      if (success) {
-        alert('Dados importados com sucesso! A página será recarregada.');
-        window.location.reload();
-      } else {
-        alert('Erro ao importar dados! Verifique o formato JSON.');
-      }
+      const data = JSON.parse(importData);
+      // Aqui você pode implementar a lógica de importação
+      alert('Funcionalidade de importação será implementada em breve.');
     } catch (error) {
       alert('Erro ao importar dados! Verifique o formato JSON.');
       console.error(error);
@@ -71,9 +69,8 @@ const BackupManager = () => {
 
   const handleClearAll = () => {
     if (window.confirm('⚠️ ATENÇÃO: Isso irá apagar TODAS as propriedades!\n\nTem certeza que deseja continuar?\n\nRecomendamos fazer um backup antes.')) {
-      PropertyService.clearAllData();
-      alert('Todos os dados foram limpos! A página será recarregada.');
-      window.location.reload();
+      // Aqui você pode implementar a lógica de limpeza
+      alert('Funcionalidade de limpeza será implementada em breve.');
     }
   };
 

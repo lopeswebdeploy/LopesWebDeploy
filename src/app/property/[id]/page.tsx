@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
-import PropertyFullPage from "@/components/admin/PropertyFullPage";
+// import PropertyFullPage from "@/components/admin/PropertyFullPage"; // Arquivo removido temporariamente
 import { Property } from "@/types/property";
 import { PropertyService } from "@/services/propertyService";
 
@@ -60,5 +60,18 @@ export default function PropertyPage() {
     );
   }
 
-  return <PropertyFullPage property={property} />;
+  // return <PropertyFullPage property={property} />; // Componente removido temporariamente
+  return (
+    <div className="min-h-screen p-8">
+      <div className="max-w-4xl mx-auto">
+        <h1 className="text-3xl font-bold mb-4">{property.title}</h1>
+        <p className="text-gray-600 mb-4">{property.description}</p>
+        <p className="text-2xl font-bold text-blue-600">
+          {property.price ? new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(property.price) : 'Sob consulta'}
+        </p>
+        <p className="text-sm text-gray-500 mt-2">Status: {property.status}</p>
+        {property.featured && <p className="text-yellow-600 font-semibold">⭐ Destaque</p>}
+      </div>
+    </div>
+  );
 }

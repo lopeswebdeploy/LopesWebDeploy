@@ -1,242 +1,119 @@
-import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { MapPin, Bed, Bath, Car, ChevronLeft, ChevronRight } from "lucide-react";
-import { Property } from "@/types/property";
+'use client';
+import Image from 'next/image';
+import Link from 'next/link';
 
-interface PropertyCardProps extends Property {}
-
-const PropertyCard = ({
-  id,
-  bannerImage,
-  galleryImages,
-  price,
-  title,
-  description,
-}: PropertyCardProps) => {
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
-
-  // Garantir que a propriedade tenha valores padrão
-  const safeProperty = {
-    title: title || "Sem título",
-    description: description || "",
-    price: price || 0,
-    // Usar bannerImage ou galleryImages
-    images: bannerImage ? [bannerImage, ...galleryImages] : galleryImages || []
+interface PropertyCardProps {
+  property: {
+    id: number;
+    title: string;
+    price: number | null;
+    bannerImage?: string | null;
+    galleryImages?: string[];
+    status: string;
+    featured: boolean;
+    author?: {
+      name: string;
+    };
   };
+  showAdminActions?: boolean;
+  onEdit?: (id: number) => void;
+  onDelete?: (id: number) => void;
+  onToggleFeatured?: (id: number, featured: boolean) => void;
+}
 
-  // Debug: verificar imagens
-  console.log("🔍 PropertyCard - Propriedade:", {
-    title: safeProperty.title,
-    images: safeProperty.images,
-    imagesLength: safeProperty.images?.length || 0
-  });
+export default function PropertyCard({ 
+  property, 
+  showAdminActions = false,
+  onEdit,
+  onDelete,
+  onToggleFeatured
+}: PropertyCardProps) {
+  
+  // Usar bannerImage ou primeira imagem da galeria ou placeholder
+  const imageUrl = property.bannerImage || 
+                   (property.galleryImages && property.galleryImages[0]) || 
+                   '/placeholder-property.jpg';
 
-  // Reset do índice quando as imagens mudam
-  useEffect(() => {
-    setCurrentImageIndex(0);
-  }, [safeProperty.images]);
+  const formattedPrice = property.price 
+    ? new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(property.price)
+    : 'Sob consulta';
 
-  // Função para navegar para a próxima imagem
-  const nextImage = (e?: React.MouseEvent) => {
-    e?.stopPropagation();
-    e?.preventDefault();
-    
-    if (safeProperty.images && safeProperty.images.length > 1) {
-      setCurrentImageIndex((prev) => {
-        const newIndex = prev === safeProperty.images.length - 1 ? 0 : prev + 1;
-        console.log("🔄 PropertyCard - Próxima imagem:", newIndex, "de", safeProperty.images.length);
-        return newIndex;
-      });
-    }
-  };
-
-  // Função para navegar para a imagem anterior
-  const prevImage = (e?: React.MouseEvent) => {
-    e?.stopPropagation();
-    e?.preventDefault();
-    
-    if (safeProperty.images && safeProperty.images.length > 1) {
-      setCurrentImageIndex((prev) => {
-        const newIndex = prev === 0 ? safeProperty.images.length - 1 : prev - 1;
-        console.log("🔄 PropertyCard - Imagem anterior:", newIndex, "de", safeProperty.images.length);
-        return newIndex;
-      });
-    }
-  };
-
-  // Função para ir diretamente para uma imagem específica
-  const goToImage = (index: number) => {
-    if (safeProperty.images && index >= 0 && index < safeProperty.images.length) {
-      setCurrentImageIndex(index);
-      console.log("🔄 PropertyCard - Ir para imagem:", index);
-    }
-  };
-
-
-  const handleViewDetails = () => {
-    console.log("🔍 PropertyCard - handleViewDetails chamado");
-    console.log("🔍 PropertyCard - ID da propriedade:", id);
-    console.log("🔍 PropertyCard - Título da propriedade:", title);
-    
-    if (id) {
-      console.log("🔍 PropertyCard - Abrindo URL:", `/property/${id}`);
-      window.open(`/property/${id}`, '_blank');
-    } else {
-      console.log("❌ PropertyCard - ID não encontrado!");
-    }
-  };
   return (
-    <div className="group bg-card rounded-xl overflow-hidden shadow-card-luxury hover:shadow-luxury transition-all duration-500 hover:-translate-y-2">
-      {/* Image Container */}
-      <div className="relative overflow-hidden group">
-        {/* Imagem Principal */}
-        {safeProperty.images && safeProperty.images.length > 0 ? (
-          <div className="relative w-full h-64">
-            <img
-              key={`${id}-${currentImageIndex}`} // Force re-render when image changes
-              src={safeProperty.images[currentImageIndex]}
-              alt={`${safeProperty.title} - Imagem ${currentImageIndex + 1}`}
-              className="w-full h-full object-cover transition-all duration-300 ease-in-out group-hover:scale-105"
-              onLoad={() => {
-                console.log("✅ PropertyCard - Imagem carregada:", currentImageIndex + 1, "de", safeProperty.images.length);
-              }}
-              onError={(e) => {
-                console.log("❌ PropertyCard - Erro ao carregar imagem:", currentImageIndex);
-                // Fallback para a primeira imagem da galeria se a imagem atual falhar
-                (e.target as HTMLImageElement).src = safeProperty.images[0] || '/placeholder-image.jpg';
-              }}
-            />
-            
-            {/* Overlay para melhorar visibilidade das setinhas */}
-            <div className="absolute inset-0 bg-gradient-to-r from-black/20 via-transparent to-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-          </div>
-        ) : (
-          <div className="w-full h-64 bg-gray-200 flex items-center justify-center">
-            <span className="text-gray-500">Sem imagem (Total: {safeProperty.images?.length || 0})</span>
+    <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
+      {/* Imagem */}
+      <div className="relative h-48 w-full">
+        <Image
+          src={imageUrl}
+          alt={property.title}
+          fill
+          className="object-cover"
+          onError={(e) => {
+            // Fallback para imagem quebrada
+            (e.target as HTMLImageElement).src = '/placeholder-property.jpg';
+          }}
+        />
+        {property.featured && (
+          <div className="absolute top-2 left-2 bg-yellow-500 text-white px-2 py-1 rounded text-xs font-semibold">
+            Destaque
           </div>
         )}
-        
-        {/* Setinhas de Navegação - Sempre Visíveis */}
-        {safeProperty.images && safeProperty.images.length > 1 && (
-          <>
-            {/* Botão Anterior */}
-            <Button
-              variant="ghost"
-              size="sm"
-              className="absolute left-3 top-1/2 -translate-y-1/2 bg-black/60 hover:bg-black/80 text-white rounded-full w-8 h-8 p-0 shadow-lg transition-all duration-200 hover:scale-110 z-10"
-              onClick={prevImage}
-              aria-label="Imagem anterior"
-            >
-              <ChevronLeft className="h-4 w-4" />
-            </Button>
-            
-            {/* Botão Próximo */}
-            <Button
-              variant="ghost"
-              size="sm"
-              className="absolute right-3 top-1/2 -translate-y-1/2 bg-black/60 hover:bg-black/80 text-white rounded-full w-8 h-8 p-0 shadow-lg transition-all duration-200 hover:scale-110 z-10"
-              onClick={nextImage}
-              aria-label="Próxima imagem"
-            >
-              <ChevronRight className="h-4 w-4" />
-            </Button>
-          </>
-        )}
-
-        {/* Indicadores de Imagem */}
-        {safeProperty.images && safeProperty.images.length > 1 && (
-          <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-2 z-10">
-            {safeProperty.images.map((_, index) => (
-              <button
-                key={index}
-                onClick={() => goToImage(index)}
-                className={`w-2 h-2 rounded-full transition-all duration-200 ${
-                  index === currentImageIndex 
-                    ? 'bg-white scale-125 shadow-lg' 
-                    : 'bg-white/60 hover:bg-white/80 hover:scale-110'
-                }`}
-                aria-label={`Ir para imagem ${index + 1}`}
-              />
-            ))}
+        {property.status === 'draft' && (
+          <div className="absolute top-2 right-2 bg-gray-500 text-white px-2 py-1 rounded text-xs font-semibold">
+            Rascunho
           </div>
         )}
-
-        {/* Contador de Imagens */}
-        {safeProperty.images && safeProperty.images.length > 1 && (
-          <div className="absolute top-3 right-3 bg-black/60 text-white text-xs px-2 py-1 rounded-full z-10">
-            {currentImageIndex + 1} / {safeProperty.images.length}
-          </div>
-        )}
-
-        <div className="absolute top-4 left-4">
-          <Badge className="bg-brand-coral text-white font-semibold">
-            Venda
-          </Badge>
-        </div>
-        <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
       </div>
-      
-      {/* Content */}
-      <div className="p-6">
-        <div className="mb-4">
-          <div className="text-2xl font-semibold text-brand-coral mb-2">
-            R$ {safeProperty.price?.toLocaleString()}
-          </div>
-          <h3 className="text-xl font-semibold text-foreground mb-2 group-hover:text-brand-coral transition-colors">
-            {safeProperty.title}
-          </h3>
-          {safeProperty.description && (
-            <p className="text-sm text-gray-600 mb-2 line-clamp-2">
-              {safeProperty.description}
-            </p>
-          )}
-          <div className="flex items-center text-muted-foreground">
-            <MapPin className="h-4 w-4 mr-2" />
-            <span>Goiânia, GO</span>
-          </div>
-        </div>
+
+      {/* Conteúdo */}
+      <div className="p-4">
+        <h3 className="text-lg font-semibold text-gray-800 mb-2 line-clamp-2">
+          {property.title}
+        </h3>
         
-        {/* Property Details */}
-        <div className="flex items-center justify-between mb-6 text-sm text-muted-foreground">
-          <div className="flex items-center">
-            <Bed className="h-4 w-4 mr-1" />
-            <span>3</span>
+        <p className="text-xl font-bold text-blue-600 mb-3">
+          {formattedPrice}
+        </p>
+
+        {/* Ações do Admin */}
+        {showAdminActions && onEdit && onDelete && (
+          <div className="flex flex-wrap gap-2 mb-3">
+            <button
+              onClick={() => onEdit(property.id)}
+              className="flex-1 bg-blue-600 text-white py-2 px-3 rounded text-sm hover:bg-blue-700 transition-colors"
+            >
+              Editar
+            </button>
+            <button
+              onClick={() => onDelete(property.id)}
+              className="flex-1 bg-red-600 text-white py-2 px-3 rounded text-sm hover:bg-red-700 transition-colors"
+            >
+              Excluir
+            </button>
+            {onToggleFeatured && (
+              <button
+                onClick={() => onToggleFeatured(property.id, !property.featured)}
+                className={`flex-1 py-2 px-3 rounded text-sm transition-colors ${
+                  property.featured 
+                    ? 'bg-gray-600 text-white hover:bg-gray-700' 
+                    : 'bg-green-600 text-white hover:bg-green-700'
+                }`}
+              >
+                {property.featured ? 'Remover Destaque' : 'Destacar'}
+              </button>
+            )}
           </div>
-          <div className="flex items-center">
-            <Bath className="h-4 w-4 mr-1" />
-            <span>2</span>
-          </div>
-          <div className="flex items-center">
-            <Car className="h-4 w-4 mr-1" />
-            <span>1</span>
-          </div>
-          <div className="font-medium">
-            120m²
-          </div>
-        </div>
-        
-        {/* CTA Buttons */}
-        <div className="flex gap-2">
-          <Button 
-            variant="outline" 
-            size="sm"
-            className="flex-1"
+        )}
+
+        {/* Link para página do imóvel (apenas se publicado) */}
+        {property.status === 'published' && (
+          <Link 
+            href={`/imoveis/${property.id}`}
+            className="block w-full bg-gray-100 text-gray-800 text-center py-2 px-4 rounded hover:bg-gray-200 transition-colors"
           >
-            Ver Mais
-          </Button>
-          <Button 
-            variant="default" 
-            size="sm"
-            className="flex-1 bg-brand-coral hover:bg-brand-coral/90"
-            onClick={handleViewDetails}
-          >
-            Tenho Interesse
-          </Button>
-        </div>
+            Ver Detalhes
+          </Link>
+        )}
       </div>
     </div>
   );
-};
-
-export default PropertyCard;
+}

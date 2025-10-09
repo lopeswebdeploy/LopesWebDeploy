@@ -55,10 +55,10 @@ const FeaturedProperties = () => {
       filtered = allProperties.slice(0, 6);
     }
     
-    // Filtrar por setor
-    if (selectedSector !== "all") {
-      filtered = filtered.filter(property => property.location === selectedSector);
-    }
+    // Filtrar por setor (removido - campo não existe no schema atual)
+    // if (selectedSector !== "all") {
+    //   filtered = filtered.filter(property => property.location === selectedSector);
+    // }
     
     setFeaturedProperties(filtered);
     setCurrentIndex(0); // Reset index when filter changes

@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Plus, Eye, Edit, Trash2, LogOut } from 'lucide-react';
 import { AuthService } from '@/lib/auth';
-import PropertyFormUnified from '@/components/admin/PropertyFormUnified';
+import PropertyFormSimple from '@/components/admin/PropertyFormSimple';
 import { Property } from '@/types/property';
 
 export default function DashboardPage() {
@@ -14,7 +14,7 @@ export default function DashboardPage() {
     id: number;
     name: string;
     email: string;
-    role: string;
+    role: 'admin' | 'corretor';
   } | null>(null);
   const [properties, setProperties] = useState<Property[]>([]);
   const [loading, setLoading] = useState(true);
@@ -51,9 +51,9 @@ export default function DashboardPage() {
     router.push('/admin/login');
   };
 
-  const handlePropertySuccess = () => {
+  const handlePropertySuccess = async (property: any) => {
     setEditingProperty(null);
-    loadProperties();
+    await loadProperties();
   };
 
   const handleDeleteProperty = async (id: number) => {
@@ -114,7 +114,7 @@ export default function DashboardPage() {
             <div className="flex justify-between items-center">
               <h2 className="text-2xl font-bold">Propriedades</h2>
               <Button 
-                onClick={() => setEditingProperty({})}
+                onClick={() => setEditingProperty(null)}
                 className="flex items-center"
               >
                 <Plus className="w-4 h-4 mr-2" />
@@ -123,7 +123,7 @@ export default function DashboardPage() {
             </div>
 
             {editingProperty && (
-              <PropertyFormUnified 
+              <PropertyFormSimple 
                 property={editingProperty}
                 user={user}
                 onSubmit={handlePropertySuccess}

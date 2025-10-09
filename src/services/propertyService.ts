@@ -52,4 +52,96 @@ export class PropertyService {
   static getPropertyByIdSync(id: string): Property | null {
     return null;
   }
+
+  // Adicionar propriedade
+  static async addProperty(property: Property): Promise<Property> {
+    console.log('🔍 PropertyService.addProperty - Adicionando propriedade:', property.title);
+    
+    try {
+      const response = await fetch('/api/properties', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(property),
+      });
+      
+      if (response.ok) {
+        const newProperty = await response.json();
+        console.log('✅ PropertyService.addProperty - Propriedade adicionada:', newProperty.id);
+        return newProperty;
+      }
+      
+      throw new Error(`Erro na API: ${response.status}`);
+    } catch (error) {
+      console.error('❌ PropertyService.addProperty - Erro:', error);
+      throw error;
+    }
+  }
+
+  // Atualizar propriedade
+  static async updateProperty(property: Property): Promise<Property> {
+    console.log('🔍 PropertyService.updateProperty - Atualizando propriedade:', property.id);
+    
+    try {
+      const response = await fetch(`/api/properties/${property.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(property),
+      });
+      
+      if (response.ok) {
+        const updatedProperty = await response.json();
+        console.log('✅ PropertyService.updateProperty - Propriedade atualizada:', updatedProperty.id);
+        return updatedProperty;
+      }
+      
+      throw new Error(`Erro na API: ${response.status}`);
+    } catch (error) {
+      console.error('❌ PropertyService.updateProperty - Erro:', error);
+      throw error;
+    }
+  }
+
+  // Excluir propriedade
+  static async deleteProperty(id: string): Promise<void> {
+    console.log('🔍 PropertyService.deleteProperty - Excluindo propriedade:', id);
+    
+    try {
+      const response = await fetch(`/api/properties/${id}`, {
+        method: 'DELETE',
+      });
+      
+      if (response.ok) {
+        console.log('✅ PropertyService.deleteProperty - Propriedade excluída:', id);
+        return;
+      }
+      
+      throw new Error(`Erro na API: ${response.status}`);
+    } catch (error) {
+      console.error('❌ PropertyService.deleteProperty - Erro:', error);
+      throw error;
+    }
+  }
+
+  // Métodos de compatibilidade (para manter funcionalidade existente)
+  static forceSampleData(): void {
+    console.log('🔍 PropertyService.forceSampleData - Método não implementado');
+  }
+
+  static exportData(): string {
+    console.log('🔍 PropertyService.exportData - Método não implementado');
+    return '{}';
+  }
+
+  static async importData(data: string): Promise<boolean> {
+    console.log('🔍 PropertyService.importData - Método não implementado');
+    return false;
+  }
+
+  static clearAllData(): void {
+    console.log('🔍 PropertyService.clearAllData - Método não implementado');
+  }
 }

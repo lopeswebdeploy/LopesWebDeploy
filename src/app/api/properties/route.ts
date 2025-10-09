@@ -1,66 +1,74 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
-// GET - Listar todas as propriedades
-export async function GET() {
+// GET - Para site público (apenas published)
+export async function GET(request: Request) {
   try {
+    const { searchParams } = new URL(request.url);
+    const featured = searchParams.get('featured');
+    
+    let whereClause: any = { status: 'published' };
+    
+    if (featured === 'true') {
+      whereClause.featured = true;
+    }
+    
     const properties = await prisma.property.findMany({
+      where: whereClause,
       include: {
-        author: true,
-        _count: {
-          select: { leads: true }
-        }
+        author: true
       },
       orderBy: { createdAt: 'desc' }
     });
-
+    
     return NextResponse.json(properties);
   } catch (error) {
-    console.error('❌ Erro ao carregar propriedades:', error);
+    console.error('Error fetching properties:', error);
     return NextResponse.json(
-      { error: 'Erro ao carregar propriedades' }, 
+      { error: 'Erro ao buscar propriedades' },
       { status: 500 }
     );
   }
 }
 
-// POST - Criar nova propriedade
-export async function POST(request: NextRequest) {
+// POST - Criar property (apenas usuários logados)
+export async function POST(request: Request) {
   try {
-    const data = await request.json();
-    
-    // Validar dados obrigatórios
-    if (!data.title || !data.price) {
-      return NextResponse.json(
-        { error: 'Título e preço são obrigatórios' }, 
-        { status: 400 }
-      );
+    // Verificar sessão do middleware
+    const userHeader = request.headers.get('x-user');
+    if (!userHeader) {
+      return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
     }
 
+    const user = JSON.parse(userHeader);
+    const data = await request.json();
+
+    // Inserir property
     const newProperty = await prisma.property.create({
       data: {
         title: data.title,
         description: data.description,
-        price: parseFloat(data.price),
+        price: data.price ? parseFloat(data.price) : null,
         status: data.status || 'draft',
         featured: data.featured || false,
-        authorId: data.authorId || 1, // TODO: Obter do auth
-        bannerImage: data.bannerImage,
-        galleryImages: data.galleryImages || [],
-        floorPlans: data.floorPlans || []
+                bannerImage: data.bannerImage,
+                galleryImages: data.galleryImages || [],
+        floorPlans: data.floorPlans || [],
+        authorId: user.userId
       },
       include: {
         author: true
       }
     });
 
-    return NextResponse.json(newProperty, { status: 201 });
+    return NextResponse.json(newProperty);
+
   } catch (error) {
-    console.error('❌ Erro ao criar propriedade:', error);
+    console.error('Error creating property:', error);
     return NextResponse.json(
-      { error: 'Erro ao criar propriedade' }, 
+      { error: 'Erro ao criar propriedade' },
       { status: 500 }
     );
   }

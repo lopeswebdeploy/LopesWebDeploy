@@ -1,78 +1,57 @@
-#!/usr/bin/env tsx
-
 import { PrismaClient } from '@prisma/client';
 import { hash } from 'bcryptjs';
 
 const prisma = new PrismaClient();
 
-async function resetAndPopulateDatabase() {
-  console.log('🚀 Iniciando reset e população do banco de dados...');
-  
+async function main() {
+  console.log('🌱 Iniciando povoamento do banco de dados...');
+
   try {
-    // 1. Conectar ao banco
-    await prisma.$connect();
-    console.log('✅ Conexão com banco estabelecida');
-    
-    // 2. LIMPAR TODAS AS TABELAS (em ordem correta devido às foreign keys)
-    console.log('🧹 Limpando todas as tabelas...');
-    
-    await prisma.lead.deleteMany({});
-    console.log('  ✅ Leads deletados');
-    
-    await prisma.property.deleteMany({});
-    console.log('  ✅ Propriedades deletadas');
-    
-    await prisma.user.deleteMany({});
-    console.log('  ✅ Usuários deletados');
-    
-    console.log('🎉 Banco limpo com sucesso!');
-    
-    // 3. CRIAR USUÁRIOS
-    console.log('👥 Criando usuários...');
-    
+    // Limpar dados existentes
+    await prisma.lead.deleteMany();
+    await prisma.property.deleteMany();
+    await prisma.user.deleteMany();
+
+    console.log('🧹 Dados antigos removidos');
+
+    // Criar usuários
     const adminPassword = await hash('admin123', 12);
     const corretor1Password = await hash('corretor123', 12);
     const corretor2Password = await hash('corretor456', 12);
-    
-    const adminUser = await prisma.user.create({
+
+    const admin = await prisma.user.create({
       data: {
+        name: 'Administrador',
         email: 'admin@lopes.com',
-        name: 'Admin Master',
         password: adminPassword,
         role: 'admin',
         active: true
       }
     });
-    
-    const corretorUser = await prisma.user.create({
+
+    const corretor1 = await prisma.user.create({
       data: {
-        email: 'corretor@lopes.com',
-        name: 'João Corretor',
+        name: 'João Silva',
+        email: 'joao@lopes.com',
         password: corretor1Password,
         role: 'corretor',
         active: true
       }
     });
-    
-    const corretor2User = await prisma.user.create({
+
+    const corretor2 = await prisma.user.create({
       data: {
+        name: 'Maria Santos',
         email: 'maria@lopes.com',
-        name: 'Maria Corretora',
         password: corretor2Password,
         role: 'corretor',
         active: true
       }
     });
-    
-    console.log('✅ Usuários criados:', {
-      admin: adminUser.name,
-      corretor1: corretorUser.name,
-      corretor2: corretor2User.name
-    });
-    
-    // 4. CRIAR PROPRIEDADES SIMPLES
-    console.log('🏠 Criando propriedades...');
-    
+
+    console.log('👥 Usuários criados:', { admin: admin.id, corretor1: corretor1.id, corretor2: corretor2.id });
+
+    // Criar propriedades
     const properties = [
       {
         title: 'Apartamento Luxo no Centro',
@@ -80,7 +59,7 @@ async function resetAndPopulateDatabase() {
         price: 450000,
         status: 'published',
         featured: true,
-        authorId: corretorUser.id,
+        authorId: corretor1.id,
         bannerImage: '/property-1.jpg',
         galleryImages: ['/property-1.jpg', '/property-2.jpg'],
         floorPlans: ['/placeholder-floorplan.jpg']
@@ -91,7 +70,7 @@ async function resetAndPopulateDatabase() {
         price: 680000,
         status: 'published',
         featured: true,
-        authorId: corretor2User.id,
+        authorId: corretor2.id,
         bannerImage: '/property-2.jpg',
         galleryImages: ['/property-2.jpg', '/property-3.jpg'],
         floorPlans: ['/placeholder-floorplan.jpg']
@@ -102,7 +81,7 @@ async function resetAndPopulateDatabase() {
         price: 320000,
         status: 'published',
         featured: false,
-        authorId: corretorUser.id,
+        authorId: corretor1.id,
         bannerImage: '/property-3.jpg',
         galleryImages: ['/property-3.jpg'],
         floorPlans: []
@@ -113,10 +92,21 @@ async function resetAndPopulateDatabase() {
         price: 850000,
         status: 'draft',
         featured: false,
-        authorId: corretor2User.id,
+        authorId: corretor2.id,
         bannerImage: '/property-1.jpg',
         galleryImages: ['/property-1.jpg'],
         floorPlans: ['/placeholder-floorplan.jpg']
+      },
+      {
+        title: 'Casa em Condomínio',
+        description: 'Casa em condomínio fechado com 3 quartos e área de lazer.',
+        price: 520000,
+        status: 'published',
+        featured: false,
+        authorId: admin.id,
+        bannerImage: '/property-2.jpg',
+        galleryImages: ['/property-2.jpg', '/property-3.jpg'],
+        floorPlans: []
       }
     ];
 
@@ -126,37 +116,38 @@ async function resetAndPopulateDatabase() {
       });
       console.log(`🏠 Propriedade criada: ${property.title} (ID: ${property.id})`);
     }
-    
-    // 5. CRIAR LEADS DE EXEMPLO
-    console.log('📞 Criando leads...');
-    
+
+    // Buscar propriedades criadas para usar nos leads
     const createdProperties = await prisma.property.findMany({
       select: { id: true, title: true }
     });
 
+    console.log('🏠 Propriedades disponíveis:', createdProperties.map(p => `${p.id}: ${p.title}`));
+
+    // Criar alguns leads
     const leads = [
       {
         name: 'Carlos Oliveira',
         phone: '(11) 99999-1111',
         email: 'carlos@email.com',
         propertyId: createdProperties[0]?.id,
-          ownerId: corretorUser.id,
+        ownerId: corretor1.id,
         status: 'new'
-        },
-        {
-          name: 'Ana Costa',
+      },
+      {
+        name: 'Ana Costa',
         phone: '(11) 99999-2222',
-          email: 'ana@email.com',
+        email: 'ana@email.com',
         propertyId: createdProperties[1]?.id,
-        ownerId: corretor2User.id,
+        ownerId: corretor2.id,
         status: 'contacted'
       },
       {
         name: 'Pedro Santos',
         phone: '(11) 99999-3333',
-          email: 'pedro@email.com',
+        email: 'pedro@email.com',
         propertyId: createdProperties[2]?.id,
-          ownerId: corretorUser.id,
+        ownerId: corretor1.id,
         status: 'new'
       }
     ];
@@ -169,49 +160,23 @@ async function resetAndPopulateDatabase() {
         console.log(`📞 Lead criado: ${lead.name} (ID: ${lead.id})`);
       }
     }
-    
-    console.log('✅ Leads criados');
-    
-    // 6. VERIFICAR DADOS FINAIS
-    const stats = await prisma.$transaction([
-      prisma.user.count(),
-      prisma.property.count(),
-      prisma.lead.count()
-    ]);
-    
-    console.log('📊 ESTATÍSTICAS FINAIS:');
-    console.log(`  👥 Usuários: ${stats[0]}`);
-    console.log(`  🏠 Propriedades: ${stats[1]}`);
-    console.log(`  📞 Leads: ${stats[2]}`);
-    
-    console.log('🎉 BANCO DE DADOS RESETADO E POPULADO COM SUCESSO!');
-    console.log('');
-    console.log('📋 RESUMO DO QUE FOI CRIADO:');
-    console.log('  👤 3 usuários (1 admin + 2 corretores)');
-    console.log('  🏠 4 propriedades completas');
-    console.log('  📞 3 leads de exemplo');
-    console.log('');
-    console.log('🔑 CREDENCIAIS DE LOGIN:');
-    console.log('  Admin: admin@lopes.com / admin123');
-    console.log('  Corretor 1: corretor@lopes.com / corretor123');
-    console.log('  Corretor 2: maria@lopes.com / corretor456');
-    
+
+    console.log('✅ Povoamento concluído com sucesso!');
+    console.log('\n📋 Credenciais de acesso:');
+    console.log('👑 Admin: admin@lopes.com / admin123');
+    console.log('👤 Corretor 1: joao@lopes.com / corretor123');
+    console.log('👤 Corretor 2: maria@lopes.com / corretor456');
+
   } catch (error) {
-    console.error('❌ Erro ao resetar e popular banco:', error);
+    console.error('❌ Erro no povoamento:', error);
     throw error;
   } finally {
     await prisma.$disconnect();
   }
 }
 
-// Executar se chamado diretamente
-if (require.main === module) {
-  resetAndPopulateDatabase()
-    .then(() => process.exit(0))
-    .catch((error) => {
-      console.error(error);
-      process.exit(1);
-    });
-}
-
-export { resetAndPopulateDatabase };
+main()
+  .catch((e) => {
+    console.error(e);
+    process.exit(1);
+  });

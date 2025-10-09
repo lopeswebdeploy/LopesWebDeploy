@@ -3,11 +3,11 @@ export interface Property {
   id: number;
   title: string;
   description?: string;
-  price?: number;
+  price: number | null;
   status: string;
   featured: boolean;
   authorId: number;
-  bannerImage?: string;
+  bannerImage?: string | null;
   galleryImages: string[];
   floorPlans: string[];
   createdAt: Date;
@@ -21,6 +21,13 @@ export interface Property {
     role: string;
   };
   leads?: any[];
+  
+  // Campos de compatibilidade (para manter funcionalidade existente)
+  isFeatured?: boolean;
+  isVisible?: boolean;
+  category?: string;
+  location?: string;
+  developer?: string;
 }
 
 export interface ApartmentOption {

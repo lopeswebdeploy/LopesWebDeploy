@@ -63,7 +63,7 @@ export class PermissionService {
 
     // Corretor só pode acessar suas próprias propriedades
     if (user.role === 'corretor') {
-      return propertyOwnerId === user.id;
+      return propertyOwnerId === user.id.toString();
     }
 
     return false;

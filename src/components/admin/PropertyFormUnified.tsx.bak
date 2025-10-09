@@ -65,18 +65,19 @@ const PropertyFormUnified = ({
     bannerImage: property?.bannerImage || "",
     galleryImages: property?.galleryImages || [],
     floorPlans: property?.floorPlans || [],
-    fullDescription: "",
-    address: "",
-    suites: 0,
-    characteristics: [],
-    locationBenefits: [],
-    differentials: [],
-    balconyTypes: [],
-    apartmentOptions: [],
-    coordinates: { lat: -16.6869, lng: -49.2648 },
-    photoGallery: [],
-    isFeatured: false,
-    isVisible: true
+    // Campos removidos - não existem no schema atual
+    // fullDescription: "",
+    // address: "",
+    // suites: 0,
+    // characteristics: [],
+    // locationBenefits: [],
+    // differentials: [],
+    // balconyTypes: [],
+    // apartmentOptions: [],
+    // coordinates: { lat: -16.6869, lng: -49.2648 },
+    // photoGallery: [],
+    // isFeatured: false,
+    // isVisible: true
   });
 
   const [newCharacteristic, setNewCharacteristic] = useState("");
@@ -87,9 +88,10 @@ const PropertyFormUnified = ({
   useEffect(() => {
     if (property) {
       setFormData({
-        ...property,
-        photoGallery: property.photoGallery || property.images || [],
-        images: property.images || property.photoGallery || []
+        ...property
+        // Campos removidos - não existem no schema atual
+        // photoGallery: property.photoGallery || property.images || [],
+        // images: property.images || property.photoGallery || []
       });
     }
   }, [property]);
@@ -116,34 +118,35 @@ const PropertyFormUnified = ({
     handleInputChange(field, currentItems.filter((_, i) => i !== index));
   };
 
-  const addApartmentOption = () => {
-    const newOption: ApartmentOption = {
-      id: Date.now().toString(),
-      bedrooms: 2,
-      bathrooms: 2,
-      suites: 1,
-      parking: 1,
-      area: "",
-      price: "",
-      floor: 1,
-      available: true,
-      features: [],
-      unitType: "",
-      description: "",
-    };
-    handleInputChange("apartmentOptions", [...(formData.apartmentOptions || []), newOption]);
-  };
+  // Funções removidas - campos não existem no schema atual
+  // const addApartmentOption = () => {
+  //   const newOption: ApartmentOption = {
+  //     id: Date.now().toString(),
+  //     bedrooms: 2,
+  //     bathrooms: 2,
+  //     suites: 1,
+  //     parking: 1,
+  //     area: "",
+  //     price: "",
+  //     floor: 1,
+  //     available: true,
+  //     features: [],
+  //     unitType: "",
+  //     description: "",
+  //   };
+  //   handleInputChange("apartmentOptions", [...(formData.apartmentOptions || []), newOption]);
+  // };
 
-  const removeApartmentOption = (index: number) => {
-    const options = formData.apartmentOptions || [];
-    handleInputChange("apartmentOptions", options.filter((_, i) => i !== index));
-  };
+  // const removeApartmentOption = (index: number) => {
+  //   const options = formData.apartmentOptions || [];
+  //   handleInputChange("apartmentOptions", options.filter((_, i) => i !== index));
+  // };
 
-  const handleApartmentOptionChange = (index: number, field: string, value: any) => {
-    const options = [...(formData.apartmentOptions || [])];
-    options[index] = { ...options[index], [field]: value };
-    handleInputChange("apartmentOptions", options);
-  };
+  // const handleApartmentOptionChange = (index: number, field: string, value: any) => {
+  //   const options = [...(formData.apartmentOptions || [])];
+  //   options[index] = { ...options[index], [field]: value };
+  //   handleInputChange("apartmentOptions", options);
+  // };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -151,46 +154,53 @@ const PropertyFormUnified = ({
 
     try {
       // Validar dados obrigatórios
-      if (!formData.title || !formData.location || !formData.price) {
+      if (!formData.title || !formData.price) {
         alert('Por favor, preencha todos os campos obrigatórios.');
         return;
       }
 
       // Criar propriedade completa
       const propertyData: Property = {
-        id: formData.id || `temp-${Date.now()}`,
+        id: typeof formData.id === 'number' ? formData.id : Date.now(),
         title: formData.title || '',
         description: formData.description || '',
-        fullDescription: formData.fullDescription || '',
-        category: formData.category || 'venda',
-        type: formData.type || '',
-        propertyType: formData.propertyType || 'apartamento',
-        location: formData.location || '',
-        state: formData.state || 'Goiânia',
-        address: formData.address || '',
-        coordinates: formData.coordinates || { lat: -16.6869, lng: -49.2648 },
-        embedUrl: formData.embedUrl || '',
-        bedrooms: Number(formData.bedrooms) || 0,
-        bathrooms: Number(formData.bathrooms) || 0,
-        suites: Number(formData.suites) || 0,
-        parking: Number(formData.parking) || 0,
-        area: formData.area || '',
-        balconyTypes: formData.balconyTypes || [],
-        price: formData.price || '',
-        apartmentOptions: formData.apartmentOptions || [],
-        developer: formData.developer || '',
-        deliveryDate: formData.deliveryDate || '',
-        availability: formData.availability || '',
-        images: formData.images || [],
-        photoGallery: formData.photoGallery || [],
-        characteristics: formData.characteristics || [],
-        locationBenefits: formData.locationBenefits || [],
-        differentials: formData.differentials || [],
-        status: formData.status || 'ativo',
-        isFeatured: formData.isFeatured || false,
-        isVisible: formData.isVisible !== false,
-        ownerId: user.id,
-        createdAt: formData.createdAt || new Date(),
+        // fullDescription: formData.fullDescription || '', // Campo removido
+        // Campos removidos - não existem no schema atual
+        // category: formData.category || 'venda',
+        // type: formData.type || '',
+        // propertyType: formData.propertyType || 'apartamento',
+        // location: formData.location || '',
+        // state: formData.state || 'Goiânia',
+        // Campos removidos - não existem no schema atual
+        // address: formData.address || '',
+        // coordinates: formData.coordinates || { lat: -16.6869, lng: -49.2648 },
+        // embedUrl: formData.embedUrl || '',
+        // bedrooms: Number(formData.bedrooms) || 0,
+        // bathrooms: Number(formData.bathrooms) || 0,
+        // Campos removidos - não existem no schema atual
+        // suites: Number(formData.suites) || 0,
+        // parking: Number(formData.parking) || 0,
+        // area: formData.area || '',
+        // balconyTypes: formData.balconyTypes || [],
+        price: typeof formData.price === 'number' ? formData.price : parseFloat(formData.price as string) || 0,
+        // Campos removidos - não existem no schema atual
+        // apartmentOptions: formData.apartmentOptions || [],
+        // developer: formData.developer || '',
+        // deliveryDate: formData.deliveryDate || '',
+        // availability: formData.availability || '',
+        // images: formData.images || [],
+        // Campos removidos - não existem no schema atual
+        // photoGallery: formData.photoGallery || [],
+        // characteristics: formData.characteristics || [],
+        // locationBenefits: formData.locationBenefits || [],
+        // differentials: formData.differentials || [],
+        status: formData.status || 'draft',
+        featured: formData.featured || false,
+        authorId: user.id,
+        bannerImage: formData.bannerImage || '',
+        galleryImages: formData.galleryImages || [],
+        floorPlans: formData.floorPlans || [],
+        createdAt: new Date(),
         updatedAt: new Date()
       };
 

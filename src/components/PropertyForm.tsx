@@ -22,7 +22,7 @@ interface PropertyFormProps {
     price?: number;
     featured?: boolean;
     status?: string;
-  };
+  } | null;
   onSuccess?: () => void;
 }
 

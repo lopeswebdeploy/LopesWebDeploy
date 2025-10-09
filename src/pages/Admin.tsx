@@ -8,8 +8,8 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Plus, Eye, Edit, Trash2, Download, Upload, Trash, Search, Filter, Star, EyeOff, LogOut, User } from "lucide-react";
 import { AuthService } from "@/lib/auth";
-import PropertyFormUnified from "@/components/admin/PropertyFormUnified";
-import PropertyPreview from "@/components/admin/PropertyPreview";
+import PropertyFormSimple from "@/components/admin/PropertyFormSimple";
+// import PropertyPreview from "@/components/admin/PropertyPreview"; // Arquivo removido temporariamente
 import BackupManager from "@/components/admin/BackupManager";
 import { Property } from "@/types/property";
 import { PropertyService } from "@/services/propertyService";
@@ -35,12 +35,12 @@ const Admin = () => {
         loadedProperties.forEach((prop, index) => {
           console.log(`🔍 Admin - Propriedade ${index + 1}:`, {
             title: prop.title,
-            bannerImage: prop.images?.[0] ? `${prop.images[0].substring(0, 50)}...` : 'VAZIO',
-            images: prop.images?.length || 0,
-            imagesArray: prop.images,
-            photoGallery: prop.photoGallery?.length || 0,
-            photoGalleryArray: prop.photoGallery,
-            floorPlan: prop.images?.find(img => img.includes('floorplan')) ? `${prop.images.find(img => img.includes('floorplan'))?.substring(0, 50)}...` : 'VAZIO'
+            bannerImage: prop.bannerImage ? `${prop.bannerImage.substring(0, 50)}...` : 'VAZIO',
+            galleryImages: prop.galleryImages?.length || 0,
+            galleryImagesArray: prop.galleryImages,
+            floorPlans: prop.floorPlans?.length || 0,
+            floorPlansArray: prop.floorPlans,
+            floorPlan: prop.floorPlans?.find(img => img.includes('floorplan')) ? `${prop.floorPlans.find(img => img.includes('floorplan'))?.substring(0, 50)}...` : 'VAZIO'
           });
         });
         
@@ -78,8 +78,8 @@ const Admin = () => {
       console.log(`🧪 Propriedade ${index + 1}:`, {
         id: prop.id,
         title: prop.title,
-        hasImages: !!(prop.images && prop.images.length > 0),
-         hasBanner: !!(prop.images && prop.images.length > 0)
+        hasGalleryImages: !!(prop.galleryImages && prop.galleryImages.length > 0),
+        hasBanner: !!(prop.bannerImage)
       });
     });
   };
@@ -150,7 +150,7 @@ const Admin = () => {
   };
 
   const handleDeleteProperty = async (id: string) => {
-    const property = properties.find(p => p.id === id);
+    const property = properties.find(p => p.id === parseInt(id));
     const propertyName = property?.title || 'esta propriedade';
     
     if (confirm(`⚠️ Tem certeza que deseja excluir "${propertyName}"?\n\nEsta ação não pode ser desfeita!`)) {
@@ -179,7 +179,7 @@ const Admin = () => {
   };
 
   const handleToggleFeatured = async (id: string) => {
-    const property = properties.find(p => p.id === id);
+    const property = properties.find(p => p.id === parseInt(id));
     if (!property) return;
 
     const currentFeaturedCount = properties.filter(p => p.isFeatured).length;
@@ -197,7 +197,7 @@ const Admin = () => {
   };
 
   const handleToggleVisibility = async (id: string) => {
-    const property = properties.find(p => p.id === id);
+    const property = properties.find(p => p.id === parseInt(id));
     if (!property) return;
 
     const updatedProperty = { ...property, isVisible: !property.isVisible };
@@ -490,7 +490,7 @@ const Admin = () => {
                           <Button
                             variant={property.isFeatured ? "default" : "outline"}
                             size="sm"
-                            onClick={() => property.id && handleToggleFeatured(property.id)}
+                            onClick={() => property.id && handleToggleFeatured(property.id.toString())}
                             title={property.isFeatured ? "Remover do destaque" : "Adicionar ao destaque"}
                             className={property.isFeatured ? "bg-yellow-500 hover:bg-yellow-600" : ""}
                           >
@@ -499,7 +499,7 @@ const Admin = () => {
                           <Button
                             variant={property.isVisible !== false ? "default" : "outline"}
                             size="sm"
-                            onClick={() => property.id && handleToggleVisibility(property.id)}
+                            onClick={() => property.id && handleToggleVisibility(property.id.toString())}
                             title={property.isVisible !== false ? "Ocultar propriedade" : "Mostrar propriedade"}
                             className={property.isVisible !== false ? "bg-green-500 hover:bg-green-600" : ""}
                           >
@@ -516,7 +516,7 @@ const Admin = () => {
                           <Button
                             variant="outline"
                             size="sm"
-                            onClick={() => property.id && handleDeleteProperty(property.id)}
+                            onClick={() => property.id && handleDeleteProperty(property.id.toString())}
                             title="Excluir propriedade"
                             className="text-red-600 hover:text-red-700"
                           >
@@ -526,10 +526,17 @@ const Admin = () => {
                       </div>
                     </CardHeader>
                     <CardContent>
-                      <PropertyPreview 
+                      {/* <PropertyPreview 
                         property={property} 
                         onPreviewClick={() => handlePreviewClick(property)}
-                      />
+                      /> */}
+                      <div className="p-4">
+                        <h3 className="font-semibold">{property.title}</h3>
+                        <p className="text-gray-600">{property.description}</p>
+                        <p className="text-blue-600 font-bold">
+                          {property.price ? new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(property.price) : 'Sob consulta'}
+                        </p>
+                      </div>
                     </CardContent>
                   </Card>
                 ))}
@@ -556,7 +563,7 @@ const Admin = () => {
                 </Button>
               </div>
             </div>
-                <PropertyFormUnified 
+                <PropertyFormSimple 
                   onSubmit={handleAddProperty}
                   onCancel={() => setCurrentTab("properties")}
                   user={AuthService.getCurrentUser()!}
@@ -583,7 +590,7 @@ const Admin = () => {
                     Fechar
                   </Button>
                 </div>
-                    <PropertyFormUnified 
+                    <PropertyFormSimple 
                       property={editingProperty}
                       onSubmit={handleEditProperty}
                       onCancel={() => setEditingProperty(null)}
