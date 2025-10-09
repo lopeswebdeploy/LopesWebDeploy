@@ -1,5 +1,6 @@
 'use client';
 import { useState } from 'react';
+import ImageUpload from './ImageUpload';
 
 interface PropertyFormSimpleProps {
   property?: any;
@@ -24,7 +25,7 @@ export default function PropertyFormSimple({
   const [formData, setFormData] = useState({
     title: property?.title || '',
     description: property?.description || '',
-    price: property?.price || 0,
+    price: property?.price ? Number(property.price) : '',
     status: property?.status || 'draft',
     featured: property?.featured || false,
     bannerImage: property?.bannerImage || '',
@@ -47,7 +48,7 @@ export default function PropertyFormSimple({
         id: property?.id || Date.now(),
         title: formData.title,
         description: formData.description,
-        price: typeof formData.price === 'number' ? formData.price : parseFloat(formData.price as string) || 0,
+        price: formData.price === '' ? null : Number(formData.price),
         status: formData.status,
         featured: formData.featured,
         authorId: user.id,
@@ -109,7 +110,7 @@ export default function PropertyFormSimple({
             type="number"
             id="price"
             value={formData.price}
-            onChange={(e) => handleInputChange('price', parseFloat(e.target.value))}
+            onChange={(e) => handleInputChange('price', e.target.value === '' ? '' : Number(e.target.value))}
             className="w-full p-2 border rounded-md"
             required
           />
@@ -143,19 +144,32 @@ export default function PropertyFormSimple({
           </label>
         </div>
 
-        <div>
-          <label htmlFor="bannerImage" className="block text-sm font-medium text-gray-700 mb-2">
-            Imagem Banner (URL)
-          </label>
-          <input
-            type="url"
-            id="bannerImage"
-            value={formData.bannerImage}
-            onChange={(e) => handleInputChange('bannerImage', e.target.value)}
-            className="w-full p-2 border rounded-md"
-            placeholder="https://exemplo.com/imagem.jpg"
-          />
-        </div>
+        {/* Upload de Imagem Banner */}
+        <ImageUpload
+          images={formData.bannerImage ? [formData.bannerImage] : []}
+          onImagesChange={(images) => handleInputChange('bannerImage', images[0] || '')}
+          type="banner"
+          maxImages={1}
+          title="Imagem Banner"
+        />
+
+        {/* Upload de Galeria */}
+        <ImageUpload
+          images={formData.galleryImages}
+          onImagesChange={(images) => handleInputChange('galleryImages', images)}
+          type="gallery"
+          maxImages={10}
+          title="Galeria de Fotos"
+        />
+
+        {/* Upload de Plantas Baixas */}
+        <ImageUpload
+          images={formData.floorPlans}
+          onImagesChange={(images) => handleInputChange('floorPlans', images)}
+          type="floorplan"
+          maxImages={5}
+          title="Plantas Baixas"
+        />
 
         <div className="flex justify-end space-x-4">
           <button

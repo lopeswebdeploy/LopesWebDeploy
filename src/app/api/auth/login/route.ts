@@ -39,10 +39,11 @@ export async function POST(request: Request) {
 
     // Criar sessão (simplificado - implementar JWT depois)
     const session = {
-      userId: user.id,
+      id: user.id,
       email: user.email,
       name: user.name,
-      role: user.role
+      role: user.role,
+      active: user.active
     };
 
     const response = NextResponse.json({
@@ -51,7 +52,8 @@ export async function POST(request: Request) {
         id: user.id,
         name: user.name,
         email: user.email,
-        role: user.role
+        role: user.role,
+        active: user.active
       }
     });
 

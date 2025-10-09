@@ -23,12 +23,34 @@ const Admin = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [filterCategory, setFilterCategory] = useState("all");
   const [filterLocation, setFilterLocation] = useState("all");
+  const [currentUser, setCurrentUser] = useState<any>(null);
 
-  // Carregar propriedades do banco de dados
+  // Carregar usuário atual
+  useEffect(() => {
+    const user = AuthService.getCurrentUser();
+    setCurrentUser(user);
+    console.log('👤 Usuário atual:', user);
+  }, []);
+
+  // Função para verificar se o usuário pode editar/excluir a propriedade
+  const canEditProperty = (property: Property): boolean => {
+    if (!currentUser) return false;
+    // Admin pode editar tudo
+    if (currentUser.role === 'admin') return true;
+    // Corretor só pode editar suas próprias propriedades
+    return property.authorId === currentUser.id;
+  };
+
+  // Função para verificar se o usuário pode aprovar propriedades
+  const canApproveProperty = (): boolean => {
+    return currentUser?.role === 'admin';
+  };
+
+  // Carregar propriedades do banco de dados (com parâmetro admin)
   useEffect(() => {
     const loadProperties = async () => {
       try {
-        const loadedProperties = await PropertyService.loadProperties();
+        const loadedProperties = await PropertyService.loadProperties(true); // true para painel admin
         console.log("🔍 Admin - Propriedades carregadas:", loadedProperties.length);
         
         // Debug detalhado de cada propriedade
@@ -182,14 +204,14 @@ const Admin = () => {
     const property = properties.find(p => p.id === parseInt(id));
     if (!property) return;
 
-    const currentFeaturedCount = properties.filter(p => p.isFeatured).length;
+    const currentFeaturedCount = properties.filter(p => p.featured).length;
     
-    if (!property.isFeatured && currentFeaturedCount >= 6) {
+    if (!property.featured && currentFeaturedCount >= 6) {
       alert('⚠️ Máximo de 6 propriedades em destaque permitido!');
       return;
     }
 
-    const updatedProperty = { ...property, isFeatured: !property.isFeatured };
+    const updatedProperty = { ...property, featured: !property.featured };
     PropertyService.updateProperty(updatedProperty);
     const updatedProperties = await PropertyService.loadProperties();
     setProperties(updatedProperties);
@@ -200,7 +222,10 @@ const Admin = () => {
     const property = properties.find(p => p.id === parseInt(id));
     if (!property) return;
 
-    const updatedProperty = { ...property, isVisible: !property.isVisible };
+    const updatedProperty = { 
+      ...property, 
+      status: property.status === 'published' ? 'draft' : 'published' 
+    };
     PropertyService.updateProperty(updatedProperty);
     const updatedProperties = await PropertyService.loadProperties();
     setProperties(updatedProperties);
@@ -487,54 +512,83 @@ const Admin = () => {
                           {property.title}
                         </CardTitle>
                         <div className="flex gap-1">
-                          <Button
-                            variant={property.isFeatured ? "default" : "outline"}
-                            size="sm"
-                            onClick={() => property.id && handleToggleFeatured(property.id.toString())}
-                            title={property.isFeatured ? "Remover do destaque" : "Adicionar ao destaque"}
-                            className={property.isFeatured ? "bg-yellow-500 hover:bg-yellow-600" : ""}
-                          >
-                            <Star className="h-4 w-4" />
-                          </Button>
-                          <Button
-                            variant={property.isVisible !== false ? "default" : "outline"}
-                            size="sm"
-                            onClick={() => property.id && handleToggleVisibility(property.id.toString())}
-                            title={property.isVisible !== false ? "Ocultar propriedade" : "Mostrar propriedade"}
-                            className={property.isVisible !== false ? "bg-green-500 hover:bg-green-600" : ""}
-                          >
-                            {property.isVisible !== false ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
-                          </Button>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => setEditingProperty(property)}
-                            title="Editar propriedade"
-                          >
-                            <Edit className="h-4 w-4" />
-                          </Button>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => property.id && handleDeleteProperty(property.id.toString())}
-                            title="Excluir propriedade"
-                            className="text-red-600 hover:text-red-700"
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
+                          {/* Botão Featured - Apenas Admin */}
+                          {canApproveProperty() && (
+                            <Button
+                              variant={property.featured ? "default" : "outline"}
+                              size="sm"
+                              onClick={() => property.id && handleToggleFeatured(property.id.toString())}
+                              title={property.featured ? "Remover do destaque" : "Adicionar ao destaque"}
+                              className={property.featured ? "bg-yellow-500 hover:bg-yellow-600" : ""}
+                            >
+                              <Star className="h-4 w-4" />
+                            </Button>
+                          )}
+                          
+                          {/* Botão Publicar/Ocultar - Apenas Admin */}
+                          {canApproveProperty() && (
+                            <Button
+                              variant={property.status === 'published' ? "default" : "outline"}
+                              size="sm"
+                              onClick={() => property.id && handleToggleVisibility(property.id.toString())}
+                              title={property.status === 'published' ? "Despublicar propriedade" : "Publicar propriedade"}
+                              className={property.status === 'published' ? "bg-green-500 hover:bg-green-600" : ""}
+                            >
+                              {property.status === 'published' ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
+                            </Button>
+                          )}
+                          
+                          {/* Botão Editar - Admin ou Dono */}
+                          {canEditProperty(property) && (
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => setEditingProperty(property)}
+                              title="Editar propriedade"
+                            >
+                              <Edit className="h-4 w-4" />
+                            </Button>
+                          )}
+                          
+                          {/* Botão Excluir - Admin ou Dono */}
+                          {canEditProperty(property) && (
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => property.id && handleDeleteProperty(property.id.toString())}
+                              title="Excluir propriedade"
+                              className="text-red-600 hover:text-red-700"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          )}
                         </div>
                       </div>
                     </CardHeader>
                     <CardContent>
-                      {/* <PropertyPreview 
-                        property={property} 
-                        onPreviewClick={() => handlePreviewClick(property)}
-                      /> */}
-                      <div className="p-4">
-                        <h3 className="font-semibold">{property.title}</h3>
-                        <p className="text-gray-600">{property.description}</p>
-                        <p className="text-blue-600 font-bold">
-                          {property.price ? new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(property.price) : 'Sob consulta'}
+                      <div className="space-y-3">
+                        {/* Status e Autor */}
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className={`px-2 py-1 rounded-full text-xs font-semibold ${
+                            property.status === 'published' 
+                              ? 'bg-green-100 text-green-800' 
+                              : 'bg-gray-100 text-gray-800'
+                          }`}>
+                            {property.status === 'published' ? '✓ Publicado' : '○ Rascunho'}
+                          </span>
+                          {property.author && (
+                            <span className="px-2 py-1 rounded-full text-xs bg-blue-100 text-blue-800">
+                              {property.author.name}
+                            </span>
+                          )}
+                        </div>
+                        
+                        {/* Descrição */}
+                        <p className="text-gray-600 text-sm line-clamp-2">{property.description}</p>
+                        
+                        {/* Preço */}
+                        <p className="text-blue-600 font-bold text-lg">
+                          {property.price ? new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(Number(property.price)) : 'Sob consulta'}
                         </p>
                       </div>
                     </CardContent>

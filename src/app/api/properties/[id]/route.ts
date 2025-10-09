@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
 
+// Instância singleton do Prisma
 const prisma = new PrismaClient();
 
 // GET propriedade específica

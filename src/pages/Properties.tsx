@@ -14,8 +14,8 @@ const Properties = () => {
   useEffect(() => {
     const loadProperties = async () => {
       const loadedProperties = await PropertyService.loadProperties();
-      // Filtrar apenas propriedades visíveis
-      const visibleProperties = loadedProperties.filter(property => property.isVisible !== false);
+      // Filtrar apenas propriedades visíveis (published)
+      const visibleProperties = loadedProperties.filter(property => property.status === 'published');
       setProperties(visibleProperties);
     };
     loadProperties();

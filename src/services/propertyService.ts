@@ -3,18 +3,40 @@ import { AuthService } from "@/lib/auth";
 
 export class PropertyService {
   // Carregar propriedades - APENAS do banco de dados
-  static async loadProperties(): Promise<Property[]> {
+  static async loadProperties(adminView: boolean = false): Promise<Property[]> {
     console.log('🔍 PropertyService.loadProperties - Carregando propriedades do banco...');
     
     try {
-      const response = await fetch('/api/properties');
+      const url = adminView ? '/api/properties?admin=true' : '/api/properties';
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        cache: 'no-store' // Evitar cache para dados sempre atualizados
+      });
+      
       if (response.ok) {
         const properties = await response.json();
         console.log('✅ PropertyService.loadProperties - Carregadas do banco:', properties.length, 'propriedades');
-        return properties;
+        
+        // Converter propriedades do banco para o formato esperado pelo frontend
+        const convertedProperties = properties.map((prop: any) => ({
+          ...prop,
+          // Mapear campos do banco para campos esperados pelo frontend
+          isFeatured: prop.featured,
+          isVisible: prop.status === 'published',
+          category: 'venda', // Valor padrão já que não existe no schema
+          location: 'Goiânia', // Valor padrão já que não existe no schema
+          developer: 'Lopes Imóveis' // Valor padrão já que não existe no schema
+        }));
+        
+        return convertedProperties;
       }
       
-      console.error('❌ PropertyService.loadProperties - Erro na API:', response.status);
+      console.error('❌ PropertyService.loadProperties - Erro na API:', response.status, response.statusText);
+      const errorData = await response.text();
+      console.error('❌ PropertyService.loadProperties - Detalhes do erro:', errorData);
       return [];
     } catch (error) {
       console.error('❌ PropertyService.loadProperties - Erro no banco:', error);
@@ -33,19 +55,37 @@ export class PropertyService {
     console.log("🔍 PropertyService.getPropertyById - Buscando ID:", id);
     
     try {
-      const response = await fetch(`/api/properties/${id}`);
+      const response = await fetch(`/api/properties/${id}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        cache: 'no-store'
+      });
+      
       if (response.ok) {
         const property = await response.json();
         console.log("✅ PropertyService.getPropertyById - Propriedade encontrada:", property.title);
-        return property;
+        
+        // Converter propriedade do banco para o formato esperado pelo frontend
+        const convertedProperty = {
+          ...property,
+          isFeatured: property.featured,
+          isVisible: property.status === 'published',
+          category: 'venda',
+          location: 'Goiânia',
+          developer: 'Lopes Imóveis'
+        };
+        
+        return convertedProperty;
       }
+      
+      console.error("❌ PropertyService.getPropertyById - Erro na API:", response.status, response.statusText);
+      return null;
     } catch (error) {
       console.error("❌ PropertyService.getPropertyById - Erro:", error);
       return null;
     }
-    
-    console.log("❌ PropertyService.getPropertyById - Propriedade não encontrada!");
-    return null;
   }
 
   // Versão síncrona para compatibilidade
@@ -58,21 +98,44 @@ export class PropertyService {
     console.log('🔍 PropertyService.addProperty - Adicionando propriedade:', property.title);
     
     try {
+      // Converter propriedade do frontend para o formato do banco
+      const propertyData = {
+        title: property.title,
+        description: property.description,
+        price: property.price,
+        status: property.status || 'draft',
+        featured: property.isFeatured || false,
+        bannerImage: property.bannerImage,
+        galleryImages: property.galleryImages || [],
+        floorPlans: property.floorPlans || []
+      };
+      
       const response = await fetch('/api/properties', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(property),
+        body: JSON.stringify(propertyData),
       });
       
       if (response.ok) {
         const newProperty = await response.json();
         console.log('✅ PropertyService.addProperty - Propriedade adicionada:', newProperty.id);
-        return newProperty;
+        
+        // Converter de volta para o formato do frontend
+        return {
+          ...newProperty,
+          isFeatured: newProperty.featured,
+          isVisible: newProperty.status === 'published',
+          category: 'venda',
+          location: 'Goiânia',
+          developer: 'Lopes Imóveis'
+        };
       }
       
-      throw new Error(`Erro na API: ${response.status}`);
+      const errorData = await response.text();
+      console.error('❌ PropertyService.addProperty - Erro na API:', response.status, errorData);
+      throw new Error(`Erro na API: ${response.status} - ${errorData}`);
     } catch (error) {
       console.error('❌ PropertyService.addProperty - Erro:', error);
       throw error;
@@ -84,21 +147,44 @@ export class PropertyService {
     console.log('🔍 PropertyService.updateProperty - Atualizando propriedade:', property.id);
     
     try {
+      // Converter propriedade do frontend para o formato do banco
+      const propertyData = {
+        title: property.title,
+        description: property.description,
+        price: property.price,
+        status: property.status || 'draft',
+        featured: property.isFeatured || false,
+        bannerImage: property.bannerImage,
+        galleryImages: property.galleryImages || [],
+        floorPlans: property.floorPlans || []
+      };
+      
       const response = await fetch(`/api/properties/${property.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(property),
+        body: JSON.stringify(propertyData),
       });
       
       if (response.ok) {
         const updatedProperty = await response.json();
         console.log('✅ PropertyService.updateProperty - Propriedade atualizada:', updatedProperty.id);
-        return updatedProperty;
+        
+        // Converter de volta para o formato do frontend
+        return {
+          ...updatedProperty,
+          isFeatured: updatedProperty.featured,
+          isVisible: updatedProperty.status === 'published',
+          category: 'venda',
+          location: 'Goiânia',
+          developer: 'Lopes Imóveis'
+        };
       }
       
-      throw new Error(`Erro na API: ${response.status}`);
+      const errorData = await response.text();
+      console.error('❌ PropertyService.updateProperty - Erro na API:', response.status, errorData);
+      throw new Error(`Erro na API: ${response.status} - ${errorData}`);
     } catch (error) {
       console.error('❌ PropertyService.updateProperty - Erro:', error);
       throw error;

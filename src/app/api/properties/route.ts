@@ -1,15 +1,35 @@
 import { NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
 
+// Instância singleton do Prisma
 const prisma = new PrismaClient();
 
-// GET - Para site público (apenas published)
+// GET - Para site público (apenas published) ou painel admin (todas)
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const featured = searchParams.get('featured');
+    const adminView = searchParams.get('admin'); // Novo parâmetro para painel admin
     
-    let whereClause: any = { status: 'published' };
+    // Verificar se é requisição do painel admin
+    const userHeader = request.headers.get('x-user');
+    let whereClause: any = {};
+    
+    if (adminView === 'true' && userHeader) {
+      const user = JSON.parse(userHeader);
+      
+      // Admin vê tudo, corretor vê apenas suas propriedades
+      if (user.role === 'admin') {
+        // Admin vê todas as propriedades (publicadas e rascunho)
+        whereClause = {};
+      } else if (user.role === 'corretor') {
+        // Corretor vê apenas suas próprias propriedades
+        whereClause = { authorId: user.id };
+      }
+    } else {
+      // Site público: apenas propriedades publicadas
+      whereClause = { status: 'published' };
+    }
     
     if (featured === 'true') {
       whereClause.featured = true;
@@ -23,9 +43,10 @@ export async function GET(request: Request) {
       orderBy: { createdAt: 'desc' }
     });
     
+    console.log(`✅ API Properties - ${properties.length} propriedades encontradas`);
     return NextResponse.json(properties);
   } catch (error) {
-    console.error('Error fetching properties:', error);
+    console.error('❌ API Properties - Erro ao buscar propriedades:', error);
     return NextResponse.json(
       { error: 'Erro ao buscar propriedades' },
       { status: 500 }
@@ -56,7 +77,7 @@ export async function POST(request: Request) {
                 bannerImage: data.bannerImage,
                 galleryImages: data.galleryImages || [],
         floorPlans: data.floorPlans || [],
-        authorId: user.userId
+        authorId: user.id
       },
       include: {
         author: true
