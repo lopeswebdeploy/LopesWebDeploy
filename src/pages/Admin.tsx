@@ -6,11 +6,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, Eye, Edit, Trash2, Download, Upload, Trash, Search, Filter, Star, EyeOff, LogOut, User } from "lucide-react";
+import { Plus, Eye, Edit, Trash2, Search, Filter, Star, EyeOff, LogOut, User, UserPlus } from "lucide-react";
 import { AuthService } from "@/lib/auth";
 import PropertyFormSimple from "@/components/admin/PropertyFormSimple";
 // import PropertyPreview from "@/components/admin/PropertyPreview"; // Arquivo removido temporariamente
-import BackupManager from "@/components/admin/BackupManager";
+// import BackupManager from "@/components/admin/BackupManager";
 import { Property } from "@/types/property";
 import { PropertyService } from "@/services/propertyService";
 
@@ -23,6 +23,8 @@ const Admin = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [filterCategory, setFilterCategory] = useState("all");
   const [filterLocation, setFilterLocation] = useState("all");
+  const [filterAuthor, setFilterAuthor] = useState("all");
+  const [filterStatus, setFilterStatus] = useState("all");
   const [currentUser, setCurrentUser] = useState<any>(null);
 
   // Carregar usuário atual
@@ -44,6 +46,11 @@ const Admin = () => {
   // Função para verificar se o usuário pode aprovar propriedades
   const canApproveProperty = (): boolean => {
     return currentUser?.role === 'admin';
+  };
+
+  // Função para verificar se o usuário pode criar propriedades
+  const canCreateProperty = (): boolean => {
+    return currentUser?.role === 'admin' || currentUser?.role === 'corretor';
   };
 
   // Carregar propriedades do banco de dados (com parâmetro admin)
@@ -120,9 +127,14 @@ const Admin = () => {
       );
     }
 
-    // Filtro por categoria
-    if (filterCategory !== "all") {
-      filtered = filtered.filter(property => property.category === filterCategory);
+    // Filtro por status
+    if (filterStatus !== "all") {
+      filtered = filtered.filter(property => property.status === filterStatus);
+    }
+
+    // Filtro por autor
+    if (filterAuthor !== "all") {
+      filtered = filtered.filter(property => property.author?.name === filterAuthor);
     }
 
     // Filtro por localização
@@ -130,8 +142,17 @@ const Admin = () => {
       filtered = filtered.filter(property => property.location === filterLocation);
     }
 
+    // Filtro por destaque
+    if (filterCategory !== "all") {
+      if (filterCategory === "featured") {
+        filtered = filtered.filter(property => property.featured === true);
+      } else if (filterCategory === "not-featured") {
+        filtered = filtered.filter(property => property.featured === false);
+      }
+    }
+
     setFilteredProperties(filtered);
-  }, [properties, searchTerm, filterCategory, filterLocation]);
+  }, [properties, searchTerm, filterStatus, filterAuthor, filterLocation, filterCategory]);
 
   const handleAddProperty = async (property: Property) => {
     try {
@@ -307,67 +328,55 @@ const Admin = () => {
               )}
             </div>
             <div className="flex gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => {
-                  AuthService.logout();
-                  window.location.href = '/login';
-                }}
-                className="flex items-center gap-2"
-              >
-                <LogOut className="h-4 w-4" />
-                Sair
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleExportData}
-                className="flex items-center gap-2"
-              >
-                <Download className="h-4 w-4" />
-                Backup
-              </Button>
-              <label htmlFor="import-file">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="flex items-center gap-2 cursor-pointer"
-                >
-                  <Upload className="h-4 w-4" />
-                  Restore
-                </Button>
-              </label>
-              <input
-                id="import-file"
-                type="file"
-                accept=".json"
-                onChange={handleImportData}
-                className="hidden"
-              />
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleClearAllData}
-                className="flex items-center gap-2 text-red-600 hover:text-red-700"
-              >
-                <Trash className="h-4 w-4" />
-                Limpar
-              </Button>
+              {currentUser ? (
+                <>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      AuthService.logout();
+                      window.location.reload();
+                    }}
+                    className="flex items-center gap-2"
+                  >
+                    <LogOut className="h-4 w-4" />
+                    Sair
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => window.location.href = '/admin/login'}
+                    className="flex items-center gap-2"
+                  >
+                    <User className="h-4 w-4" />
+                    Login
+                  </Button>
+                  <Button
+                    variant="default"
+                    size="sm"
+                    onClick={() => window.location.href = '/admin/register'}
+                    className="flex items-center gap-2"
+                  >
+                    <UserPlus className="h-4 w-4" />
+                    Registrar
+                  </Button>
+                </>
+              )}
             </div>
           </div>
         </div>
 
         <Tabs value={currentTab} onValueChange={setCurrentTab} className="space-y-6">
           <div className="flex justify-between items-center">
-            <TabsList className="grid w-full grid-cols-3">
+            <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="properties">Propriedades</TabsTrigger>
-              <TabsTrigger value="add">Adicionar Nova</TabsTrigger>
-              <TabsTrigger value="backup">Backup & Dados</TabsTrigger>
+              {canCreateProperty() && (
+                <TabsTrigger value="add">Adicionar Nova</TabsTrigger>
+              )}
             </TabsList>
-            <Button onClick={testPropertySearch} variant="secondary" size="sm" className="ml-4">
-              🧪 Testar
-            </Button>
           </div>
 
           <TabsContent value="properties" className="space-y-6">
@@ -387,14 +396,14 @@ const Admin = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
                   {/* Busca */}
                   <div className="space-y-2">
                     <label className="text-sm font-medium">Buscar</label>
                     <div className="relative">
                       <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                       <Input
-                        placeholder="Título, descrição, localização..."
+                        placeholder="Título, descrição..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                         className="pl-10"
@@ -402,18 +411,33 @@ const Admin = () => {
                     </div>
                   </div>
 
-                  {/* Filtro por Categoria */}
+                  {/* Filtro por Status */}
                   <div className="space-y-2">
-                    <label className="text-sm font-medium">Categoria</label>
-                    <Select value={filterCategory} onValueChange={setFilterCategory}>
+                    <label className="text-sm font-medium">Status</label>
+                    <Select value={filterStatus} onValueChange={setFilterStatus}>
                       <SelectTrigger>
-                        <SelectValue placeholder="Todas as categorias" />
+                        <SelectValue placeholder="Todos os status" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="all">Todas as categorias</SelectItem>
-                        <SelectItem value="venda">Venda</SelectItem>
-                        <SelectItem value="investimento">Investimento</SelectItem>
-                        <SelectItem value="aluguel">Aluguel</SelectItem>
+                        <SelectItem value="all">Todos os status</SelectItem>
+                        <SelectItem value="published">Publicado</SelectItem>
+                        <SelectItem value="draft">Rascunho</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* Filtro por Autor */}
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Autor</label>
+                    <Select value={filterAuthor} onValueChange={setFilterAuthor}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Todos os autores" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">Todos os autores</SelectItem>
+                        {Array.from(new Set(properties.map(p => p.author?.name).filter(Boolean))).map(author => (
+                          <SelectItem key={author} value={author as string}>{author}</SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
                   </div>
@@ -423,31 +447,45 @@ const Admin = () => {
                     <label className="text-sm font-medium">Localização</label>
                     <Select value={filterLocation} onValueChange={setFilterLocation}>
                       <SelectTrigger>
-                        <SelectValue placeholder="Todos os setores" />
+                        <SelectValue placeholder="Todas as localizações" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="all">Todos os setores</SelectItem>
-                        <SelectItem value="Setor Oeste">Setor Oeste</SelectItem>
-                        <SelectItem value="Setor Marista">Setor Marista</SelectItem>
-                        <SelectItem value="Setor Bueno">Setor Bueno</SelectItem>
-                        <SelectItem value="Jardim Europa">Jardim Europa</SelectItem>
-                        <SelectItem value="Alto da Glória">Alto da Glória</SelectItem>
-                        <SelectItem value="Setor Universitário">Setor Universitário</SelectItem>
+                        <SelectItem value="all">Todas as localizações</SelectItem>
+                        {Array.from(new Set(properties.map(p => p.location).filter(Boolean))).map(location => (
+                          <SelectItem key={location} value={location as string}>{location}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* Filtro por Destaque */}
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Destaque</label>
+                    <Select value={filterCategory} onValueChange={setFilterCategory}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Todos" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">Todos</SelectItem>
+                        <SelectItem value="featured">Em destaque</SelectItem>
+                        <SelectItem value="not-featured">Não destacados</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
                 </div>
 
                 {/* Botão Limpar Filtros */}
-                {(searchTerm || filterCategory !== "all" || filterLocation !== "all") && (
+                {(searchTerm || filterStatus !== "all" || filterAuthor !== "all" || filterLocation !== "all" || filterCategory !== "all") && (
                   <div className="mt-4">
                     <Button
                       variant="outline"
                       size="sm"
                       onClick={() => {
                         setSearchTerm("");
-                        setFilterCategory("all");
+                        setFilterStatus("all");
+                        setFilterAuthor("all");
                         setFilterLocation("all");
+                        setFilterCategory("all");
                       }}
                     >
                       Limpar Filtros
@@ -623,10 +661,6 @@ const Admin = () => {
                   user={AuthService.getCurrentUser()!}
                   mode="create"
                 />
-          </TabsContent>
-
-          <TabsContent value="backup" className="space-y-6">
-            <BackupManager />
           </TabsContent>
         </Tabs>
 

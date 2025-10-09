@@ -26,6 +26,12 @@ export default function PropertyFormSimple({
     title: property?.title || '',
     description: property?.description || '',
     price: property?.price ? Number(property.price) : '',
+    location: property?.location || 'Goiânia',
+    developer: property?.developer || 'Lopes Imóveis',
+    category: property?.category || 'venda',
+    bedrooms: property?.bedrooms || '',
+    bathrooms: property?.bathrooms || '',
+    area: property?.area || '',
     status: property?.status || 'draft',
     featured: property?.featured || false,
     bannerImage: property?.bannerImage || '',
@@ -49,6 +55,12 @@ export default function PropertyFormSimple({
         title: formData.title,
         description: formData.description,
         price: formData.price === '' ? null : Number(formData.price),
+        location: formData.location,
+        developer: formData.developer,
+        category: formData.category,
+        bedrooms: formData.bedrooms === '' ? null : Number(formData.bedrooms),
+        bathrooms: formData.bathrooms === '' ? null : Number(formData.bathrooms),
+        area: formData.area === '' ? null : Number(formData.area),
         status: formData.status,
         featured: formData.featured,
         authorId: user.id,
@@ -116,33 +128,120 @@ export default function PropertyFormSimple({
           />
         </div>
 
-        <div>
-          <label htmlFor="status" className="block text-sm font-medium text-gray-700 mb-2">
-            Status
-          </label>
-          <select
-            id="status"
-            value={formData.status}
-            onChange={(e) => handleInputChange('status', e.target.value)}
-            className="w-full p-2 border rounded-md"
-          >
-            <option value="draft">Rascunho</option>
-            <option value="published">Publicado</option>
-          </select>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label htmlFor="location" className="block text-sm font-medium text-gray-700 mb-2">
+              Localização
+            </label>
+            <input
+              type="text"
+              id="location"
+              value={formData.location}
+              onChange={(e) => handleInputChange('location', e.target.value)}
+              className="w-full p-2 border rounded-md"
+            />
+          </div>
+
+          <div>
+            <label htmlFor="developer" className="block text-sm font-medium text-gray-700 mb-2">
+              Construtora
+            </label>
+            <input
+              type="text"
+              id="developer"
+              value={formData.developer}
+              onChange={(e) => handleInputChange('developer', e.target.value)}
+              className="w-full p-2 border rounded-md"
+            />
+          </div>
         </div>
 
-        <div className="flex items-center">
-          <input
-            type="checkbox"
-            id="featured"
-            checked={formData.featured}
-            onChange={(e) => handleInputChange('featured', e.target.checked)}
-            className="mr-2"
-          />
-          <label htmlFor="featured" className="text-sm font-medium text-gray-700">
-            Destacar propriedade
-          </label>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div>
+            <label htmlFor="bedrooms" className="block text-sm font-medium text-gray-700 mb-2">
+              Quartos
+            </label>
+            <input
+              type="number"
+              id="bedrooms"
+              value={formData.bedrooms}
+              onChange={(e) => handleInputChange('bedrooms', e.target.value === '' ? '' : Number(e.target.value))}
+              className="w-full p-2 border rounded-md"
+              min="0"
+            />
+          </div>
+
+          <div>
+            <label htmlFor="bathrooms" className="block text-sm font-medium text-gray-700 mb-2">
+              Banheiros
+            </label>
+            <input
+              type="number"
+              id="bathrooms"
+              value={formData.bathrooms}
+              onChange={(e) => handleInputChange('bathrooms', e.target.value === '' ? '' : Number(e.target.value))}
+              className="w-full p-2 border rounded-md"
+              min="0"
+            />
+          </div>
+
+          <div>
+            <label htmlFor="area" className="block text-sm font-medium text-gray-700 mb-2">
+              Área (m²)
+            </label>
+            <input
+              type="number"
+              id="area"
+              value={formData.area}
+              onChange={(e) => handleInputChange('area', e.target.value === '' ? '' : Number(e.target.value))}
+              className="w-full p-2 border rounded-md"
+              min="0"
+              step="0.01"
+            />
+          </div>
         </div>
+
+        {user.role === 'admin' ? (
+          <>
+            <div>
+              <label htmlFor="status" className="block text-sm font-medium text-gray-700 mb-2">
+                Status
+              </label>
+              <select
+                id="status"
+                value={formData.status}
+                onChange={(e) => handleInputChange('status', e.target.value)}
+                className="w-full p-2 border rounded-md"
+              >
+                <option value="draft">Rascunho</option>
+                <option value="published">Publicado</option>
+              </select>
+            </div>
+
+            <div className="flex items-center">
+              <input
+                type="checkbox"
+                id="featured"
+                checked={formData.featured}
+                onChange={(e) => handleInputChange('featured', e.target.checked)}
+                className="mr-2"
+              />
+              <label htmlFor="featured" className="text-sm font-medium text-gray-700">
+                Destacar propriedade
+              </label>
+            </div>
+          </>
+        ) : (
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+            <h3 className="font-semibold text-blue-800 mb-2">ℹ️ Informações para Corretores</h3>
+            <ul className="text-sm text-blue-700 space-y-1">
+              <li>• Suas propriedades são criadas como <strong>rascunho</strong></li>
+              <li>• Elas ficam <strong>invisíveis no site</strong> até aprovação do admin</li>
+              <li>• Você pode <strong>editar e excluir</strong> apenas suas propriedades</li>
+              <li>• Apenas o <strong>admin pode publicar</strong> e destacar propriedades</li>
+            </ul>
+          </div>
+        )}
 
         {/* Upload de Imagem Banner */}
         <ImageUpload

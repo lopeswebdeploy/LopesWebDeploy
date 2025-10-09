@@ -28,6 +28,12 @@ model Property {
   price         Decimal? @db.Decimal(12, 2)
   status        String   @default("draft")
   featured      Boolean  @default(false)
+  location      String?  @default("Goiânia")
+  developer     String?  @default("Lopes Imóveis")
+  category      String?  @default("venda")
+  bedrooms      Int?
+  bathrooms     Int?
+  area          Float?
   authorId      Int      @map("author_id")
   bannerImage   String?  @map("banner_image")
   galleryImages String[] @map("gallery_images")

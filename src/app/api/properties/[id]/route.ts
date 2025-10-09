@@ -46,6 +46,11 @@ export async function PUT(
     const { id } = await params;
     const data = await request.json();
 
+    // Verificar se usuário está ativo
+    if (!user.active) {
+      return NextResponse.json({ error: 'Conta inativa' }, { status: 401 });
+    }
+
     // Verificar permissões
     const property = await prisma.property.findUnique({
       where: { id: parseInt(id) }
@@ -56,29 +61,42 @@ export async function PUT(
     }
     
     // Apenas admin ou o autor podem editar
-    if (user.role !== 'admin' && property.authorId !== user.userId) {
+    if (user.role !== 'admin' && property.authorId !== user.id) {
       return NextResponse.json({ error: 'Sem permissão' }, { status: 403 });
     }
 
-    // Apenas admin pode destacar
-    if (data.featured !== undefined && user.role !== 'admin') {
-      return NextResponse.json({ error: 'Apenas admin pode destacar' }, { status: 403 });
+    // Determinar quais campos podem ser atualizados baseado na role
+    let updateData: any = {
+      title: data.title,
+      description: data.description,
+      price: data.price ? parseFloat(data.price) : null,
+      location: data.location || 'Goiânia',
+      developer: data.developer || 'Lopes Imóveis',
+      category: data.category || 'venda',
+      bedrooms: data.bedrooms ? parseInt(data.bedrooms) : null,
+      bathrooms: data.bathrooms ? parseInt(data.bathrooms) : null,
+      area: data.area ? parseFloat(data.area) : null,
+      bannerImage: data.bannerImage,
+      galleryImages: data.galleryImages || [],
+      floorPlans: data.floorPlans || [],
+      updatedAt: new Date()
+    };
+
+    if (user.role === 'admin') {
+      // Admin pode alterar status e destaque
+      updateData.status = data.status;
+      updateData.featured = data.featured || false;
+    } else if (user.role === 'corretor') {
+      // Corretor não pode alterar status nem destaque
+      // Mantém os valores originais
+      updateData.status = property.status;
+      updateData.featured = property.featured;
     }
 
     // Atualizar
     const updatedProperty = await prisma.property.update({
       where: { id: parseInt(id) },
-      data: {
-        title: data.title,
-        description: data.description,
-        price: data.price ? parseFloat(data.price) : null,
-        status: data.status,
-                bannerImage: data.bannerImage,
-                galleryImages: data.galleryImages || [],
-        floorPlans: data.floorPlans || [],
-        featured: data.featured || false,
-        updatedAt: new Date()
-      },
+      data: updateData,
       include: {
         author: true
       }
@@ -106,6 +124,11 @@ export async function DELETE(
     const user = JSON.parse(userHeader);
     const { id } = await params;
 
+    // Verificar se usuário está ativo
+    if (!user.active) {
+      return NextResponse.json({ error: 'Conta inativa' }, { status: 401 });
+    }
+
     // Verificar permissões
     const property = await prisma.property.findUnique({
       where: { id: parseInt(id) }
@@ -116,7 +139,7 @@ export async function DELETE(
     }
     
     // Apenas admin ou o autor podem deletar
-    if (user.role !== 'admin' && property.authorId !== user.userId) {
+    if (user.role !== 'admin' && property.authorId !== user.id) {
       return NextResponse.json({ error: 'Sem permissão' }, { status: 403 });
     }
 

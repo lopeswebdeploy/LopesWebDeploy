@@ -17,8 +17,17 @@ export function middleware(request: NextRequest) {
         request.method === 'GET') {
       return NextResponse.next();
     }
+    
+    // Para APIs de upload, exigir autenticação
+    if (request.nextUrl.pathname.startsWith('/api/upload')) {
+      const session = request.cookies.get('user-session');
+      if (!session) {
+        return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
+      }
+      return NextResponse.next();
+    }
 
-    // Verificar se tem sessão
+    // Verificar se tem sessão para operações que precisam de autenticação
     const session = request.cookies.get('user-session');
     
     if (!session) {
@@ -37,6 +46,14 @@ export function middleware(request: NextRequest) {
           return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
         }
         return NextResponse.redirect(new URL('/admin/login', request.url));
+      }
+
+      // Verificar se usuário está ativo (não inativo)
+      if (!user.active) {
+        if (request.nextUrl.pathname.startsWith('/api/')) {
+          return NextResponse.json({ error: 'Conta inativa' }, { status: 401 });
+        }
+        return NextResponse.redirect(new URL('/admin/inactive', request.url));
       }
 
       // Adicionar user ao header para uso nas páginas e APIs

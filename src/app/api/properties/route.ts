@@ -18,12 +18,17 @@ export async function GET(request: Request) {
     if (adminView === 'true' && userHeader) {
       const user = JSON.parse(userHeader);
       
+      // Verificar se usuário está ativo
+      if (!user.active) {
+        return NextResponse.json({ error: 'Conta inativa' }, { status: 401 });
+      }
+      
       // Admin vê tudo, corretor vê apenas suas propriedades
       if (user.role === 'admin') {
         // Admin vê todas as propriedades (publicadas e rascunho)
         whereClause = {};
       } else if (user.role === 'corretor') {
-        // Corretor vê apenas suas próprias propriedades
+        // Corretor vê apenas suas próprias propriedades (todas, mesmo rascunho)
         whereClause = { authorId: user.id };
       }
     } else {
@@ -66,16 +71,41 @@ export async function POST(request: Request) {
     const user = JSON.parse(userHeader);
     const data = await request.json();
 
+    // Verificar se usuário está ativo
+    if (!user.active) {
+      return NextResponse.json({ error: 'Conta inativa' }, { status: 401 });
+    }
+
+    // Determinar status baseado na role
+    let propertyStatus = 'draft';
+    let propertyFeatured = false;
+    
+    if (user.role === 'admin') {
+      // Admin pode definir status e destaque
+      propertyStatus = data.status || 'draft';
+      propertyFeatured = data.featured || false;
+    } else if (user.role === 'corretor') {
+      // Corretor sempre cria como rascunho e sem destaque
+      propertyStatus = 'draft';
+      propertyFeatured = false;
+    }
+
     // Inserir property
     const newProperty = await prisma.property.create({
       data: {
         title: data.title,
         description: data.description,
         price: data.price ? parseFloat(data.price) : null,
-        status: data.status || 'draft',
-        featured: data.featured || false,
-                bannerImage: data.bannerImage,
-                galleryImages: data.galleryImages || [],
+        status: propertyStatus,
+        featured: propertyFeatured,
+        location: data.location || 'Goiânia',
+        developer: data.developer || 'Lopes Imóveis',
+        category: data.category || 'venda',
+        bedrooms: data.bedrooms ? parseInt(data.bedrooms) : null,
+        bathrooms: data.bathrooms ? parseInt(data.bathrooms) : null,
+        area: data.area ? parseFloat(data.area) : null,
+        bannerImage: data.bannerImage,
+        galleryImages: data.galleryImages || [],
         floorPlans: data.floorPlans || [],
         authorId: user.id
       },

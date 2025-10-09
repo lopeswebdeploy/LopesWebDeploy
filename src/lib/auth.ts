@@ -53,9 +53,27 @@ export class AuthService {
   // Obter usuário atual
   static getCurrentUser(): any {
     if (typeof window !== 'undefined') {
+      // Tentar obter do cookie primeiro
+      const cookies = document.cookie.split(';');
+      const sessionCookie = cookies.find(cookie => cookie.trim().startsWith('user-session='));
+      
+      if (sessionCookie) {
+        try {
+          const sessionData = sessionCookie.split('=')[1];
+          const decoded = decodeURIComponent(sessionData);
+          const user = JSON.parse(decoded);
+          this.currentUser = user;
+          return user;
+        } catch (error) {
+          console.error('Erro ao decodificar sessão:', error);
+        }
+      }
+      
+      // Fallback para localStorage
       const stored = localStorage.getItem('auth_user');
       if (stored) {
         this.currentUser = JSON.parse(stored);
+        return this.currentUser;
       }
     }
     return this.currentUser;

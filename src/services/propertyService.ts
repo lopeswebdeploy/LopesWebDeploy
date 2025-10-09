@@ -26,9 +26,9 @@ export class PropertyService {
           // Mapear campos do banco para campos esperados pelo frontend
           isFeatured: prop.featured,
           isVisible: prop.status === 'published',
-          category: 'venda', // Valor padrão já que não existe no schema
-          location: 'Goiânia', // Valor padrão já que não existe no schema
-          developer: 'Lopes Imóveis' // Valor padrão já que não existe no schema
+          category: prop.category || 'venda',
+          location: prop.location || 'Goiânia',
+          developer: prop.developer || 'Lopes Imóveis'
         }));
         
         return convertedProperties;
@@ -72,9 +72,9 @@ export class PropertyService {
           ...property,
           isFeatured: property.featured,
           isVisible: property.status === 'published',
-          category: 'venda',
-          location: 'Goiânia',
-          developer: 'Lopes Imóveis'
+          category: property.category || 'venda',
+          location: property.location || 'Goiânia',
+          developer: property.developer || 'Lopes Imóveis'
         };
         
         return convertedProperty;
@@ -127,9 +127,9 @@ export class PropertyService {
           ...newProperty,
           isFeatured: newProperty.featured,
           isVisible: newProperty.status === 'published',
-          category: 'venda',
-          location: 'Goiânia',
-          developer: 'Lopes Imóveis'
+          category: newProperty.category || 'venda',
+          location: newProperty.location || 'Goiânia',
+          developer: newProperty.developer || 'Lopes Imóveis'
         };
       }
       
@@ -176,9 +176,9 @@ export class PropertyService {
           ...updatedProperty,
           isFeatured: updatedProperty.featured,
           isVisible: updatedProperty.status === 'published',
-          category: 'venda',
-          location: 'Goiânia',
-          developer: 'Lopes Imóveis'
+          category: updatedProperty.category || 'venda',
+          location: updatedProperty.location || 'Goiânia',
+          developer: updatedProperty.developer || 'Lopes Imóveis'
         };
       }
       
