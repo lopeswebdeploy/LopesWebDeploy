@@ -49,26 +49,19 @@ const Header = () => {
             >
               Sobre
             </Link>
-            <Link 
-              href="/contato" 
-              className={`text-foreground hover:text-brand-coral transition-colors duration-300 font-medium ${
-                isActive('/contato') ? 'text-brand-coral' : ''
-              }`}
-            >
-              Contato
-            </Link>
           </nav>
 
           {/* CTA Button */}
           <div className="hidden md:flex items-center space-x-4">
-            <Link href="/admin" className="text-sm text-gray-500 hover:text-brand-coral transition-colors">
-              Admin
+            <Link 
+              href="/admin/login"
+              className="text-sm text-gray-600 hover:text-brand-coral transition-colors"
+            >
+              Sou Corretor
             </Link>
-            <Link href="/imoveis">
-              <Button variant="luxury" size="lg">
-                Quero Comprar
-              </Button>
-            </Link>
+            <Button variant="luxury" size="lg">
+              Entre em Contato
+            </Button>
           </div>
 
           {/* Mobile menu button */}
@@ -116,28 +109,15 @@ const Header = () => {
                 Sobre
               </Link>
               <Link 
-                href="/contato" 
-                className={`text-foreground hover:text-brand-coral transition-colors duration-300 font-medium py-2 ${
-                  isActive('/contato') ? 'text-brand-coral' : ''
-                }`}
+                href="/admin/login"
+                className="text-sm text-gray-600 hover:text-brand-coral transition-colors py-2"
                 onClick={() => setIsMenuOpen(false)}
               >
-                Contato
+                Sou Corretor
               </Link>
-              <Link 
-                href="/admin" 
-                className={`text-foreground hover:text-brand-coral transition-colors duration-300 font-medium py-2 ${
-                  isActive('/admin') ? 'text-brand-coral' : ''
-                }`}
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Admin
-              </Link>
-              <Link href="/imoveis" onClick={() => setIsMenuOpen(false)}>
-                <Button variant="luxury" size="lg" className="mt-4 w-full">
-                  Quero Comprar
-                </Button>
-              </Link>
+              <Button variant="luxury" size="lg" className="mt-4 w-full">
+                Entre em Contato
+              </Button>
             </nav>
           </div>
         )}

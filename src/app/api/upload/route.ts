@@ -1,67 +1,56 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { put } from '@vercel/blob';
+// API Route: Upload de Imagens
+import { NextRequest, NextResponse } from 'next/server'
+import { getSession } from '@/lib/auth'
+import { uploadImage, uploadMultipleImages } from '@/lib/blob'
 
 export async function POST(request: NextRequest) {
   try {
-    const formData = await request.formData();
-    const file = formData.get('file') as File;
-    const type = formData.get('type') as string;
+    const session = await getSession()
 
-    if (!file) {
-      return NextResponse.json({ error: 'Nenhum arquivo enviado' }, { status: 400 });
+    if (!session) {
+      return NextResponse.json(
+        { error: 'Não autenticado' },
+        { status: 401 }
+      )
     }
 
-    // Validar tipo de arquivo
-    if (!file.type.startsWith('image/')) {
-      return NextResponse.json({ error: 'Apenas arquivos de imagem são permitidos' }, { status: 400 });
+    const formData = await request.formData()
+    const propertyId = formData.get('propertyId') as string
+    const type = formData.get('type') as 'banner' | 'gallery' | 'floor_plan' | 'apartment_variant'
+    
+    if (!propertyId || !type) {
+      return NextResponse.json(
+        { error: 'propertyId e type são obrigatórios' },
+        { status: 400 }
+      )
     }
 
-    // Validar tamanho (máximo 5MB)
-    if (file.size > 5 * 1024 * 1024) {
-      return NextResponse.json({ error: 'Arquivo muito grande. Máximo 5MB' }, { status: 400 });
+    const files = formData.getAll('files') as File[]
+
+    if (!files || files.length === 0) {
+      return NextResponse.json(
+        { error: 'Nenhum arquivo enviado' },
+        { status: 400 }
+      )
     }
 
-    // Organizar por tipo de imagem
-    let folder = 'properties';
-    switch (type) {
-      case 'banner':
-        folder = 'properties/banners';
-        break;
-      case 'gallery':
-        folder = 'properties/gallery';
-        break;
-      case 'floorplan':
-        folder = 'properties/floorplans';
-        break;
-      default:
-        folder = 'properties/misc';
+    // Upload único ou múltiplo
+    let urls: string[]
+
+    if (type === 'banner') {
+      const url = await uploadImage(files[0], parseInt(propertyId), type)
+      urls = [url]
+    } else {
+      urls = await uploadMultipleImages(files, parseInt(propertyId), type)
     }
 
-    // Gerar nome único para o arquivo
-    const timestamp = Date.now();
-    const extension = file.name.split('.').pop();
-    const filename = `${timestamp}-${Math.random().toString(36).substring(2)}.${extension}`;
-    const fullPath = `${folder}/${filename}`;
-
-    // Fazer upload para o Vercel Blob
-    const blob = await put(fullPath, file, {
-      access: 'public',
-    });
-
-    console.log(`✅ Upload realizado: ${fullPath} -> ${blob.url}`);
-
-    return NextResponse.json({
-      url: blob.url,
-      path: fullPath,
-      size: file.size,
-      type: file.type
-    });
-
+    return NextResponse.json({ urls })
   } catch (error) {
-    console.error('❌ Erro no upload:', error);
+    console.error('Erro no upload:', error)
     return NextResponse.json(
-      { error: 'Erro interno do servidor' },
+      { error: 'Erro ao fazer upload' },
       { status: 500 }
-    );
+    )
   }
 }
+

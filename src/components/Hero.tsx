@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
 const Hero = () => {
@@ -28,16 +27,12 @@ const Hero = () => {
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <Link href="/imoveis">
-              <Button variant="luxury" size="xl" className="min-w-48">
-                Ver Imóveis
-              </Button>
-            </Link>
-            <Link href="/contato">
-              <Button variant="luxury-outline" size="xl" className="min-w-48 border-white text-white hover:bg-white hover:text-primary">
-                Fale Conosco
-              </Button>
-            </Link>
+            <Button variant="luxury" size="xl" className="min-w-48">
+              Entre em Contato
+            </Button>
+            <Button variant="luxury-outline" size="xl" className="min-w-48 border-white text-white hover:bg-white hover:text-primary">
+              Saiba Mais
+            </Button>
           </div>
         </div>
       </div>

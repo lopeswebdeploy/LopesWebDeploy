@@ -1,77 +1,78 @@
-import { compare } from 'bcryptjs';
-import { PrismaClient } from '@prisma/client';
-import { NextResponse } from 'next/server';
+// API Route: Login de Corretores/Admins
+import { NextRequest, NextResponse } from 'next/server'
+import { prisma } from '@/lib/prisma'
+import { verifyPassword, setSession } from '@/lib/auth'
 
-const prisma = new PrismaClient();
-
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
-    const { email, password } = await request.json();
+    const body = await request.json()
+    const { email, password } = body
 
-    // Buscar usuário
+    // Validações
+    if (!email || !password) {
+      return NextResponse.json(
+        { error: 'Email e senha são obrigatórios' },
+        { status: 400 }
+      )
+    }
+
+    // Busca o usuário
     const user = await prisma.user.findUnique({
-      where: { email }
-    });
+      where: { email },
+    })
 
     if (!user) {
       return NextResponse.json(
         { error: 'Email ou senha incorretos' },
         { status: 401 }
-      );
+      )
     }
 
-    // Verificar se conta está ativa
+    // Verifica se a conta está ativa
     if (!user.active) {
       return NextResponse.json(
-        { error: 'Conta pendente de ativação. Entre em contato com a equipe.' },
+        {
+          error:
+            'Sua conta ainda não foi ativada. Entre em contato com a equipe de marketing da Lopes Marista.',
+        },
         { status: 401 }
-      );
+      )
     }
 
-    // Verificar senha
-    const isValidPassword = await compare(password, user.password);
+    // Verifica a senha
+    const isValidPassword = await verifyPassword(password, user.password)
+
     if (!isValidPassword) {
       return NextResponse.json(
         { error: 'Email ou senha incorretos' },
         { status: 401 }
-      );
+      )
     }
 
-    // Criar sessão (simplificado - implementar JWT depois)
-    const session = {
-      id: user.id,
+    // Cria a sessão
+    await setSession({
+      userId: user.id,
       email: user.email,
       name: user.name,
       role: user.role,
-      active: user.active
-    };
+      active: user.active,
+    })
 
-    const response = NextResponse.json({
+    return NextResponse.json({
       success: true,
       user: {
         id: user.id,
         name: user.name,
         email: user.email,
         role: user.role,
-        active: user.active
-      }
-    });
-
-    // Set cookie (simplificado)
-    response.cookies.set('user-session', JSON.stringify(session), {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      maxAge: 60 * 60 * 24 * 7 // 1 week
-    });
-
-    return response;
-
+      },
+    })
   } catch (error) {
-    console.error('Login error:', error);
+    console.error('Erro no login:', error)
     return NextResponse.json(
-      { error: 'Erro interno do servidor' },
+      { error: 'Erro ao fazer login. Tente novamente.' },
       { status: 500 }
-    );
+    )
   }
 }
+

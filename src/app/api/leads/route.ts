@@ -1,67 +1,75 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
+// API Route: Leads
+import { NextRequest, NextResponse } from 'next/server'
+import { prisma } from '@/lib/prisma'
+import { getSession } from '@/lib/auth'
 
-const prisma = new PrismaClient();
-
-// GET - Listar todos os leads
+// GET: Listar leads (apenas admin)
 export async function GET() {
   try {
-    const leads = await prisma.lead.findMany({
-      include: {
-        property: true
-      },
-      orderBy: { createdAt: 'desc' }
-    });
-    
-    return NextResponse.json(leads);
-  } catch (error) {
-    console.error('❌ Erro ao carregar leads:', error);
-    return NextResponse.json(
-      { error: 'Erro ao carregar leads' }, 
-      { status: 500 }
-    );
-  }
-}
+    const session = await getSession()
 
-// POST - Criar novo lead
-export async function POST(request: NextRequest) {
-  try {
-    const leadData = await request.json();
-    
-    // Validar dados obrigatórios
-    if (!leadData.name || !leadData.phone) {
+    if (!session || session.role !== 'admin') {
       return NextResponse.json(
-        { error: 'Nome e telefone são obrigatórios' }, 
-        { status: 400 }
-      );
+        { error: 'Sem permissão' },
+        { status: 403 }
+      )
     }
 
-    const newLead = await prisma.lead.create({
-      data: {
-        name: leadData.name,
-        phone: leadData.phone,
-        email: leadData.email,
-        propertyId: leadData.propertyId ? parseInt(leadData.propertyId) : null,
-        status: leadData.status || 'new'
-      },
+    const leads = await prisma.lead.findMany({
       include: {
-        property: true
-      }
-    });
+        property: {
+          select: {
+            id: true,
+            title: true,
+          },
+        },
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    })
 
-    // TODO: Integrar com WhatsApp aqui
-    console.log('📱 Lead criado, pronto para envio WhatsApp:', {
-      name: leadData.name,
-      phone: leadData.phone,
-      property: leadData.propertyId
-    });
-
-    return NextResponse.json(newLead, { status: 201 });
+    return NextResponse.json({ leads })
   } catch (error) {
-    console.error('❌ Erro ao criar lead:', error);
+    console.error('Erro ao listar leads:', error)
     return NextResponse.json(
-      { error: 'Erro ao criar lead' }, 
+      { error: 'Erro ao listar leads' },
       { status: 500 }
-    );
+    )
   }
 }
+
+// POST: Criar lead
+export async function POST(request: NextRequest) {
+  try {
+    const body = await request.json()
+
+    // Validações
+    if (!body.name || !body.phone) {
+      return NextResponse.json(
+        { error: 'Nome e telefone são obrigatórios' },
+        { status: 400 }
+      )
+    }
+
+    const lead = await prisma.lead.create({
+      data: {
+        name: body.name,
+        phone: body.phone,
+        email: body.email || null,
+        message: body.message || null,
+        propertyId: body.propertyId ? parseInt(body.propertyId) : null,
+        status: 'new',
+      },
+    })
+
+    return NextResponse.json({ lead }, { status: 201 })
+  } catch (error) {
+    console.error('Erro ao criar lead:', error)
+    return NextResponse.json(
+      { error: 'Erro ao criar lead' },
+      { status: 500 }
+    )
+  }
+}
+

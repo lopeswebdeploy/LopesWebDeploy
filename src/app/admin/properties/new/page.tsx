@@ -1,0 +1,191 @@
+'use client'
+
+import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
+import PropertyForm from '@/components/PropertyForm'
+import ImageUploader from '@/components/ImageUploader'
+import { PropertyFormData } from '@/lib/types'
+import { Loader2, ArrowLeft } from 'lucide-react'
+import Link from 'next/link'
+
+export default function NewPropertyPage() {
+  const router = useRouter()
+  const [loading, setLoading] = useState(false)
+  const [session, setSession] = useState<any>(null)
+  const [propertyId, setPropertyId] = useState<number | null>(null)
+  const [images, setImages] = useState({
+    banner: [] as string[],
+    gallery: [] as string[],
+    floorPlans: [] as string[],
+  })
+
+  useEffect(() => {
+    fetchSession()
+  }, [])
+
+  const fetchSession = async () => {
+    try {
+      const response = await fetch('/api/auth/session')
+      if (response.ok) {
+        const data = await response.json()
+        setSession(data.session)
+      } else {
+        router.push('/admin/login')
+      }
+    } catch (error) {
+      router.push('/admin/login')
+    }
+  }
+
+  const handleSubmit = async (data: PropertyFormData) => {
+    setLoading(true)
+
+    try {
+      // Adicionar imagens ao form data
+      const propertyData = {
+        ...data,
+        bannerImage: images.banner[0] || '',
+        galleryImages: images.gallery,
+        floorPlans: images.floorPlans,
+      }
+
+      const response = await fetch('/api/properties', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(propertyData),
+      })
+
+      const result = await response.json()
+
+      if (!response.ok) {
+        throw new Error(result.error || 'Erro ao criar propriedade')
+      }
+
+      alert('Propriedade criada com sucesso!')
+      router.push('/admin/properties')
+    } catch (error: any) {
+      alert(error.message)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  // Criar propriedade temporária para upload de imagens
+  const createTempProperty = async () => {
+    if (propertyId) return propertyId
+
+    try {
+      const response = await fetch('/api/properties', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title: 'Propriedade Temporária',
+          propertyType: 'casa',
+          transactionType: 'venda',
+          price: 0,
+        }),
+      })
+
+      const data = await response.json()
+      if (response.ok) {
+        setPropertyId(data.property.id)
+        return data.property.id
+      }
+    } catch (error) {
+      console.error('Erro ao criar propriedade temporária:', error)
+    }
+    return null
+  }
+
+  const handleImageUpload = async (type: 'banner' | 'gallery' | 'floor_plans') => {
+    const id = await createTempProperty()
+    return id
+  }
+
+  if (!session) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+      </div>
+    )
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      {/* Header */}
+      <header className="bg-white shadow-sm border-b sticky top-0 z-10">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <Link
+                href="/admin/properties"
+                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+              >
+                <ArrowLeft className="w-5 h-5" />
+              </Link>
+              <h1 className="text-2xl font-bold text-gray-900">
+                Nova Propriedade
+              </h1>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <div className="container mx-auto px-4 py-8">
+        <div className="max-w-5xl mx-auto">
+          {/* Upload de Imagens */}
+          <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
+            <h2 className="text-xl font-bold text-gray-900 mb-6">
+              Imagens da Propriedade
+            </h2>
+            
+            <div className="space-y-6">
+              <div>
+                <ImageUploader
+                  propertyId={propertyId || 0}
+                  type="banner"
+                  label="Imagem de Banner (Destaque)"
+                  maxFiles={1}
+                  currentImages={images.banner}
+                  onUploadComplete={(urls) => setImages({ ...images, banner: urls })}
+                />
+              </div>
+
+              <div>
+                <ImageUploader
+                  propertyId={propertyId || 0}
+                  type="gallery"
+                  label="Galeria de Imagens"
+                  maxFiles={15}
+                  currentImages={images.gallery}
+                  onUploadComplete={(urls) => setImages({ ...images, gallery: urls })}
+                />
+              </div>
+
+              <div>
+                <ImageUploader
+                  propertyId={propertyId || 0}
+                  type="floor_plan"
+                  label="Plantas Baixas"
+                  maxFiles={5}
+                  currentImages={images.floorPlans}
+                  onUploadComplete={(urls) => setImages({ ...images, floorPlans: urls })}
+                />
+              </div>
+            </div>
+
+            <div className="mt-4 bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+              <p className="text-sm text-yellow-800">
+                ℹ️ As imagens são salvas automaticamente após o upload. Continue preenchendo o formulário abaixo.
+              </p>
+            </div>
+          </div>
+
+          {/* Formulário */}
+          <PropertyForm onSubmit={handleSubmit} isLoading={loading} />
+        </div>
+      </div>
+    </div>
+  )
+}
+

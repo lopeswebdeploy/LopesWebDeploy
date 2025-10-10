@@ -1,3 +1,4 @@
+// Prisma Schema - Sistema Imobiliário Lopes
 generator client {
   provider = "prisma-client-js"
 }
@@ -7,56 +8,80 @@ datasource db {
   url      = env("POSTGRES_URL")
 }
 
+// Tabela de usuários (corretores e admins)
 model User {
-  id         Int        @id @default(autoincrement())
+  id         Int      @id @default(autoincrement())
   name       String
-  email      String     @unique
+  email      String   @unique
   password   String
-  role       String     @default("corretor")
-  active     Boolean    @default(false)
-  createdAt  DateTime   @default(now()) @map("created_at")
-  leads      Lead[]     @relation("LeadOwner")
-  properties Property[] @relation("PropertyAuthor")
-
-  @@map("User")
+  role       String   @default("corretor") // "corretor" ou "admin"
+  active     Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  
+  properties Property[]
+  
+  @@map("users")
 }
 
+// Tabela de propriedades
 model Property {
-  id            Int      @id @default(autoincrement())
-  title         String
-  description   String?
-  price         Decimal? @db.Decimal(12, 2)
-  status        String   @default("draft")
-  featured      Boolean  @default(false)
-  location      String?  @default("Goiânia")
-  developer     String?  @default("Lopes Imóveis")
-  category      String?  @default("venda")
-  bedrooms      Int?
-  bathrooms     Int?
-  area          Float?
-  authorId      Int      @map("author_id")
-  bannerImage   String?  @map("banner_image")
-  galleryImages String[] @map("gallery_images")
-  floorPlans    String[] @map("floor_plans")
-  createdAt     DateTime @default(now()) @map("created_at")
-  updatedAt     DateTime @default(now()) @map("updated_at")
-  leads         Lead[]
-  author        User     @relation("PropertyAuthor", fields: [authorId], references: [id])
-
-  @@map("Property")
+  id                 Int      @id @default(autoincrement())
+  title              String
+  shortDescription   String?  @db.Text
+  fullDescription    String?  @db.Text
+  propertyType       String   // 'casa', 'apartamento', 'terreno', 'comercial'
+  transactionType    String   // 'venda', 'aluguel', 'investimento'
+  price              Decimal  @db.Decimal(12, 2)
+  
+  // Características
+  bedrooms           Int      @default(0)
+  bathrooms          Int      @default(0)
+  suites             Int      @default(0)
+  parkingSpaces      Int      @default(0)
+  area               Decimal? @db.Decimal(10, 2)
+  amenities          String[] // Array de vantagens
+  
+  // Imagens
+  bannerImage        String?
+  galleryImages      String[] // Até 15 imagens
+  floorPlans         String[] // Plantas baixas
+  apartmentVariants  Json?    // Para apartamentos com múltiplas plantas
+  
+  // Localização
+  address            String?  @db.Text
+  googleMapsIframe   String?  @db.Text
+  
+  // Status e destaque
+  featured           Boolean  @default(false)
+  visible            Boolean  @default(false) // Apenas admin pode mudar para true
+  status             String   @default("draft")
+  
+  // Relacionamentos
+  authorId           Int
+  author             User     @relation(fields: [authorId], references: [id])
+  
+  leads              Lead[]
+  
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+  
+  @@map("properties")
 }
 
+// Tabela de leads
 model Lead {
-  id         Int       @id @default(autoincrement())
+  id         Int      @id @default(autoincrement())
   name       String
   phone      String
   email      String?
-  propertyId Int?      @map("property_id")
-  ownerId    Int?      @map("owner_id")
-  status     String    @default("new")
-  createdAt  DateTime  @default(now()) @map("created_at")
-  owner      User?     @relation("LeadOwner", fields: [ownerId], references: [id])
+  message    String?  @db.Text
+  
+  propertyId Int?
   property   Property? @relation(fields: [propertyId], references: [id])
-
-  @@map("Lead")
+  
+  status     String   @default("new")
+  createdAt  DateTime @default(now())
+  
+  @@map("leads")
 }

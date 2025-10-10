@@ -1,155 +1,212 @@
-import { NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
+// API Route: Buscar, Atualizar e Deletar Propriedade
+import { NextRequest, NextResponse } from 'next/server'
+import { prisma } from '@/lib/prisma'
+import { getSession } from '@/lib/auth'
+import { deleteMultipleImages } from '@/lib/blob'
 
-// Instância singleton do Prisma
-const prisma = new PrismaClient();
-
-// GET propriedade específica
+// GET: Buscar propriedade específica
 export async function GET(
-  request: Request,
+  request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = await params;
-    const property = await prisma.property.findFirst({
-      where: { 
-        id: parseInt(id),
-        status: 'published'
-      },
+    const { id } = await params
+    const property = await prisma.property.findUnique({
+      where: { id: parseInt(id) },
       include: {
-        author: true
-      }
-    });
+        author: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            role: true,
+          },
+        },
+      },
+    })
 
     if (!property) {
-      return NextResponse.json({ error: 'Propriedade não encontrada' }, { status: 404 });
+      return NextResponse.json(
+        { error: 'Propriedade não encontrada' },
+        { status: 404 }
+      )
     }
 
-    return NextResponse.json(property);
+    return NextResponse.json({ property })
   } catch (error) {
-    return NextResponse.json({ error: 'Erro interno' }, { status: 500 });
+    console.error('Erro ao buscar propriedade:', error)
+    return NextResponse.json(
+      { error: 'Erro ao buscar propriedade' },
+      { status: 500 }
+    )
   }
 }
 
-// PUT atualizar property (com permissões)
+// PUT: Atualizar propriedade
 export async function PUT(
-  request: Request,
+  request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const userHeader = request.headers.get('x-user');
-    if (!userHeader) {
-      return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
+    const session = await getSession()
+
+    if (!session) {
+      return NextResponse.json(
+        { error: 'Não autenticado' },
+        { status: 401 }
+      )
     }
 
-    const user = JSON.parse(userHeader);
-    const { id } = await params;
-    const data = await request.json();
+    const { id } = await params
+    const body = await request.json()
 
-    // Verificar se usuário está ativo
-    if (!user.active) {
-      return NextResponse.json({ error: 'Conta inativa' }, { status: 401 });
+    // Buscar propriedade existente
+    const existingProperty = await prisma.property.findUnique({
+      where: { id: parseInt(id) },
+    })
+
+    if (!existingProperty) {
+      return NextResponse.json(
+        { error: 'Propriedade não encontrada' },
+        { status: 404 }
+      )
     }
 
     // Verificar permissões
-    const property = await prisma.property.findUnique({
-      where: { id: parseInt(id) }
-    });
-    
-    if (!property) {
-      return NextResponse.json({ error: 'Propriedade não encontrada' }, { status: 404 });
-    }
-    
-    // Apenas admin ou o autor podem editar
-    if (user.role !== 'admin' && property.authorId !== user.id) {
-      return NextResponse.json({ error: 'Sem permissão' }, { status: 403 });
+    const isOwner = existingProperty.authorId === session.userId
+    const isAdmin = session.role === 'admin'
+
+    if (!isOwner && !isAdmin) {
+      return NextResponse.json(
+        { error: 'Sem permissão para editar esta propriedade' },
+        { status: 403 }
+      )
     }
 
-    // Determinar quais campos podem ser atualizados baseado na role
-    let updateData: any = {
-      title: data.title,
-      description: data.description,
-      price: data.price ? parseFloat(data.price) : null,
-      location: data.location || 'Goiânia',
-      developer: data.developer || 'Lopes Imóveis',
-      category: data.category || 'venda',
-      bedrooms: data.bedrooms ? parseInt(data.bedrooms) : null,
-      bathrooms: data.bathrooms ? parseInt(data.bathrooms) : null,
-      area: data.area ? parseFloat(data.area) : null,
-      bannerImage: data.bannerImage,
-      galleryImages: data.galleryImages || [],
-      floorPlans: data.floorPlans || [],
-      updatedAt: new Date()
-    };
+    // Preparar dados de atualização
+    const updateData: any = {}
 
-    if (user.role === 'admin') {
-      // Admin pode alterar status e destaque
-      updateData.status = data.status;
-      updateData.featured = data.featured || false;
-    } else if (user.role === 'corretor') {
-      // Corretor não pode alterar status nem destaque
-      // Mantém os valores originais
-      updateData.status = property.status;
-      updateData.featured = property.featured;
+    // Campos que todos podem editar
+    if (body.title !== undefined) updateData.title = body.title
+    if (body.shortDescription !== undefined) updateData.shortDescription = body.shortDescription
+    if (body.fullDescription !== undefined) updateData.fullDescription = body.fullDescription
+    if (body.propertyType !== undefined) updateData.propertyType = body.propertyType
+    if (body.transactionType !== undefined) updateData.transactionType = body.transactionType
+    if (body.price !== undefined) updateData.price = parseFloat(body.price)
+    if (body.bedrooms !== undefined) updateData.bedrooms = body.bedrooms
+    if (body.bathrooms !== undefined) updateData.bathrooms = body.bathrooms
+    if (body.suites !== undefined) updateData.suites = body.suites
+    if (body.parkingSpaces !== undefined) updateData.parkingSpaces = body.parkingSpaces
+    if (body.area !== undefined) updateData.area = body.area ? parseFloat(body.area) : null
+    if (body.amenities !== undefined) updateData.amenities = body.amenities
+    if (body.bannerImage !== undefined) updateData.bannerImage = body.bannerImage
+    if (body.galleryImages !== undefined) updateData.galleryImages = body.galleryImages
+    if (body.floorPlans !== undefined) updateData.floorPlans = body.floorPlans
+    if (body.apartmentVariants !== undefined) updateData.apartmentVariants = body.apartmentVariants
+    if (body.address !== undefined) updateData.address = body.address
+    if (body.googleMapsIframe !== undefined) updateData.googleMapsIframe = body.googleMapsIframe
+
+    // Campos que apenas admin pode editar
+    if (isAdmin) {
+      if (body.visible !== undefined) updateData.visible = body.visible
+      if (body.featured !== undefined) updateData.featured = body.featured
+      if (body.status !== undefined) updateData.status = body.status
     }
 
-    // Atualizar
-    const updatedProperty = await prisma.property.update({
+    const property = await prisma.property.update({
       where: { id: parseInt(id) },
       data: updateData,
       include: {
-        author: true
-      }
-    });
+        author: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            role: true,
+          },
+        },
+      },
+    })
 
-    return NextResponse.json(updatedProperty);
-
+    return NextResponse.json({ property })
   } catch (error) {
-    console.error('Error updating property:', error);
-    return NextResponse.json({ error: 'Erro ao atualizar' }, { status: 500 });
+    console.error('Erro ao atualizar propriedade:', error)
+    return NextResponse.json(
+      { error: 'Erro ao atualizar propriedade' },
+      { status: 500 }
+    )
   }
 }
 
-// DELETE - Deletar propriedade (com permissões)
+// DELETE: Deletar propriedade
 export async function DELETE(
-  request: Request,
+  request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const userHeader = request.headers.get('x-user');
-    if (!userHeader) {
-      return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
+    const session = await getSession()
+
+    if (!session) {
+      return NextResponse.json(
+        { error: 'Não autenticado' },
+        { status: 401 }
+      )
     }
 
-    const user = JSON.parse(userHeader);
-    const { id } = await params;
+    const { id } = await params
 
-    // Verificar se usuário está ativo
-    if (!user.active) {
-      return NextResponse.json({ error: 'Conta inativa' }, { status: 401 });
+    // Buscar propriedade existente
+    const existingProperty = await prisma.property.findUnique({
+      where: { id: parseInt(id) },
+    })
+
+    if (!existingProperty) {
+      return NextResponse.json(
+        { error: 'Propriedade não encontrada' },
+        { status: 404 }
+      )
     }
 
     // Verificar permissões
-    const property = await prisma.property.findUnique({
-      where: { id: parseInt(id) }
-    });
-    
-    if (!property) {
-      return NextResponse.json({ error: 'Propriedade não encontrada' }, { status: 404 });
-    }
-    
-    // Apenas admin ou o autor podem deletar
-    if (user.role !== 'admin' && property.authorId !== user.id) {
-      return NextResponse.json({ error: 'Sem permissão' }, { status: 403 });
+    const isOwner = existingProperty.authorId === session.userId
+    const isAdmin = session.role === 'admin'
+
+    if (!isOwner && !isAdmin) {
+      return NextResponse.json(
+        { error: 'Sem permissão para deletar esta propriedade' },
+        { status: 403 }
+      )
     }
 
+    // Coletar todas as imagens para deletar
+    const imagesToDelete = [
+      ...(existingProperty.galleryImages || []),
+      ...(existingProperty.floorPlans || []),
+    ]
+
+    if (existingProperty.bannerImage) {
+      imagesToDelete.push(existingProperty.bannerImage)
+    }
+
+    // Deletar propriedade do banco
     await prisma.property.delete({
-      where: { id: parseInt(id) }
-    });
+      where: { id: parseInt(id) },
+    })
 
-    return NextResponse.json({ success: true });
+    // Deletar imagens do blob (não bloquear a resposta)
+    if (imagesToDelete.length > 0) {
+      deleteMultipleImages(imagesToDelete).catch((error) =>
+        console.error('Erro ao deletar imagens:', error)
+      )
+    }
+
+    return NextResponse.json({ success: true })
   } catch (error) {
-    console.error('Error deleting property:', error);
-    return NextResponse.json({ error: 'Erro ao deletar' }, { status: 500 });
+    console.error('Erro ao deletar propriedade:', error)
+    return NextResponse.json(
+      { error: 'Erro ao deletar propriedade' },
+      { status: 500 }
+    )
   }
 }
+

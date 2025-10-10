@@ -1,126 +1,159 @@
-import { NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
+// API Route: Listar e Criar Propriedades
+import { NextRequest, NextResponse } from 'next/server'
+import { prisma } from '@/lib/prisma'
+import { getSession } from '@/lib/auth'
 
-// Instância singleton do Prisma
-const prisma = new PrismaClient();
-
-// GET - Para site público (apenas published) ou painel admin (todas)
-export async function GET(request: Request) {
+// GET: Listar propriedades com filtros
+export async function GET(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url);
-    const featured = searchParams.get('featured');
-    const adminView = searchParams.get('admin'); // Novo parâmetro para painel admin
+    const searchParams = request.nextUrl.searchParams
     
-    // Verificar se é requisição do painel admin
-    const userHeader = request.headers.get('x-user');
-    let whereClause: any = {};
+    // Parâmetros de filtro
+    const propertyType = searchParams.get('propertyType')
+    const transactionType = searchParams.get('transactionType')
+    const minPrice = searchParams.get('minPrice')
+    const maxPrice = searchParams.get('maxPrice')
+    const bedrooms = searchParams.get('bedrooms')
+    const bathrooms = searchParams.get('bathrooms')
+    const featured = searchParams.get('featured')
+    const visible = searchParams.get('visible')
+    const authorId = searchParams.get('authorId')
+    const search = searchParams.get('search')
+    const limit = searchParams.get('limit')
+    const offset = searchParams.get('offset')
+
+    // Construir filtros
+    const where: any = {}
+
+    if (propertyType) where.propertyType = propertyType
+    if (transactionType) where.transactionType = transactionType
+    if (bedrooms) where.bedrooms = parseInt(bedrooms)
+    if (bathrooms) where.bathrooms = parseInt(bathrooms)
+    if (featured !== null) where.featured = featured === 'true'
+    if (visible !== null) where.visible = visible === 'true'
+    if (authorId) where.authorId = parseInt(authorId)
     
-    if (adminView === 'true' && userHeader) {
-      const user = JSON.parse(userHeader);
-      
-      // Verificar se usuário está ativo
-      if (!user.active) {
-        return NextResponse.json({ error: 'Conta inativa' }, { status: 401 });
-      }
-      
-      // Admin vê tudo, corretor vê apenas suas propriedades
-      if (user.role === 'admin') {
-        // Admin vê todas as propriedades (publicadas e rascunho)
-        whereClause = {};
-      } else if (user.role === 'corretor') {
-        // Corretor vê apenas suas próprias propriedades (todas, mesmo rascunho)
-        whereClause = { authorId: user.id };
-      }
-    } else {
-      // Site público: apenas propriedades publicadas
-      whereClause = { status: 'published' };
+    if (minPrice || maxPrice) {
+      where.price = {}
+      if (minPrice) where.price.gte = parseFloat(minPrice)
+      if (maxPrice) where.price.lte = parseFloat(maxPrice)
     }
-    
-    if (featured === 'true') {
-      whereClause.featured = true;
+
+    if (search) {
+      where.OR = [
+        { title: { contains: search, mode: 'insensitive' } },
+        { shortDescription: { contains: search, mode: 'insensitive' } },
+        { address: { contains: search, mode: 'insensitive' } },
+      ]
     }
-    
+
+    // Buscar propriedades
     const properties = await prisma.property.findMany({
-      where: whereClause,
+      where,
       include: {
-        author: true
+        author: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            role: true,
+          },
+        },
       },
-      orderBy: { createdAt: 'desc' }
-    });
-    
-    console.log(`✅ API Properties - ${properties.length} propriedades encontradas`);
-    return NextResponse.json(properties);
+      orderBy: [
+        { featured: 'desc' },
+        { createdAt: 'desc' },
+      ],
+      take: limit ? parseInt(limit) : undefined,
+      skip: offset ? parseInt(offset) : undefined,
+    })
+
+    const total = await prisma.property.count({ where })
+
+    return NextResponse.json({
+      properties,
+      total,
+      limit: limit ? parseInt(limit) : total,
+      offset: offset ? parseInt(offset) : 0,
+    })
   } catch (error) {
-    console.error('❌ API Properties - Erro ao buscar propriedades:', error);
+    console.error('Erro ao listar propriedades:', error)
     return NextResponse.json(
-      { error: 'Erro ao buscar propriedades' },
+      { error: 'Erro ao listar propriedades' },
       { status: 500 }
-    );
+    )
   }
 }
 
-// POST - Criar property (apenas usuários logados)
-export async function POST(request: Request) {
+// POST: Criar propriedade
+export async function POST(request: NextRequest) {
   try {
-    // Verificar sessão do middleware
-    const userHeader = request.headers.get('x-user');
-    if (!userHeader) {
-      return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
+    const session = await getSession()
+
+    if (!session) {
+      return NextResponse.json(
+        { error: 'Não autenticado' },
+        { status: 401 }
+      )
     }
 
-    const user = JSON.parse(userHeader);
-    const data = await request.json();
+    const body = await request.json()
 
-    // Verificar se usuário está ativo
-    if (!user.active) {
-      return NextResponse.json({ error: 'Conta inativa' }, { status: 401 });
+    // Validações básicas
+    if (!body.title || !body.propertyType || !body.transactionType || !body.price) {
+      return NextResponse.json(
+        { error: 'Campos obrigatórios faltando' },
+        { status: 400 }
+      )
     }
 
-    // Determinar status baseado na role
-    let propertyStatus = 'draft';
-    let propertyFeatured = false;
-    
-    if (user.role === 'admin') {
-      // Admin pode definir status e destaque
-      propertyStatus = data.status || 'draft';
-      propertyFeatured = data.featured || false;
-    } else if (user.role === 'corretor') {
-      // Corretor sempre cria como rascunho e sem destaque
-      propertyStatus = 'draft';
-      propertyFeatured = false;
-    }
+    // Corretor sempre cria propriedades invisíveis
+    const visible = session.role === 'admin' ? body.visible || false : false
 
-    // Inserir property
-    const newProperty = await prisma.property.create({
+    const property = await prisma.property.create({
       data: {
-        title: data.title,
-        description: data.description,
-        price: data.price ? parseFloat(data.price) : null,
-        status: propertyStatus,
-        featured: propertyFeatured,
-        location: data.location || 'Goiânia',
-        developer: data.developer || 'Lopes Imóveis',
-        category: data.category || 'venda',
-        bedrooms: data.bedrooms ? parseInt(data.bedrooms) : null,
-        bathrooms: data.bathrooms ? parseInt(data.bathrooms) : null,
-        area: data.area ? parseFloat(data.area) : null,
-        bannerImage: data.bannerImage,
-        galleryImages: data.galleryImages || [],
-        floorPlans: data.floorPlans || [],
-        authorId: user.id
+        title: body.title,
+        shortDescription: body.shortDescription || '',
+        fullDescription: body.fullDescription || '',
+        propertyType: body.propertyType,
+        transactionType: body.transactionType,
+        price: parseFloat(body.price),
+        bedrooms: body.bedrooms || 0,
+        bathrooms: body.bathrooms || 0,
+        suites: body.suites || 0,
+        parkingSpaces: body.parkingSpaces || 0,
+        area: body.area ? parseFloat(body.area) : null,
+        amenities: body.amenities || [],
+        bannerImage: body.bannerImage || null,
+        galleryImages: body.galleryImages || [],
+        floorPlans: body.floorPlans || [],
+        apartmentVariants: body.apartmentVariants || null,
+        address: body.address || '',
+        googleMapsIframe: body.googleMapsIframe || '',
+        featured: false,
+        visible,
+        status: 'draft',
+        authorId: session.userId,
       },
       include: {
-        author: true
-      }
-    });
+        author: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            role: true,
+          },
+        },
+      },
+    })
 
-    return NextResponse.json(newProperty);
-
+    return NextResponse.json({ property }, { status: 201 })
   } catch (error) {
-    console.error('Error creating property:', error);
+    console.error('Erro ao criar propriedade:', error)
     return NextResponse.json(
       { error: 'Erro ao criar propriedade' },
       { status: 500 }
-    );
+    )
   }
 }
+

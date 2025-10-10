@@ -1,72 +1,70 @@
-import { hash } from 'bcryptjs';
-import { PrismaClient } from '@prisma/client';
-import { NextResponse } from 'next/server';
+// API Route: Registro de Corretores
+import { NextRequest, NextResponse } from 'next/server'
+import { prisma } from '@/lib/prisma'
+import { hashPassword } from '@/lib/auth'
 
-const prisma = new PrismaClient();
-
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
-    const { name, email, password, confirmPassword } = await request.json();
+    const body = await request.json()
+    const { name, email, password, confirmPassword } = body
 
     // Validações
+    if (!name || !email || !password) {
+      return NextResponse.json(
+        { error: 'Todos os campos são obrigatórios' },
+        { status: 400 }
+      )
+    }
+
     if (password !== confirmPassword) {
       return NextResponse.json(
-        { error: 'Senhas não coincidem' },
+        { error: 'As senhas não coincidem' },
         { status: 400 }
-      );
+      )
     }
 
-    if (password.length < 6) {
-      return NextResponse.json(
-        { error: 'Senha deve ter pelo menos 6 caracteres' },
-        { status: 400 }
-      );
-    }
-
-    // Verificar se email já existe
+    // Verifica se o email já existe
     const existingUser = await prisma.user.findUnique({
-      where: { email }
-    });
+      where: { email },
+    })
 
     if (existingUser) {
       return NextResponse.json(
-        { error: 'Email já cadastrado' },
+        { error: 'Este email já está cadastrado' },
         { status: 400 }
-      );
+      )
     }
 
-    // Hash da senha e criar usuário INATIVO
-    const hashedPassword = await hash(password, 12);
-    
-    const result = await prisma.user.create({
+    // Cria o hash da senha
+    const hashedPassword = await hashPassword(password)
+
+    // Cria o usuário (inactive por padrão)
+    const user = await prisma.user.create({
       data: {
         name,
         email,
         password: hashedPassword,
+        role: 'corretor',
         active: false,
-        role: 'corretor'
-      }
-    });
-
-    const user = {
-      id: result.id,
-      name: result.name,
-      email: result.email,
-      role: result.role,
-      active: result.active
-    };
+      },
+    })
 
     return NextResponse.json({
       success: true,
-      message: 'Conta criada com sucesso! Entre em contato com a equipe para ativação.',
-      user
-    });
-
+      message:
+        'Conta criada com sucesso! Entre em contato com a equipe de marketing da Lopes Marista para validá-la enviando seu nome e email.',
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+      },
+    })
   } catch (error) {
-    console.error('Registration error:', error);
+    console.error('Erro no registro:', error)
     return NextResponse.json(
-      { error: 'Erro interno do servidor' },
+      { error: 'Erro ao criar conta. Tente novamente.' },
       { status: 500 }
-    );
+    )
   }
 }
+
