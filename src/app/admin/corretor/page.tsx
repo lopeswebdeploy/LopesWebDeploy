@@ -4,39 +4,34 @@ import { prisma } from '@/lib/prisma'
 import Link from 'next/link'
 import { Plus, Home, Users, Mail, BarChart3 } from 'lucide-react'
 
-async function getDashboardData(userId: number, role: string) {
-  // Admin vê todas as propriedades, corretor só as suas
-  const where = role === 'admin' ? {} : { authorId: userId }
+async function getCorretorDashboardData(userId: number) {
+  const where = { authorId: userId }
   
-  const [totalProperties, visibleProperties, featuredProperties, totalLeads] = await Promise.all([
+  const [totalProperties, visibleProperties, featuredProperties] = await Promise.all([
     prisma.property.count({ where }),
     prisma.property.count({ where: { ...where, visible: true } }),
     prisma.property.count({ where: { ...where, featured: true } }),
-    role === 'admin' ? prisma.lead.count() : 0,
   ])
 
   return {
     totalProperties,
     visibleProperties,
     featuredProperties,
-    totalLeads,
   }
 }
 
-export default async function DashboardPage() {
+export default async function CorretorDashboardPage() {
   const session = await getSession()
 
   if (!session) {
     redirect('/admin/login')
   }
 
-  // Redirecionar corretores para seu dashboard específico
-  if (session.role === 'corretor') {
-    redirect('/admin/corretor')
+  if (session.role !== 'corretor') {
+    redirect('/admin/dashboard')
   }
 
-  const stats = await getDashboardData(session.userId, session.role)
-  const isAdmin = session.role === 'admin'
+  const stats = await getCorretorDashboardData(session.userId)
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -46,10 +41,10 @@ export default async function DashboardPage() {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-2xl font-bold text-gray-900">
-                Painel {isAdmin ? 'Administrativo' : 'do Corretor'}
+                Painel do Corretor
               </h1>
               <p className="text-gray-600">
-                Bem-vindo, {session.name}
+                Bem-vindo, {session.name} - {session.equipe || 'Sem equipe definida'}
               </p>
             </div>
             <div className="flex items-center gap-4">
@@ -74,11 +69,11 @@ export default async function DashboardPage() {
 
       <div className="container mx-auto px-4 py-8">
         {/* Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <div className="bg-white rounded-lg shadow-sm p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Total de Imóveis</p>
+                <p className="text-sm text-gray-600">Minhas Propriedades</p>
                 <p className="text-3xl font-bold text-gray-900 mt-1">
                   {stats.totalProperties}
                 </p>
@@ -92,7 +87,7 @@ export default async function DashboardPage() {
           <div className="bg-white rounded-lg shadow-sm p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Visíveis</p>
+                <p className="text-sm text-gray-600">Aprovadas</p>
                 <p className="text-3xl font-bold text-green-600 mt-1">
                   {stats.visibleProperties}
                 </p>
@@ -116,22 +111,6 @@ export default async function DashboardPage() {
               </div>
             </div>
           </div>
-
-          {isAdmin && (
-            <div className="bg-white rounded-lg shadow-sm p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-gray-600">Leads</p>
-                  <p className="text-3xl font-bold text-purple-600 mt-1">
-                    {stats.totalLeads}
-                  </p>
-                </div>
-                <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
-                  <Mail className="w-6 h-6 text-purple-600" />
-                </div>
-              </div>
-            </div>
-          )}
         </div>
 
         {/* Quick Actions */}
@@ -139,7 +118,7 @@ export default async function DashboardPage() {
           <h2 className="text-xl font-bold text-gray-900 mb-4">
             Ações Rápidas
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Link
               href="/admin/properties/new"
               className="flex items-center gap-3 p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-colors group"
@@ -161,43 +140,27 @@ export default async function DashboardPage() {
                 <Home className="w-6 h-6 text-green-600" />
               </div>
               <div>
-                <p className="font-semibold text-gray-900">Gerenciar Imóveis</p>
-                <p className="text-sm text-gray-600">Ver todas as propriedades</p>
+                <p className="font-semibold text-gray-900">Minhas Propriedades</p>
+                <p className="text-sm text-gray-600">Gerenciar suas propriedades</p>
               </div>
             </Link>
-
-            {isAdmin && (
-              <Link
-                href="/admin/leads"
-                className="flex items-center gap-3 p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-purple-500 hover:bg-purple-50 transition-colors group"
-              >
-                <div className="w-10 h-10 bg-purple-100 group-hover:bg-purple-200 rounded-lg flex items-center justify-center">
-                  <Mail className="w-6 h-6 text-purple-600" />
-                </div>
-                <div>
-                  <p className="font-semibold text-gray-900">Ver Leads</p>
-                  <p className="text-sm text-gray-600">Gerenciar contatos</p>
-                </div>
-              </Link>
-            )}
           </div>
         </div>
 
-        {/* Info for Corretores */}
-        {!isAdmin && (
-          <div className="mt-8 bg-blue-50 border border-blue-200 rounded-lg p-6">
-            <h3 className="font-semibold text-blue-900 mb-2">
-              📋 Informações Importantes
-            </h3>
-            <ul className="text-sm text-blue-800 space-y-1">
-              <li>• Propriedades criadas por você ficam invisíveis até aprovação do administrador</li>
-              <li>• Você pode editar e excluir apenas suas propriedades</li>
-              <li>• Após aprovação, você pode continuar editando suas propriedades</li>
-            </ul>
-          </div>
-        )}
+        {/* Info para Corretores */}
+        <div className="mt-8 bg-blue-50 border border-blue-200 rounded-lg p-6">
+          <h3 className="font-semibold text-blue-900 mb-2">
+            📋 Informações Importantes
+          </h3>
+          <ul className="text-sm text-blue-800 space-y-1">
+            <li>• Propriedades criadas por você ficam invisíveis até aprovação do administrador</li>
+            <li>• Você pode editar e excluir apenas suas propriedades</li>
+            <li>• Após aprovação, você pode continuar editando suas propriedades</li>
+            <li>• Propriedades aprovadas não podem ser editadas</li>
+            <li>• Apenas administradores podem destacar propriedades</li>
+          </ul>
+        </div>
       </div>
     </div>
   )
 }
-

@@ -105,6 +105,7 @@ export async function PUT(
     if (body.apartmentVariants !== undefined) updateData.apartmentVariants = body.apartmentVariants
     if (body.address !== undefined) updateData.address = body.address
     if (body.googleMapsIframe !== undefined) updateData.googleMapsIframe = body.googleMapsIframe
+    if (body.isLancamento !== undefined) updateData.isLancamento = body.isLancamento
 
     // Campos que apenas admin pode editar
     if (isAdmin) {

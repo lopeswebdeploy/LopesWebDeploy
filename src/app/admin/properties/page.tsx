@@ -12,6 +12,7 @@ export default function AdminPropertiesPage() {
   const [properties, setProperties] = useState<Property[]>([])
   const [loading, setLoading] = useState(true)
   const [session, setSession] = useState<any>(null)
+  const [selectedProperties, setSelectedProperties] = useState<number[]>([])
   const [filters, setFilters] = useState({
     search: '',
     visible: 'all',
@@ -147,6 +148,66 @@ export default function AdminPropertiesPage() {
     }
   }
 
+  // Funções de seleção em massa
+  const handleSelectAll = () => {
+    if (selectedProperties.length === properties.length) {
+      setSelectedProperties([])
+    } else {
+      setSelectedProperties(properties.map(p => p.id))
+    }
+  }
+
+  const handleSelectProperty = (id: number) => {
+    if (selectedProperties.includes(id)) {
+      setSelectedProperties(selectedProperties.filter(pid => pid !== id))
+    } else {
+      setSelectedProperties([...selectedProperties, id])
+    }
+  }
+
+  const handleBulkDelete = async () => {
+    if (selectedProperties.length === 0) return
+    
+    if (!confirm(`Tem certeza que deseja excluir ${selectedProperties.length} propriedade(s)?`)) return
+
+    try {
+      const deletePromises = selectedProperties.map(id => 
+        fetch(`/api/properties/${id}`, { method: 'DELETE' })
+      )
+      
+      await Promise.all(deletePromises)
+      setSelectedProperties([])
+      fetchProperties()
+    } catch (error) {
+      alert('Erro ao excluir propriedades')
+    }
+  }
+
+  const handleBulkApprove = async () => {
+    if (selectedProperties.length === 0) return
+    
+    if (session.role !== 'admin') {
+      alert('Apenas administradores podem aprovar propriedades')
+      return
+    }
+
+    try {
+      const updatePromises = selectedProperties.map(id => 
+        fetch(`/api/properties/${id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ visible: true }),
+        })
+      )
+      
+      await Promise.all(updatePromises)
+      setSelectedProperties([])
+      fetchProperties()
+    } catch (error) {
+      alert('Erro ao aprovar propriedades')
+    }
+  }
+
   if (!session) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -245,19 +306,70 @@ export default function AdminPropertiesPage() {
             <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
           </div>
         ) : properties.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {properties.map((property) => (
-              <PropertyCard
-                key={property.id}
-                property={property}
-                showAdminActions
-                onEdit={handleEdit}
-                onDelete={handleDelete}
-                onToggleVisible={isAdmin ? handleToggleVisible : undefined}
-                onToggleFeatured={isAdmin ? handleToggleFeatured : undefined}
-              />
-            ))}
-          </div>
+          <>
+            {/* Bulk Actions */}
+            {selectedProperties.length > 0 && (
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+                <div className="flex items-center justify-between">
+                  <p className="text-blue-800 font-medium">
+                    {selectedProperties.length} propriedade(s) selecionada(s)
+                  </p>
+                  <div className="flex gap-2">
+                    {isAdmin && (
+                      <button
+                        onClick={handleBulkApprove}
+                        className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+                      >
+                        Aprovar Selecionadas
+                      </button>
+                    )}
+                    <button
+                      onClick={handleBulkDelete}
+                      className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+                    >
+                      Excluir Selecionadas
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Select All */}
+            <div className="mb-4">
+              <label className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  checked={selectedProperties.length === properties.length && properties.length > 0}
+                  onChange={handleSelectAll}
+                  className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                />
+                <span className="text-sm font-medium text-gray-700">
+                  Selecionar todas ({properties.length})
+                </span>
+              </label>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {properties.map((property) => (
+                <div key={property.id} className="relative">
+                  <input
+                    type="checkbox"
+                    checked={selectedProperties.includes(property.id)}
+                    onChange={() => handleSelectProperty(property.id)}
+                    className="absolute top-2 left-2 z-10 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                  />
+                  <PropertyCard
+                    property={property}
+                    showAdminActions
+                    onEdit={handleEdit}
+                    onDelete={handleDelete}
+                    onToggleVisible={isAdmin ? handleToggleVisible : undefined}
+                    onToggleFeatured={isAdmin ? handleToggleFeatured : undefined}
+                  />
+                </div>
+              ))}
+            </div>
+          </>
         ) : (
           <div className="text-center py-20">
             <p className="text-gray-600 text-lg mb-4">

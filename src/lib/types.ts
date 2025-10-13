@@ -26,6 +26,7 @@ export interface PropertyFormData {
   galleryImages: string[]
   floorPlans: string[]
   apartmentVariants?: ApartmentVariant[]
+  isLancamento: boolean
 }
 
 export interface ApartmentVariant {

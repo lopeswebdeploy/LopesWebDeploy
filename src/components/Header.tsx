@@ -39,7 +39,15 @@ const Header = () => {
                 isActive('/imoveis') ? 'text-brand-coral' : ''
               }`}
             >
-              Imóveis
+              Imóveis Disponíveis
+            </Link>
+            <Link 
+              href="/lancamentos" 
+              className={`text-foreground hover:text-brand-coral transition-colors duration-300 font-medium ${
+                isActive('/lancamentos') ? 'text-brand-coral' : ''
+              }`}
+            >
+              Lançamentos
             </Link>
             <Link 
               href="/sobre" 
@@ -97,7 +105,16 @@ const Header = () => {
                 }`}
                 onClick={() => setIsMenuOpen(false)}
               >
-                Imóveis
+                Imóveis Disponíveis
+              </Link>
+              <Link 
+                href="/lancamentos" 
+                className={`text-foreground hover:text-brand-coral transition-colors duration-300 font-medium py-2 ${
+                  isActive('/lancamentos') ? 'text-brand-coral' : ''
+                }`}
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Lançamentos
               </Link>
               <Link 
                 href="/sobre" 

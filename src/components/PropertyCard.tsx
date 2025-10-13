@@ -189,9 +189,15 @@ export default function PropertyCard({
           <div className="flex gap-2">
             <button
               onClick={() => onEdit?.(property.id)}
-              className="flex-1 bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors"
+              disabled={property.visible}
+              className={`flex-1 py-2 rounded-lg transition-colors ${
+                property.visible
+                  ? 'bg-gray-400 text-gray-200 cursor-not-allowed'
+                  : 'bg-blue-600 text-white hover:bg-blue-700'
+              }`}
+              title={property.visible ? 'Propriedades aprovadas não podem ser editadas' : 'Editar propriedade'}
             >
-              Editar
+              {property.visible ? 'Bloqueado' : 'Editar'}
             </button>
             <button
               onClick={() => onToggleVisible?.(property.id, !property.visible)}

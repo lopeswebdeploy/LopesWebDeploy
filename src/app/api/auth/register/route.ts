@@ -9,10 +9,10 @@ export const runtime = 'nodejs'
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { name, email, password, confirmPassword } = body
+    const { name, email, password, confirmPassword, equipe } = body
 
     // Validações
-    if (!name || !email || !password) {
+    if (!name || !email || !password || !equipe) {
       return NextResponse.json(
         { error: 'Todos os campos são obrigatórios' },
         { status: 400 }
@@ -48,6 +48,7 @@ export async function POST(request: NextRequest) {
         email,
         password: hashedPassword,
         role: 'corretor',
+        equipe,
         active: false,
       },
     })

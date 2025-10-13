@@ -12,6 +12,7 @@ export default function RegisterPage() {
     email: '',
     password: '',
     confirmPassword: '',
+    equipe: '',
   })
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -140,6 +141,24 @@ export default function RegisterPage() {
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="seu@email.com"
               />
+            </div>
+
+            <div>
+              <label htmlFor="equipe" className="block text-sm font-medium text-gray-700 mb-1">
+                Equipe *
+              </label>
+              <select
+                id="equipe"
+                required
+                value={formData.equipe}
+                onChange={(e) => setFormData({ ...formData, equipe: e.target.value })}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
+                <option value="">Selecione sua equipe</option>
+                <option value="Lopes Marista">Lopes Marista</option>
+                <option value="Lopes Bueno">Lopes Bueno</option>
+                <option value="Lopes Jardim Goias">Lopes Jardim Goias</option>
+              </select>
             </div>
 
             <div>

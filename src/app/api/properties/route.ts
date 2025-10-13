@@ -18,6 +18,7 @@ export async function GET(request: NextRequest) {
     const featured = searchParams.get('featured')
     const visible = searchParams.get('visible')
     const authorId = searchParams.get('authorId')
+    const isLancamento = searchParams.get('isLancamento')
     const search = searchParams.get('search')
     const limit = searchParams.get('limit')
     const offset = searchParams.get('offset')
@@ -31,6 +32,7 @@ export async function GET(request: NextRequest) {
     if (bathrooms) where.bathrooms = parseInt(bathrooms)
     if (featured !== null) where.featured = featured === 'true'
     if (visible !== null) where.visible = visible === 'true'
+    if (isLancamento !== null) where.isLancamento = isLancamento === 'true'
     if (authorId) where.authorId = parseInt(authorId)
     
     if (minPrice || maxPrice) {
@@ -130,6 +132,7 @@ export async function POST(request: NextRequest) {
         apartmentVariants: body.apartmentVariants || null,
         address: body.address || '',
         googleMapsIframe: body.googleMapsIframe || '',
+        isLancamento: body.isLancamento || false,
         featured: false,
         visible,
         status: 'draft',

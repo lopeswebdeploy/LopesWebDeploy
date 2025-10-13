@@ -47,6 +47,7 @@ export default function PropertyForm({ property, onSubmit, isLoading = false }: 
     apartmentVariants: property?.apartmentVariants 
       ? (property.apartmentVariants as unknown as ApartmentVariant[])
       : [],
+    isLancamento: property?.isLancamento || false,
   })
 
   const [showApartmentVariants, setShowApartmentVariants] = useState(
@@ -164,6 +165,23 @@ export default function PropertyForm({ property, onSubmit, isLoading = false }: 
               <option value="aluguel">Aluguel</option>
               <option value="investimento">Investimento</option>
             </select>
+          </div>
+
+          <div>
+            <label className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                checked={formData.isLancamento}
+                onChange={(e) => setFormData({ ...formData, isLancamento: e.target.checked })}
+                className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+              />
+              <span className="text-sm font-medium text-gray-700">
+                É um lançamento
+              </span>
+            </label>
+            <p className="text-xs text-gray-500 mt-1">
+              Marque se esta propriedade é um novo lançamento
+            </p>
           </div>
 
           <div>

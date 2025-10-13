@@ -5,7 +5,7 @@ import PropertyCard from '@/components/PropertyCard'
 import { Property } from '@/lib/types'
 import { Search, SlidersHorizontal, Loader2 } from 'lucide-react'
 
-export default function ImoveisPage() {
+export default function LancamentosPage() {
   const [properties, setProperties] = useState<Property[]>([])
   const [loading, setLoading] = useState(true)
   const [filters, setFilters] = useState({
@@ -29,7 +29,7 @@ export default function ImoveisPage() {
       // Construir query string
       const params = new URLSearchParams()
       params.append('visible', 'true') // Apenas propriedades visíveis
-      params.append('isLancamento', 'false') // Excluir lançamentos
+      params.append('isLancamento', 'true') // Apenas lançamentos
 
       if (filters.propertyType) params.append('propertyType', filters.propertyType)
       if (filters.transactionType) params.append('transactionType', filters.transactionType)
@@ -46,7 +46,7 @@ export default function ImoveisPage() {
         setProperties(data.properties)
       }
     } catch (error) {
-      console.error('Erro ao buscar propriedades:', error)
+      console.error('Erro ao buscar lançamentos:', error)
     } finally {
       setLoading(false)
     }
@@ -76,10 +76,10 @@ export default function ImoveisPage() {
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-4xl font-bold text-gray-900 mb-2">
-            Nossos Imóveis
+            Lançamentos
           </h1>
           <p className="text-gray-600">
-            Explore nossa seleção completa de propriedades disponíveis
+            Confira nossos novos empreendimentos e lançamentos exclusivos
           </p>
         </div>
 
@@ -234,7 +234,7 @@ export default function ImoveisPage() {
         ) : (
           <div className="text-center py-20">
             <p className="text-gray-600 text-lg">
-              Nenhuma propriedade encontrada com os filtros selecionados.
+              Nenhum lançamento encontrado com os filtros selecionados.
             </p>
             <button
               onClick={clearFilters}
@@ -248,4 +248,3 @@ export default function ImoveisPage() {
     </main>
   )
 }
-

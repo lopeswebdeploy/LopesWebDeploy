@@ -33,6 +33,7 @@ async function createAdmin() {
         password: hashedPassword,
         role: 'admin',
         active: true,
+        equipe: 'Lopes Marista' // Adicionar equipe padrão
       },
     })
 
