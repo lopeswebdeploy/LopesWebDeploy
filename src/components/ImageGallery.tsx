@@ -106,6 +106,7 @@ export default function ImageGallery({
                   src={image}
                   alt={`Miniatura ${index + 1}`}
                   fill
+                  sizes="80px"
                   className="object-cover"
                 />
               </button>
@@ -138,6 +139,7 @@ export default function ImageGallery({
               src={images[currentIndex]}
               alt={`Imagem ${currentIndex + 1}`}
               fill
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 60vw"
               className="object-contain"
             />
           </div>

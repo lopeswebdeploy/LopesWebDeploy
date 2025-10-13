@@ -97,6 +97,7 @@ export default async function PropertyPage({ params }: { params: Promise<{ id: s
                     src={property.bannerImage}
                     alt={property.title}
                     fill
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 70vw"
                     className="object-cover"
                     priority
                   />
@@ -107,6 +108,7 @@ export default async function PropertyPage({ params }: { params: Promise<{ id: s
                     src={property.galleryImages[0]}
                     alt={property.title}
                     fill
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 70vw"
                     className="object-cover"
                     priority
                   />
@@ -258,6 +260,7 @@ export default async function PropertyPage({ params }: { params: Promise<{ id: s
                               src={variant.floorPlan}
                               alt={`Planta ${variant.name}`}
                               fill
+                              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 40vw"
                               className="object-contain bg-gray-50"
                             />
                           </div>
@@ -289,6 +292,7 @@ export default async function PropertyPage({ params }: { params: Promise<{ id: s
                         src={plan}
                         alt={`Planta ${index + 1}`}
                         fill
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 40vw"
                         className="object-contain"
                       />
                     </div>
