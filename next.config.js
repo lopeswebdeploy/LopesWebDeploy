@@ -2,7 +2,7 @@
 const nextConfig = {
   // Configurar a porta padrão como 3001
   // Remover warning de múltiplos lockfiles
-  outputFileTracingRoot: '/Users/sdr-lopes/Downloads/Downloads/Lopes Web 0.01',
+  // outputFileTracingRoot removido - não suportado no Next.js 14
   
   // Desabilitar ESLint temporariamente para focar nos erros de TypeScript
   eslint: {

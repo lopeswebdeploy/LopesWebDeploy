@@ -3,6 +3,9 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { verifyPassword, setSession } from '@/lib/auth'
 
+// Configurar runtime para Node.js (necessário para bcryptjs)
+export const runtime = 'nodejs'
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
