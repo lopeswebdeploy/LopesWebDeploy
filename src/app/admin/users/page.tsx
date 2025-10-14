@@ -13,7 +13,7 @@ async function getUsers(page = 1, search = '', equipe = '', role = '', active = 
       ...(active && { active })
     })
 
-    const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3001'}/api/users?${params}`, {
+    const response = await fetch(`/api/users?${params}`, {
       cache: 'no-store'
     })
 

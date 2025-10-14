@@ -65,6 +65,11 @@ export default function UsersManagement({
   const [editingUser, setEditingUser] = useState<User | null>(null)
   const [showCreateForm, setShowCreateForm] = useState(false)
 
+  // Debug: Log dos dados iniciais
+  console.log('UsersManagement - initialUsers:', initialUsers)
+  console.log('UsersManagement - initialPagination:', initialPagination)
+  console.log('UsersManagement - initialFilters:', initialFilters)
+
   const loadUsers = async (newFilters?: Partial<Filters>, newPage = 1) => {
     setLoading(true)
     try {
@@ -77,8 +82,11 @@ export default function UsersManagement({
         ...(newFilters?.active && { active: newFilters.active })
       })
 
+      console.log('loadUsers - URL:', `/api/users?${params}`)
       const response = await fetch(`/api/users?${params}`)
       const data = await response.json()
+
+      console.log('loadUsers - Response:', response.status, data)
 
       if (response.ok) {
         setUsers(data.users)
@@ -286,7 +294,18 @@ export default function UsersManagement({
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {users.map((user) => (
+              {users.length === 0 ? (
+                <tr>
+                  <td colSpan={7} className="px-6 py-8 text-center text-gray-500">
+                    <div className="flex flex-col items-center gap-2">
+                      <Users className="w-8 h-8 text-gray-400" />
+                      <p>Nenhum usuário encontrado</p>
+                      <p className="text-sm">Tente ajustar os filtros ou criar um novo usuário</p>
+                    </div>
+                  </td>
+                </tr>
+              ) : (
+                users.map((user) => (
                 <tr key={user.id} className="hover:bg-gray-50">
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div>
@@ -365,7 +384,8 @@ export default function UsersManagement({
                     </div>
                   </td>
                 </tr>
-              ))}
+                ))
+              )}
             </tbody>
           </table>
         </div>
