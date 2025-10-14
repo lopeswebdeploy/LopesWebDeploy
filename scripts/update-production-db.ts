@@ -84,7 +84,7 @@ async function updateProductionDatabase() {
       `
       console.log('✅ Constraint de equipe criada!')
     } catch (error) {
-      if (error.message.includes('already exists')) {
+      if (error instanceof Error && error.message.includes('already exists')) {
         console.log('✅ Constraint de equipe já existe')
       } else {
         throw error

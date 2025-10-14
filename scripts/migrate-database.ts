@@ -97,7 +97,7 @@ async function checkAndCreateConstraints(): Promise<void> {
   } catch (error) {
     console.error('❌ Erro ao criar constraint de equipe:', error)
     // Não falhar se a constraint já existir
-    if (!error.message.includes('already exists')) {
+    if (error instanceof Error && !error.message.includes('already exists')) {
       throw error
     }
   }

@@ -70,7 +70,7 @@ async function quickUpdate() {
     console.log('\n🎉 ATUALIZAÇÃO CONCLUÍDA!')
     
   } catch (error) {
-    console.error('❌ Erro:', error.message)
+    console.error('❌ Erro:', error instanceof Error ? error.message : String(error))
   } finally {
     await prisma.$disconnect()
   }
