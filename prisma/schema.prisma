@@ -13,10 +13,10 @@ model User {
   email      String     @unique
   password   String
   role       String     @default("corretor")
-  equipe     String?    // "Lopes Marista", "Lopes Bueno", "Lopes Jardim Goias"
   active     Boolean    @default(false)
   createdAt  DateTime   @default(now())
   updatedAt  DateTime   @updatedAt
+  equipe     String?
   properties Property[]
 
   @@map("users")
@@ -44,11 +44,12 @@ model Property {
   googleMapsIframe  String?
   featured          Boolean  @default(false)
   visible           Boolean  @default(false)
-  isLancamento      Boolean  @default(false) // Para lançamentos
   status            String   @default("draft")
   authorId          Int
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
+  isLancamento      Boolean  @default(false)
+  islancamento      Boolean? @default(false)
   leads             Lead[]
   author            User     @relation(fields: [authorId], references: [id])
 

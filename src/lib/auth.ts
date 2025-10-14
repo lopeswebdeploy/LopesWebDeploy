@@ -13,6 +13,7 @@ export interface SessionData {
   name: string
   role: string
   active: boolean
+  equipe?: string
   [key: string]: any
 }
 

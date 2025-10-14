@@ -167,18 +167,33 @@ export default async function DashboardPage() {
             </Link>
 
             {isAdmin && (
-              <Link
-                href="/admin/leads"
-                className="flex items-center gap-3 p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-purple-500 hover:bg-purple-50 transition-colors group"
-              >
-                <div className="w-10 h-10 bg-purple-100 group-hover:bg-purple-200 rounded-lg flex items-center justify-center">
-                  <Mail className="w-6 h-6 text-purple-600" />
-                </div>
-                <div>
-                  <p className="font-semibold text-gray-900">Ver Leads</p>
-                  <p className="text-sm text-gray-600">Gerenciar contatos</p>
-                </div>
-              </Link>
+              <>
+                <Link
+                  href="/admin/leads"
+                  className="flex items-center gap-3 p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-purple-500 hover:bg-purple-50 transition-colors group"
+                >
+                  <div className="w-10 h-10 bg-purple-100 group-hover:bg-purple-200 rounded-lg flex items-center justify-center">
+                    <Mail className="w-6 h-6 text-purple-600" />
+                  </div>
+                  <div>
+                    <p className="font-semibold text-gray-900">Ver Leads</p>
+                    <p className="text-sm text-gray-600">Gerenciar contatos</p>
+                  </div>
+                </Link>
+
+                <Link
+                  href="/admin/users"
+                  className="flex items-center gap-3 p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-orange-500 hover:bg-orange-50 transition-colors group"
+                >
+                  <div className="w-10 h-10 bg-orange-100 group-hover:bg-orange-200 rounded-lg flex items-center justify-center">
+                    <Users className="w-6 h-6 text-orange-600" />
+                  </div>
+                  <div>
+                    <p className="font-semibold text-gray-900">Gerenciar Usuários</p>
+                    <p className="text-sm text-gray-600">Ativar contas e equipes</p>
+                  </div>
+                </Link>
+              </>
             )}
           </div>
         </div>
