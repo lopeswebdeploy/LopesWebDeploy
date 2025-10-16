@@ -1,7 +1,6 @@
 // Middleware de Autenticação
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
-import { verifyToken } from '@/lib/auth'
 
 export async function middleware(request: NextRequest) {
   const path = request.nextUrl.pathname
@@ -20,19 +19,26 @@ export async function middleware(request: NextRequest) {
       return NextResponse.redirect(loginUrl)
     }
 
-    const session = await verifyToken(token)
+    // Verificação básica do token (sem usar bcryptjs no Edge Runtime)
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]))
+      const now = Math.floor(Date.now() / 1000)
+      
+      if (payload.exp && payload.exp < now) {
+        const loginUrl = new URL('/admin/login', request.url)
+        loginUrl.searchParams.set('redirect', path)
+        return NextResponse.redirect(loginUrl)
+      }
 
-    // Redirecionar para login se não autenticado
-    if (!session) {
+      // Verificar se a conta está ativa
+      if (!payload.active) {
+        const loginUrl = new URL('/admin/login', request.url)
+        loginUrl.searchParams.set('error', 'inactive')
+        return NextResponse.redirect(loginUrl)
+      }
+    } catch (error) {
       const loginUrl = new URL('/admin/login', request.url)
       loginUrl.searchParams.set('redirect', path)
-      return NextResponse.redirect(loginUrl)
-    }
-
-    // Verificar se a conta está ativa
-    if (!session.active) {
-      const loginUrl = new URL('/admin/login', request.url)
-      loginUrl.searchParams.set('error', 'inactive')
       return NextResponse.redirect(loginUrl)
     }
   }

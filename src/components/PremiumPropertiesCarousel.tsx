@@ -53,7 +53,7 @@ export default function PremiumPropertiesCarousel({ properties }: PremiumPropert
                   {currentProperty.title}
                 </h3>
                 <p className="text-gray-300 text-sm mb-3 line-clamp-2">
-                  {currentProperty.description}
+                  {currentProperty.shortDescription}
                 </p>
                 <div className="text-pink-600 text-3xl font-bold">
                   {new Intl.NumberFormat('pt-BR', {
@@ -61,7 +61,7 @@ export default function PremiumPropertiesCarousel({ properties }: PremiumPropert
                     currency: 'BRL',
                     minimumFractionDigits: 0,
                     maximumFractionDigits: 0,
-                  }).format(currentProperty.price)}
+                  }).format(Number(currentProperty.price))}
                 </div>
               </div>
             </div>
