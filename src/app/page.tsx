@@ -59,12 +59,11 @@ export default async function HomePage() {
   ])
 
   return (
-        <main className="min-h-screen bg-gray-100 pt-22">
-          {/* Layout de 3 colunas como no template */}
-          <div className="w-full px-24 py-20">
-            <div className="max-w-8xl mx-auto">
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 h-96">
-            
+    <main className="min-h-screen bg-gray-100 pt-22">
+      {/* Layout de 3 colunas como no template */}
+      <div className="w-full px-24 py-20">
+        <div className="max-w-8xl mx-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 h-96">
             {/* Coluna 1: Filtro Gigante Preto */}
             <div className="lg:col-span-4">
               <PropertyFilter />
@@ -76,40 +75,103 @@ export default async function HomePage() {
             </div>
           </div>
         </div>
+      </div>
 
-        {/* Seção de Propriedades em Destaque (abaixo das 3 colunas) */}
-        {featuredProperties.length > 0 && (
-          <section className="mt-32">
-            <div className="w-full px-24">
-              <div className="max-w-8xl mx-auto">
-                <div className="text-center mb-12">
-                  <h2 className="text-4xl font-bold text-gray-900 mb-4">
-                    Imóveis em Destaque
-                  </h2>
-                  <p className="text-gray-600 text-lg">
-                    Confira nossa seleção especial de propriedades
+      {/* Seção de Contato e Estatísticas - COMPLETAMENTE SEPARADA */}
+      <section className="bg-gray-100 py-20 mt-32">
+        <div className="w-full px-24">
+          <div className="max-w-8xl mx-auto">
+            {/* Botão Entrar em Contato */}
+            <div className="text-center mb-16">
+              <button className="bg-black text-white px-8 py-4 rounded-lg font-semibold text-lg hover:bg-gray-800 transition-colors">
+                ENTRAR EM CONTATO
+              </button>
+            </div>
+
+            {/* Seção dividida por linha vertical */}
+            <div className="flex items-start gap-12">
+              {/* Lado Esquerdo - Aspas e Texto */}
+              <div className="flex-1 flex items-start gap-6">
+                {/* Aspas grandes em vermelho */}
+                <div className="text-8xl font-bold text-brand-coral leading-none">
+                  "
+                </div>
+                
+                {/* Texto */}
+                <div className="flex-1 pt-4">
+                  <p className="text-2xl font-medium text-gray-900 leading-relaxed">
+                    Realizar sonhos e conectar<br />
+                    pessoas através da melhor<br />
+                    experiência imobiliária
                   </p>
                 </div>
+              </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {featuredProperties.map((property: Property) => (
-                <PropertyCard key={property.id} property={property} />
-              ))}
-                </div>
+              {/* Linha divisória vertical */}
+              <div className="w-px h-32 bg-gray-300"></div>
 
-                <div className="text-center mt-12">
-                  <Link
-                    href="/imoveis"
-                    className="inline-flex items-center gap-2 bg-pink-600 hover:bg-pink-700 text-white px-8 py-4 rounded-lg font-semibold transition-colors"
-                  >
-                    Ver Todos os Imóveis
-                  </Link>
+              {/* Lado Direito - Estatísticas */}
+              <div className="flex-1 pt-4">
+                <div className="text-right">
+                  <div className="text-6xl font-bold text-gray-900 mb-2">
+                    2.500
+                  </div>
+                  <div className="text-xl text-gray-600">
+                    clientes atendidos
+                  </div>
                 </div>
               </div>
             </div>
-          </section>
-        )}
-      </div>
+
+            {/* Linha horizontal inferior com quadrados */}
+            <div className="mt-16 relative">
+              <div className="flex items-center">
+                {/* Quadrado esquerdo */}
+                <div className="w-3 h-3 bg-black"></div>
+                
+                {/* Linha horizontal */}
+                <div className="flex-1 h-px bg-black mx-4"></div>
+                
+                {/* Quadrado direito */}
+                <div className="w-3 h-3 bg-black"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Seção de Propriedades em Destaque (abaixo das 3 colunas) */}
+      {featuredProperties.length > 0 && (
+        <section className="mt-32">
+          <div className="w-full px-24">
+            <div className="max-w-8xl mx-auto">
+              <div className="text-center mb-12">
+                <h2 className="text-4xl font-bold text-gray-900 mb-4">
+                  Imóveis em Destaque
+                </h2>
+                <p className="text-gray-600 text-lg">
+                  Confira nossa seleção especial de propriedades
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {featuredProperties.map((property: Property) => (
+                  <PropertyCard key={property.id} property={property} />
+                ))}
+              </div>
+
+              <div className="text-center mt-12">
+                <Link
+                  href="/imoveis"
+                  className="inline-flex items-center gap-2 bg-brand-coral hover:bg-brand-coral-dark text-white px-8 py-4 rounded-lg font-semibold transition-colors"
+                >
+                  Ver Todos os Imóveis
+                </Link>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
     </main>
   )
 }

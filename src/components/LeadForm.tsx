@@ -73,8 +73,8 @@ export default function LeadForm({ propertyId, propertyTitle, onSuccess }: LeadF
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       {propertyTitle && (
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-          <p className="text-sm text-blue-700">
+        <div className="bg-brand-coral-light border border-brand-coral rounded-lg p-4">
+          <p className="text-sm text-brand-coral-dark">
             Tenho interesse em: <strong>{propertyTitle}</strong>
           </p>
         </div>
@@ -96,7 +96,7 @@ export default function LeadForm({ propertyId, propertyTitle, onSuccess }: LeadF
           required
           value={formData.name}
           onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-coral focus:border-transparent"
           placeholder="Seu nome completo"
         />
       </div>
@@ -111,7 +111,7 @@ export default function LeadForm({ propertyId, propertyTitle, onSuccess }: LeadF
           required
           value={formData.phone}
           onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-coral focus:border-transparent"
           placeholder="(00) 00000-0000"
         />
       </div>
@@ -125,7 +125,7 @@ export default function LeadForm({ propertyId, propertyTitle, onSuccess }: LeadF
           id="email"
           value={formData.email}
           onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-coral focus:border-transparent"
           placeholder="seu@email.com"
         />
       </div>
@@ -139,7 +139,7 @@ export default function LeadForm({ propertyId, propertyTitle, onSuccess }: LeadF
           rows={4}
           value={formData.message}
           onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-coral focus:border-transparent"
           placeholder="Gostaria de mais informações sobre este imóvel..."
         />
       </div>
@@ -147,7 +147,7 @@ export default function LeadForm({ propertyId, propertyTitle, onSuccess }: LeadF
       <button
         type="submit"
         disabled={loading}
-        className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
+        className="w-full bg-brand-coral text-white py-3 rounded-lg font-semibold hover:bg-brand-coral-dark transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
       >
         {loading ? 'Enviando...' : 'Enviar Mensagem'}
       </button>

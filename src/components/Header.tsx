@@ -130,7 +130,7 @@ const Header = () => {
             
             {/* CTA Button */}
             <Button 
-              className="bg-pink-600 hover:bg-pink-700 text-white rounded-full w-12 h-12 p-0"
+              className="bg-brand-coral hover:bg-brand-coral-dark text-white rounded-full w-12 h-12 p-0"
               onClick={() => router.push('/admin/login')}
             >
               <span className="sr-only">Login</span>

@@ -104,7 +104,7 @@ export default function EditPropertyPage({ params }: { params: Promise<{ id: str
   if (loading || !session || !property) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+        <Loader2 className="w-8 h-8 animate-spin text-brand-coral" />
       </div>
     )
   }

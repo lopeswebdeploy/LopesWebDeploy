@@ -179,7 +179,7 @@ export default function UsersManagement({
           </h2>
           <button
             onClick={() => setShowCreateForm(true)}
-            className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+            className="flex items-center gap-2 bg-brand-coral text-white px-4 py-2 rounded-lg hover:bg-brand-coral-dark transition-colors"
           >
             <Plus className="w-4 h-4" />
             Novo Usuário
@@ -209,7 +209,7 @@ export default function UsersManagement({
                   type="text"
                   value={filters.search}
                   onChange={(e) => setFilters({ ...filters, search: e.target.value })}
-                  className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-coral focus:border-transparent"
                   placeholder="Nome ou email..."
                 />
               </div>
@@ -222,7 +222,7 @@ export default function UsersManagement({
               <select
                 value={filters.equipe}
                 onChange={(e) => handleFilterChange('equipe', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-coral focus:border-transparent"
               >
                 <option value="">Todas</option>
                 <option value="Lopes Marista">Lopes Marista</option>
@@ -238,7 +238,7 @@ export default function UsersManagement({
               <select
                 value={filters.role}
                 onChange={(e) => handleFilterChange('role', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-coral focus:border-transparent"
               >
                 <option value="">Todos</option>
                 <option value="admin">Administrador</option>
@@ -253,7 +253,7 @@ export default function UsersManagement({
               <select
                 value={filters.active}
                 onChange={(e) => handleFilterChange('active', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-coral focus:border-transparent"
               >
                 <option value="">Todos</option>
                 <option value="true">Ativos</option>
@@ -320,7 +320,7 @@ export default function UsersManagement({
                     <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
                       user.role === 'admin' 
                         ? 'bg-purple-100 text-purple-800' 
-                        : 'bg-blue-100 text-blue-800'
+                        : 'bg-brand-coral-light text-brand-coral-dark'
                     }`}>
                       {getRoleLabel(user.role)}
                     </span>
@@ -369,7 +369,7 @@ export default function UsersManagement({
                     <div className="flex items-center justify-end gap-2">
                       <button
                         onClick={() => setEditingUser(user)}
-                        className="text-blue-600 hover:text-blue-800"
+                        className="text-brand-coral hover:text-brand-coral-dark"
                         title="Editar usuário"
                       >
                         <Edit className="w-4 h-4" />
@@ -426,7 +426,7 @@ export default function UsersManagement({
       {/* Loading */}
       {loading && (
         <div className="flex items-center justify-center py-8">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-brand-coral"></div>
         </div>
       )}
     </div>

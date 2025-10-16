@@ -118,7 +118,7 @@ export default function PropertyCard({
 
         {/* Badges */}
         <div className="absolute top-2 left-2 flex gap-2">
-          <span className="bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-semibold">
+          <span className="bg-brand-coral text-white px-3 py-1 rounded-full text-sm font-semibold">
             {getPropertyTypeLabel(property.propertyType)}
           </span>
           <span className="bg-green-600 text-white px-3 py-1 rounded-full text-sm font-semibold">
@@ -182,7 +182,7 @@ export default function PropertyCard({
         {/* Preço */}
         <div className="mb-4">
           <span className="text-sm text-gray-500">A partir de</span>
-          <p className="text-2xl font-bold text-blue-600">{formatPrice(Number(property.price))}</p>
+          <p className="text-2xl font-bold text-brand-coral">{formatPrice(Number(property.price))}</p>
         </div>
 
         {/* Ações */}
@@ -194,7 +194,7 @@ export default function PropertyCard({
               className={`flex-1 py-2 rounded-lg transition-colors ${
                 property.visible
                   ? 'bg-gray-400 text-gray-200 cursor-not-allowed'
-                  : 'bg-blue-600 text-white hover:bg-blue-700'
+                  : 'bg-brand-coral text-white hover:bg-brand-coral-dark'
               }`}
               title={property.visible ? 'Propriedades aprovadas não podem ser editadas' : 'Editar propriedade'}
             >
@@ -230,7 +230,7 @@ export default function PropertyCard({
         ) : (
           <Link
             href={`/imoveis/${property.id}`}
-            className="block w-full bg-blue-600 text-white text-center py-2 rounded-lg hover:bg-blue-700 transition-colors"
+            className="block w-full bg-brand-coral text-white text-center py-2 rounded-lg hover:bg-brand-coral-dark transition-colors"
           >
             Ver Mais
           </Link>

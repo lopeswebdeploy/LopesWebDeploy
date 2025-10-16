@@ -80,7 +80,7 @@ export default async function PropertyPage({ params }: { params: Promise<{ id: s
         {/* Breadcrumb */}
         <Link
           href="/imoveis"
-          className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 mb-6"
+          className="inline-flex items-center gap-2 text-brand-coral hover:text-brand-coral-dark mb-6"
         >
           <ChevronLeft className="w-4 h-4" />
           Voltar para Imóveis
@@ -121,7 +121,7 @@ export default async function PropertyPage({ params }: { params: Promise<{ id: s
 
               <div className="p-6">
                 <div className="flex items-center gap-2 mb-3">
-                  <span className="bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-semibold">
+                  <span className="bg-brand-coral text-white px-3 py-1 rounded-full text-sm font-semibold">
                     {getPropertyTypeLabel(property.propertyType)}
                   </span>
                   <span className="bg-green-600 text-white px-3 py-1 rounded-full text-sm font-semibold">
@@ -142,7 +142,7 @@ export default async function PropertyPage({ params }: { params: Promise<{ id: s
 
                 <div className="flex items-end gap-2 mb-4">
                   <span className="text-sm text-gray-500">A partir de</span>
-                  <span className="text-3xl font-bold text-blue-600">
+                  <span className="text-3xl font-bold text-brand-coral">
                     {formatPrice(Number(property.price))}
                   </span>
                 </div>
@@ -246,7 +246,7 @@ export default async function PropertyPage({ params }: { params: Promise<{ id: s
                           <span>{variant.area}m²</span>
                         </div>
                         {variant.price && (
-                          <span className="font-semibold text-blue-600">
+                          <span className="font-semibold text-brand-coral">
                             {formatPrice(variant.price)}
                           </span>
                         )}

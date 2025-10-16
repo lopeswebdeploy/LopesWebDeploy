@@ -240,7 +240,7 @@ export default function AdminPropertiesPage() {
   if (!session) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+        <Loader2 className="w-8 h-8 animate-spin text-brand-coral" />
       </div>
     )
   }
@@ -265,7 +265,7 @@ export default function AdminPropertiesPage() {
               </Link>
               <Link
                 href="/admin/properties/new"
-                className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+                className="flex items-center gap-2 bg-brand-coral text-white px-4 py-2 rounded-lg font-semibold hover:bg-brand-coral-dark transition-colors"
               >
                 <Plus className="w-4 h-4" />
                 Nova Propriedade
@@ -288,7 +288,7 @@ export default function AdminPropertiesPage() {
                     placeholder="Buscar por título, descrição..."
                     value={filters.search}
                     onChange={(e) => setFilters({ ...filters, search: e.target.value })}
-                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-coral"
                   />
                 </div>
               </div>
@@ -297,7 +297,7 @@ export default function AdminPropertiesPage() {
                 <select
                   value={filters.visible}
                   onChange={(e) => setFilters({ ...filters, visible: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-coral"
                 >
                   <option value="all">Todas (Visível/Oculto)</option>
                   <option value="true">Apenas Visíveis</option>
@@ -310,7 +310,7 @@ export default function AdminPropertiesPage() {
                   <select
                     value={filters.featured}
                     onChange={(e) => setFilters({ ...filters, featured: e.target.value })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-coral"
                   >
                     <option value="all">Todas (Destaque)</option>
                     <option value="true">Em Destaque</option>
@@ -323,7 +323,7 @@ export default function AdminPropertiesPage() {
             <div className="flex gap-3">
               <button
                 type="submit"
-                className="bg-blue-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+                className="bg-brand-coral text-white px-6 py-2 rounded-lg font-semibold hover:bg-brand-coral-dark transition-colors"
               >
                 Buscar
               </button>
@@ -350,7 +350,7 @@ export default function AdminPropertiesPage() {
         {/* Results */}
         {loading ? (
           <div className="flex justify-center items-center py-20">
-            <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+            <Loader2 className="w-8 h-8 animate-spin text-brand-coral" />
           </div>
         ) : (
           <div className="space-y-12">
@@ -435,7 +435,7 @@ export default function AdminPropertiesPage() {
                           <div className="flex gap-2 mt-4">
                             <button
                               onClick={() => handleEdit(property.id)}
-                              className="flex-1 bg-blue-600 text-white px-3 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors"
+                              className="flex-1 bg-brand-coral text-white px-3 py-2 rounded-lg text-sm font-medium hover:bg-brand-coral-dark transition-colors"
                             >
                               Editar
                             </button>
@@ -464,20 +464,20 @@ export default function AdminPropertiesPage() {
             {properties.length > 0 && (
               <div>
                 <div className="flex items-center gap-3 mb-6">
-                  <Star className="w-8 h-8 text-blue-600" />
+                  <Star className="w-8 h-8 text-brand-coral" />
                   <h2 className="text-2xl font-bold text-gray-900">
                     Propriedades Regulares
                   </h2>
-                  <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
+                  <span className="bg-brand-coral-light text-brand-coral-dark px-3 py-1 rounded-full text-sm font-medium">
                     {properties.length} propriedade(s)
                   </span>
                 </div>
 
                 {/* Regular Bulk Actions */}
                 {selectedProperties.length > 0 && (
-                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+                  <div className="bg-brand-coral-light border border-brand-coral rounded-lg p-4 mb-6">
                     <div className="flex items-center justify-between">
-                      <p className="text-blue-800 font-medium">
+                      <p className="text-brand-coral-dark font-medium">
                         {selectedProperties.length} propriedade(s) selecionada(s)
                       </p>
                       <div className="flex gap-2">
@@ -507,7 +507,7 @@ export default function AdminPropertiesPage() {
                         type="checkbox"
                         checked={selectedProperties.includes(property.id)}
                         onChange={() => handleSelectProperty(property.id)}
-                        className="absolute top-2 left-2 z-10 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                        className="absolute top-2 left-2 z-10 rounded border-gray-300 text-brand-coral focus:ring-brand-coral"
                       />
                       <PropertyCard
                         property={property}
@@ -531,7 +531,7 @@ export default function AdminPropertiesPage() {
                 </p>
                 <Link
                   href="/admin/properties/new"
-                  className="inline-flex items-center gap-2 bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+                  className="inline-flex items-center gap-2 bg-brand-coral text-white px-6 py-3 rounded-lg font-semibold hover:bg-brand-coral-dark transition-colors"
                 >
                   <Plus className="w-5 h-5" />
                   Criar Nova Propriedade

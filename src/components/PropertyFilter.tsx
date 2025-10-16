@@ -59,7 +59,7 @@ export default function PropertyFilter() {
           <div className="text-white p-8 rounded-2xl h-full flex flex-col" style={{ backgroundColor: '#000000' }}>
       <h2 className="text-2xl font-bold mb-8 text-left">
         <div>Encontre o que</div>
-        <div>procura aqui<span className="text-pink-600">.</span></div>
+        <div>procura aqui<span className="text-brand-coral">.</span></div>
       </h2>
 
             <div className="space-y-6 flex-1 flex flex-col justify-between">
@@ -143,12 +143,12 @@ export default function PropertyFilter() {
                      placeholder="NOME DO BAIRRO/SETOR"
                      value={filters.location}
                      onChange={(e) => setFilters(prev => ({ ...prev, location: e.target.value }))}
-                     className="flex-1 text-white border border-gray-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-pink-500"
+                     className="flex-1 text-white border border-gray-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-brand-coral"
                      style={{ backgroundColor: '#1a1a1a' }}
                    />
             <button
               onClick={handleSearch}
-              className="bg-pink-600 hover:bg-pink-700 text-white w-10 h-10 rounded-full font-semibold text-xs flex items-center justify-center"
+              className="bg-brand-coral hover:bg-brand-coral-dark text-white w-10 h-10 rounded-full font-semibold text-xs flex items-center justify-center"
             >
               IR
             </button>

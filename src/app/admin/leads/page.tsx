@@ -89,7 +89,7 @@ export default async function LeadsPage() {
                     <Phone className="w-4 h-4 text-gray-400" />
                     <a
                       href={`tel:${lead.phone}`}
-                      className="hover:text-blue-600 transition-colors"
+                      className="hover:text-brand-coral transition-colors"
                     >
                       {lead.phone}
                     </a>
@@ -100,7 +100,7 @@ export default async function LeadsPage() {
                       <Mail className="w-4 h-4 text-gray-400" />
                       <a
                         href={`mailto:${lead.email}`}
-                        className="hover:text-blue-600 transition-colors"
+                        className="hover:text-brand-coral transition-colors"
                       >
                         {lead.email}
                       </a>
@@ -108,8 +108,8 @@ export default async function LeadsPage() {
                   )}
 
                   {lead.property && (
-                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mt-3">
-                      <p className="text-sm text-blue-700">
+                    <div className="bg-brand-coral-light border border-brand-coral rounded-lg p-3 mt-3">
+                      <p className="text-sm text-brand-coral-dark">
                         Interesse em:{' '}
                         <Link
                           href={`/imoveis/${lead.property.id}`}

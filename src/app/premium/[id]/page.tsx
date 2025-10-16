@@ -137,7 +137,7 @@ export default async function PremiumPropertyPage({ params }: PremiumPropertyPag
                     PREMIUM
                   </span>
                   {property.featured && (
-                    <span className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg flex items-center gap-1">
+                    <span className="bg-gradient-to-r from-purple-500 to-brand-coral text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg flex items-center gap-1">
                       <Star className="w-4 h-4" />
                       DESTAQUE
                     </span>
@@ -153,7 +153,7 @@ export default async function PremiumPropertyPage({ params }: PremiumPropertyPag
                   <h1 className="text-4xl font-bold text-gray-900 mb-2">{property.title}</h1>
                   <p className="text-xl text-gray-600 mb-4">{property.shortDescription}</p>
                   <div className="flex items-center gap-4 text-gray-600">
-                    <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full font-semibold">
+                    <span className="bg-brand-coral-light text-brand-coral-dark px-3 py-1 rounded-full font-semibold">
                       {getPropertyTypeLabel(property.propertyType)}
                     </span>
                     <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full font-semibold">
@@ -170,10 +170,10 @@ export default async function PremiumPropertyPage({ params }: PremiumPropertyPag
               {/* Características Premium */}
               <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
                 {property.bedrooms > 0 && (
-                  <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-6 rounded-xl text-center">
-                    <Bed className="w-8 h-8 text-blue-600 mx-auto mb-2" />
-                    <p className="text-2xl font-bold text-blue-900">{property.bedrooms}</p>
-                    <p className="text-blue-700 font-semibold">Quartos</p>
+                  <div className="bg-gradient-to-br from-brand-coral-light to-brand-coral-light p-6 rounded-xl text-center">
+                    <Bed className="w-8 h-8 text-brand-coral mx-auto mb-2" />
+                    <p className="text-2xl font-bold text-brand-coral-dark">{property.bedrooms}</p>
+                    <p className="text-brand-coral-dark font-semibold">Quartos</p>
                   </div>
                 )}
                 {property.bathrooms > 0 && (
@@ -290,7 +290,7 @@ export default async function PremiumPropertyPage({ params }: PremiumPropertyPag
             <div className="bg-white rounded-2xl shadow-xl p-6">
               <h3 className="text-xl font-bold text-gray-900 mb-4">Seu Corretor</h3>
               <div className="text-center">
-                <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white text-2xl font-bold mx-auto mb-4">
+                <div className="w-16 h-16 bg-gradient-to-br from-brand-coral to-purple-600 rounded-full flex items-center justify-center text-white text-2xl font-bold mx-auto mb-4">
                   {property.author.name.charAt(0)}
                 </div>
                 <h4 className="font-bold text-gray-900">{property.author.name}</h4>
@@ -305,7 +305,7 @@ export default async function PremiumPropertyPage({ params }: PremiumPropertyPag
                   </a>
                   <a
                     href={`mailto:${property.author.email}`}
-                    className="flex items-center justify-center gap-2 w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition-colors font-semibold"
+                    className="flex items-center justify-center gap-2 w-full bg-brand-coral text-white py-3 rounded-lg hover:bg-brand-coral-dark transition-colors font-semibold"
                   >
                     <Mail className="w-5 h-5" />
                     Enviar Email

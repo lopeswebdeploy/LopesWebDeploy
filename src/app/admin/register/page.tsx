@@ -64,7 +64,7 @@ export default function RegisterPage() {
 
   if (success) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-100 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-gradient-to-br from-brand-coral-light to-brand-coral-light flex items-center justify-center p-4">
         <div className="w-full max-w-md">
           <div className="bg-white rounded-xl shadow-lg p-8 text-center">
             <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -73,8 +73,8 @@ export default function RegisterPage() {
             <h2 className="text-2xl font-bold text-gray-900 mb-2">
               Conta Criada com Sucesso!
             </h2>
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 my-6">
-              <p className="text-blue-800 text-sm">
+            <div className="bg-brand-coral-light border border-brand-coral rounded-lg p-4 my-6">
+              <p className="text-brand-coral-dark text-sm">
                 Entre em contato com a equipe de marketing da Lopes Marista para validar sua conta 
                 enviando seu <strong>nome</strong> e <strong>email</strong>.
               </p>
@@ -89,11 +89,11 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-100 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-brand-coral-light to-brand-coral-light flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         {/* Logo/Header */}
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-blue-600 mb-2">
+          <h1 className="text-4xl font-bold text-brand-coral mb-2">
             Lopes Marista
           </h1>
           <p className="text-gray-600">Registro de Corretor</p>
@@ -102,7 +102,7 @@ export default function RegisterPage() {
         {/* Register Form */}
         <div className="bg-white rounded-xl shadow-lg p-8">
           <div className="flex items-center gap-2 mb-6">
-            <UserPlus className="w-6 h-6 text-blue-600" />
+            <UserPlus className="w-6 h-6 text-brand-coral" />
             <h2 className="text-2xl font-bold text-gray-900">Criar Conta</h2>
           </div>
 
@@ -123,7 +123,7 @@ export default function RegisterPage() {
                 required
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-coral focus:border-transparent"
                 placeholder="Seu nome completo"
               />
             </div>
@@ -138,7 +138,7 @@ export default function RegisterPage() {
                 required
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-coral focus:border-transparent"
                 placeholder="seu@email.com"
               />
             </div>
@@ -152,7 +152,7 @@ export default function RegisterPage() {
                 required
                 value={formData.equipe}
                 onChange={(e) => setFormData({ ...formData, equipe: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-coral focus:border-transparent"
               >
                 <option value="">Selecione sua equipe</option>
                 <option value="Lopes Marista">Lopes Marista</option>
@@ -172,7 +172,7 @@ export default function RegisterPage() {
                 minLength={6}
                 value={formData.password}
                 onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-coral focus:border-transparent"
                 placeholder="Mínimo 6 caracteres"
               />
             </div>
@@ -187,7 +187,7 @@ export default function RegisterPage() {
                 required
                 value={formData.confirmPassword}
                 onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-coral focus:border-transparent"
                 placeholder="Digite a senha novamente"
               />
             </div>
@@ -195,7 +195,7 @@ export default function RegisterPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="w-full bg-brand-coral text-white py-3 rounded-lg font-semibold hover:bg-brand-coral-dark transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               {loading ? (
                 <>
@@ -211,7 +211,7 @@ export default function RegisterPage() {
           <div className="mt-6 text-center">
             <p className="text-sm text-gray-600">
               Já tem uma conta?{' '}
-              <Link href="/admin/login" className="text-blue-600 hover:text-blue-700 font-semibold">
+              <Link href="/admin/login" className="text-brand-coral hover:text-brand-coral-dark font-semibold">
                 Entrar
               </Link>
             </p>

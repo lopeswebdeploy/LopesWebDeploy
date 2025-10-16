@@ -99,7 +99,7 @@ export default function ImoveisPage() {
                   placeholder="Buscar por título, descrição ou endereço..."
                   value={filters.search}
                   onChange={(e) => setFilters({ ...filters, search: e.target.value })}
-                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-coral focus:border-transparent"
                 />
               </div>
               <button
@@ -112,7 +112,7 @@ export default function ImoveisPage() {
               </button>
               <button
                 type="submit"
-                className="px-8 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+                className="px-8 py-3 bg-brand-coral text-white rounded-lg font-semibold hover:bg-brand-coral-dark transition-colors"
               >
                 Buscar
               </button>
@@ -128,7 +128,7 @@ export default function ImoveisPage() {
                   <select
                     value={filters.propertyType}
                     onChange={(e) => setFilters({ ...filters, propertyType: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-coral"
                   >
                     <option value="">Todos</option>
                     <option value="casa">Casa</option>
@@ -145,7 +145,7 @@ export default function ImoveisPage() {
                   <select
                     value={filters.isLancamento}
                     onChange={(e) => setFilters({ ...filters, isLancamento: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-coral"
                   >
                     <option value="">Todos</option>
                     <option value="true">Apenas Lançamentos</option>
@@ -160,7 +160,7 @@ export default function ImoveisPage() {
                   <select
                     value={filters.transactionType}
                     onChange={(e) => setFilters({ ...filters, transactionType: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-coral"
                   >
                     <option value="">Todas</option>
                     <option value="venda">Venda</option>
@@ -178,7 +178,7 @@ export default function ImoveisPage() {
                     min="0"
                     value={filters.minPrice}
                     onChange={(e) => setFilters({ ...filters, minPrice: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-coral"
                     placeholder="0"
                   />
                 </div>
@@ -192,7 +192,7 @@ export default function ImoveisPage() {
                     min="0"
                     value={filters.maxPrice}
                     onChange={(e) => setFilters({ ...filters, maxPrice: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-coral"
                     placeholder="0"
                   />
                 </div>
@@ -206,7 +206,7 @@ export default function ImoveisPage() {
                     min="0"
                     value={filters.bedrooms}
                     onChange={(e) => setFilters({ ...filters, bedrooms: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-coral"
                     placeholder="0"
                   />
                 </div>
@@ -220,7 +220,7 @@ export default function ImoveisPage() {
                     min="0"
                     value={filters.bathrooms}
                     onChange={(e) => setFilters({ ...filters, bathrooms: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-coral"
                     placeholder="0"
                   />
                 </div>
@@ -229,7 +229,7 @@ export default function ImoveisPage() {
                   <button
                     type="button"
                     onClick={clearFilters}
-                    className="text-sm text-blue-600 hover:text-blue-700 font-medium"
+                    className="text-sm text-brand-coral hover:text-brand-coral-dark font-medium"
                   >
                     Limpar Filtros
                   </button>
@@ -242,7 +242,7 @@ export default function ImoveisPage() {
         {/* Results */}
         {loading ? (
           <div className="flex justify-center items-center py-20">
-            <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+            <Loader2 className="w-8 h-8 animate-spin text-brand-coral" />
           </div>
         ) : properties.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -261,7 +261,7 @@ export default function ImoveisPage() {
             </p>
             <button
               onClick={clearFilters}
-              className="mt-4 text-blue-600 hover:text-blue-700 font-semibold"
+              className="mt-4 text-brand-coral hover:text-brand-coral-dark font-semibold"
             >
               Limpar filtros e ver todos
             </button>

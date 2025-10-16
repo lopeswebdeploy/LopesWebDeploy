@@ -101,7 +101,7 @@ export default function ImageUploader({
 
         {/* Upload Button */}
         {images.length < maxFiles && (
-          <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-blue-500 transition-colors">
+          <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-brand-coral transition-colors">
             <div className="flex flex-col items-center justify-center pt-5 pb-6">
               {uploading ? (
                 <>

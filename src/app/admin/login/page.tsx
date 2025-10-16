@@ -52,11 +52,11 @@ function LoginForm() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-100 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-brand-coral-light to-brand-coral-light flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         {/* Logo/Header */}
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-blue-600 mb-2">
+          <h1 className="text-4xl font-bold text-brand-coral mb-2">
             Lopes Marista
           </h1>
           <p className="text-gray-600">Área do Corretor</p>
@@ -65,7 +65,7 @@ function LoginForm() {
         {/* Login Form */}
         <div className="bg-white rounded-xl shadow-lg p-8">
           <div className="flex items-center gap-2 mb-6">
-            <LogIn className="w-6 h-6 text-blue-600" />
+            <LogIn className="w-6 h-6 text-brand-coral" />
             <h2 className="text-2xl font-bold text-gray-900">Entrar</h2>
           </div>
 
@@ -86,7 +86,7 @@ function LoginForm() {
                 required
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-coral focus:border-transparent"
                 placeholder="seu@email.com"
               />
             </div>
@@ -101,7 +101,7 @@ function LoginForm() {
                 required
                 value={formData.password}
                 onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-coral focus:border-transparent"
                 placeholder="••••••••"
               />
             </div>
@@ -109,7 +109,7 @@ function LoginForm() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="w-full bg-brand-coral text-white py-3 rounded-lg font-semibold hover:bg-brand-coral-dark transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               {loading ? (
                 <>
@@ -125,7 +125,7 @@ function LoginForm() {
           <div className="mt-6 text-center">
             <p className="text-sm text-gray-600">
               Ainda não tem uma conta?{' '}
-              <Link href="/admin/register" className="text-blue-600 hover:text-blue-700 font-semibold">
+              <Link href="/admin/register" className="text-brand-coral hover:text-brand-coral-dark font-semibold">
                 Registrar-se
               </Link>
             </p>
@@ -146,8 +146,8 @@ function LoginForm() {
 export default function LoginPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-100 flex items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+      <div className="min-h-screen bg-gradient-to-br from-brand-coral-light to-brand-coral-light flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-brand-coral" />
       </div>
     }>
       <LoginForm />

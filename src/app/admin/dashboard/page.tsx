@@ -83,8 +83,8 @@ export default async function DashboardPage() {
                   {stats.totalProperties}
                 </p>
               </div>
-              <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                <Home className="w-6 h-6 text-blue-600" />
+              <div className="w-12 h-12 bg-brand-coral-light rounded-lg flex items-center justify-center">
+                <Home className="w-6 h-6 text-brand-coral" />
               </div>
             </div>
           </div>
@@ -142,10 +142,10 @@ export default async function DashboardPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <Link
               href="/admin/properties/new"
-              className="flex items-center gap-3 p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-colors group"
+              className="flex items-center gap-3 p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-brand-coral hover:bg-brand-coral-light transition-colors group"
             >
-              <div className="w-10 h-10 bg-blue-100 group-hover:bg-blue-200 rounded-lg flex items-center justify-center">
-                <Plus className="w-6 h-6 text-blue-600" />
+              <div className="w-10 h-10 bg-brand-coral-light group-hover:bg-brand-coral rounded-lg flex items-center justify-center">
+                <Plus className="w-6 h-6 text-brand-coral" />
               </div>
               <div>
                 <p className="font-semibold text-gray-900">Nova Propriedade</p>
@@ -200,11 +200,11 @@ export default async function DashboardPage() {
 
         {/* Info for Corretores */}
         {!isAdmin && (
-          <div className="mt-8 bg-blue-50 border border-blue-200 rounded-lg p-6">
-            <h3 className="font-semibold text-blue-900 mb-2">
+          <div className="mt-8 bg-brand-coral-light border border-brand-coral rounded-lg p-6">
+            <h3 className="font-semibold text-brand-coral-dark mb-2">
               📋 Informações Importantes
             </h3>
-            <ul className="text-sm text-blue-800 space-y-1">
+            <ul className="text-sm text-brand-coral-dark space-y-1">
               <li>• Propriedades criadas por você ficam invisíveis até aprovação do administrador</li>
               <li>• Você pode editar e excluir apenas suas propriedades</li>
               <li>• Após aprovação, você pode continuar editando suas propriedades</li>

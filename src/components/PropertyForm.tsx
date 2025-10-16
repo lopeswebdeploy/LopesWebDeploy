@@ -125,7 +125,7 @@ export default function PropertyForm({ property, onSubmit, isLoading = false }: 
               required
               value={formData.title}
               onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-coral focus:border-transparent"
               placeholder="Ex: Casa de Luxo no Centro"
             />
           </div>
@@ -143,7 +143,7 @@ export default function PropertyForm({ property, onSubmit, isLoading = false }: 
                   setShowApartmentVariants(false)
                 }
               }}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-coral focus:border-transparent"
             >
               <option value="casa">Casa</option>
               <option value="apartamento">Apartamento</option>
@@ -160,7 +160,7 @@ export default function PropertyForm({ property, onSubmit, isLoading = false }: 
               required
               value={formData.transactionType}
               onChange={(e) => setFormData({ ...formData, transactionType: e.target.value })}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-coral focus:border-transparent"
             >
               <option value="venda">Venda</option>
               <option value="aluguel">Aluguel</option>
@@ -174,7 +174,7 @@ export default function PropertyForm({ property, onSubmit, isLoading = false }: 
                 type="checkbox"
                 checked={formData.isLancamento}
                 onChange={(e) => setFormData({ ...formData, isLancamento: e.target.checked })}
-                className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                className="rounded border-gray-300 text-brand-coral focus:ring-brand-coral"
               />
               <span className="text-sm font-medium text-gray-700">
                 É um lançamento
@@ -197,7 +197,7 @@ export default function PropertyForm({ property, onSubmit, isLoading = false }: 
               step="0.01"
               value={formData.price}
               onChange={(e) => setFormData({ ...formData, price: parseFloat(e.target.value) })}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-coral focus:border-transparent"
               placeholder="0.00"
             />
           </div>
@@ -212,7 +212,7 @@ export default function PropertyForm({ property, onSubmit, isLoading = false }: 
               step="0.01"
               value={formData.area}
               onChange={(e) => setFormData({ ...formData, area: parseFloat(e.target.value) })}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-coral focus:border-transparent"
               placeholder="0.00"
             />
           </div>
@@ -232,7 +232,7 @@ export default function PropertyForm({ property, onSubmit, isLoading = false }: 
               rows={2}
               value={formData.shortDescription}
               onChange={(e) => setFormData({ ...formData, shortDescription: e.target.value })}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-coral focus:border-transparent"
               placeholder="Breve descrição..."
               maxLength={200}
             />
@@ -249,7 +249,7 @@ export default function PropertyForm({ property, onSubmit, isLoading = false }: 
               rows={6}
               value={formData.fullDescription}
               onChange={(e) => setFormData({ ...formData, fullDescription: e.target.value })}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-coral focus:border-transparent"
               placeholder="Descrição detalhada do imóvel..."
             />
           </div>
@@ -393,7 +393,7 @@ export default function PropertyForm({ property, onSubmit, isLoading = false }: 
                 type="checkbox"
                 checked={formData.amenities.includes(amenity)}
                 onChange={() => toggleAmenity(amenity)}
-                className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
+                className="w-4 h-4 text-brand-coral rounded focus:ring-brand-coral"
               />
               <span className="text-sm text-gray-700">{amenity}</span>
             </label>
@@ -414,7 +414,7 @@ export default function PropertyForm({ property, onSubmit, isLoading = false }: 
               type="text"
               value={formData.address}
               onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-coral focus:border-transparent"
               placeholder="Rua, número, bairro, cidade"
             />
           </div>
@@ -427,7 +427,7 @@ export default function PropertyForm({ property, onSubmit, isLoading = false }: 
               rows={3}
               value={formData.googleMapsIframe}
               onChange={(e) => setFormData({ ...formData, googleMapsIframe: e.target.value })}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono text-sm"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-coral focus:border-transparent font-mono text-sm"
               placeholder='<iframe src="https://www.google.com/maps/embed?pb=..." ...></iframe>'
             />
             <p className="text-xs text-gray-500 mt-1">
@@ -443,7 +443,7 @@ export default function PropertyForm({ property, onSubmit, isLoading = false }: 
               rows={4}
               value={formData.regionAdvantages}
               onChange={(e) => setFormData({ ...formData, regionAdvantages: e.target.value })}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-coral focus:border-transparent"
               placeholder="Descreva as vantagens da região onde está localizada a propriedade (ex: próximo ao shopping, metrô, escolas, hospitais, etc.)"
             />
             <p className="text-xs text-gray-500 mt-1">
@@ -461,7 +461,7 @@ export default function PropertyForm({ property, onSubmit, isLoading = false }: 
             <button
               type="button"
               onClick={() => setShowApartmentVariants(!showApartmentVariants)}
-              className="text-sm text-blue-600 hover:text-blue-700"
+              className="text-sm text-brand-coral hover:text-brand-coral-dark"
             >
               {showApartmentVariants ? 'Remover variantes' : 'Adicionar variantes'}
             </button>
@@ -560,7 +560,7 @@ export default function PropertyForm({ property, onSubmit, isLoading = false }: 
               <button
                 type="button"
                 onClick={addVariant}
-                className="flex items-center gap-2 text-blue-600 hover:text-blue-700"
+                className="flex items-center gap-2 text-brand-coral hover:text-brand-coral-dark"
               >
                 <Plus className="w-4 h-4" />
                 Adicionar Variante
@@ -575,7 +575,7 @@ export default function PropertyForm({ property, onSubmit, isLoading = false }: 
         <button
           type="submit"
           disabled={isLoading}
-          className="bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
+          className="bg-brand-coral text-white px-8 py-3 rounded-lg font-semibold hover:bg-brand-coral-dark transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
         >
           {isLoading ? 'Salvando...' : property ? 'Atualizar Propriedade' : 'Criar Propriedade'}
         </button>

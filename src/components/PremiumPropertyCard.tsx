@@ -53,7 +53,7 @@ export default function PremiumPropertyCard({
         
         {/* Botão de navegação circular no canto direito */}
         <div className="absolute bottom-4 right-4">
-          <button className="w-16 h-16 bg-pink-600 hover:bg-pink-700 rounded-full flex items-center justify-center transition-all duration-300 group-hover:scale-110">
+          <button className="w-16 h-16 bg-brand-coral hover:bg-brand-coral-dark rounded-full flex items-center justify-center transition-all duration-300 group-hover:scale-110">
             <ArrowRight className="w-6 h-6 text-white" />
           </button>
         </div>
@@ -87,7 +87,7 @@ export default function PremiumPropertyCard({
               className={`w-full py-2 px-4 rounded-lg text-sm font-semibold transition-colors ${
                 property.visible
                   ? 'bg-gray-600 text-gray-400 cursor-not-allowed'
-                  : 'bg-blue-600 text-white hover:bg-blue-700'
+                  : 'bg-brand-coral text-white hover:bg-brand-coral-dark'
               }`}
             >
               {property.visible ? 'Bloqueado' : 'Editar'}

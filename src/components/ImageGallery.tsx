@@ -99,7 +99,7 @@ export default function ImageGallery({
                 key={index}
                 onClick={() => goToImage(index)}
                 className={`relative h-20 rounded-lg overflow-hidden ${
-                  index === currentIndex ? 'ring-2 ring-blue-600' : ''
+                  index === currentIndex ? 'ring-2 ring-brand-coral' : ''
                 }`}
               >
                 <Image
