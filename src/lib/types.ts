@@ -27,6 +27,7 @@ export interface PropertyFormData {
   floorPlans: string[]
   apartmentVariants?: ApartmentVariant[]
   isLancamento: boolean
+  regionAdvantages: string
 }
 
 export interface ApartmentVariant {

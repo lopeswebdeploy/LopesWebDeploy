@@ -49,7 +49,8 @@ model Property {
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
   isLancamento      Boolean  @default(false)
-  islancamento      Boolean? @default(false)
+  isPremium         Boolean  @default(false) @map("ispremium")
+  regionAdvantages  String?  @map("regionadvantages")
   leads             Lead[]
   author            User     @relation(fields: [authorId], references: [id])
 

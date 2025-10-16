@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import PropertyCard from '@/components/PropertyCard'
+import PremiumPropertyCard from '@/components/PremiumPropertyCard'
 import { Property } from '@/lib/types'
 import { Search, SlidersHorizontal, Loader2 } from 'lucide-react'
 
@@ -71,7 +72,7 @@ export default function LancamentosPage() {
   }
 
   return (
-    <main className="min-h-screen bg-gray-50 pt-24">
+    <main className="min-h-screen bg-gray-50 pt-22">
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <div className="mb-8">
@@ -228,7 +229,11 @@ export default function LancamentosPage() {
         ) : properties.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {properties.map((property) => (
-              <PropertyCard key={property.id} property={property} />
+              property.isPremium ? (
+                <PremiumPropertyCard key={property.id} property={property} />
+              ) : (
+                <PropertyCard key={property.id} property={property} />
+              )
             ))}
           </div>
         ) : (

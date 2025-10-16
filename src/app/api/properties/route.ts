@@ -19,6 +19,7 @@ export async function GET(request: NextRequest) {
     const visible = searchParams.get('visible')
     const authorId = searchParams.get('authorId')
     const isLancamento = searchParams.get('isLancamento')
+    const isPremium = searchParams.get('isPremium')
     const search = searchParams.get('search')
     const limit = searchParams.get('limit')
     const offset = searchParams.get('offset')
@@ -33,6 +34,7 @@ export async function GET(request: NextRequest) {
     if (featured !== null) where.featured = featured === 'true'
     if (visible !== null) where.visible = visible === 'true'
     if (isLancamento !== null) where.isLancamento = isLancamento === 'true'
+    if (isPremium !== null) where.isPremium = isPremium === 'true'
     if (authorId) where.authorId = parseInt(authorId)
     
     if (minPrice || maxPrice) {
@@ -63,6 +65,7 @@ export async function GET(request: NextRequest) {
         },
       },
       orderBy: [
+        { isPremium: 'desc' },
         { featured: 'desc' },
         { createdAt: 'desc' },
       ],
@@ -112,6 +115,20 @@ export async function POST(request: NextRequest) {
     // Corretor sempre cria propriedades invisíveis
     const visible = session.role === 'admin' ? body.visible || false : false
 
+    // Verificar limite de propriedades premium (máximo 5)
+    if (body.isPremium) {
+      const premiumCount = await prisma.property.count({
+        where: { isPremium: true }
+      })
+      
+      if (premiumCount >= 5) {
+        return NextResponse.json(
+          { error: 'Limite de 5 propriedades premium atingido' },
+          { status: 400 }
+        )
+      }
+    }
+
     const property = await prisma.property.create({
       data: {
         title: body.title,
@@ -132,6 +149,7 @@ export async function POST(request: NextRequest) {
         apartmentVariants: body.apartmentVariants || null,
         address: body.address || '',
         googleMapsIframe: body.googleMapsIframe || '',
+        regionAdvantages: body.regionAdvantages || '',
         isLancamento: body.isLancamento || false,
         featured: false,
         visible,

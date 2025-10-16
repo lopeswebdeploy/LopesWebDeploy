@@ -75,7 +75,7 @@ export default async function PropertyPage({ params }: { params: Promise<{ id: s
     : []
 
   return (
-    <main className="min-h-screen bg-gray-50 pt-24">
+    <main className="min-h-screen bg-gray-50 pt-22">
       <div className="container mx-auto px-4 py-8">
         {/* Breadcrumb */}
         <Link
@@ -296,6 +296,26 @@ export default async function PropertyPage({ params }: { params: Promise<{ id: s
                         className="object-contain"
                       />
                     </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Vantagens da Região */}
+            {property.regionAdvantages && (
+              <div className="bg-white rounded-xl shadow-sm p-6">
+                <h2 className="text-2xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+                  <CheckCircle className="w-6 h-6 text-green-600" />
+                  Vantagens da Região
+                </h2>
+                <div className="space-y-3">
+                  {property.regionAdvantages.split('\n').map((advantage, index) => (
+                    advantage.trim() && (
+                      <div key={index} className="flex items-start gap-3">
+                        <CheckCircle className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
+                        <span className="text-gray-700">{advantage.trim()}</span>
+                      </div>
+                    )
                   ))}
                 </div>
               </div>

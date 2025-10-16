@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { ChevronLeft, ChevronRight, Bed, Bath, Car, Maximize } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Bed, Bath, Car, Maximize, Crown } from 'lucide-react'
 import { Property } from '@/lib/types'
 
 interface PropertyCardProps {
@@ -13,6 +13,7 @@ interface PropertyCardProps {
   onDelete?: (id: number) => void
   onToggleVisible?: (id: number, visible: boolean) => void
   onToggleFeatured?: (id: number, featured: boolean) => void
+  onTogglePremium?: (id: number, isPremium: boolean) => void
 }
 
 export default function PropertyCard({

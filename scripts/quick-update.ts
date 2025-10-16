@@ -29,6 +29,30 @@ async function quickUpdate() {
       console.log('ℹ️  Coluna isLancamento já existe')
     }
     
+    // Adicionar coluna isPremium se não existir
+    try {
+      await prisma.$executeRaw`ALTER TABLE properties ADD COLUMN isPremium BOOLEAN DEFAULT FALSE`
+      console.log('✅ Coluna isPremium adicionada')
+    } catch (e) {
+      console.log('ℹ️  Coluna isPremium já existe')
+    }
+    
+    // Adicionar coluna regionAdvantages se não existir
+    try {
+      await prisma.$executeRaw`ALTER TABLE properties ADD COLUMN regionAdvantages TEXT`
+      console.log('✅ Coluna regionAdvantages adicionada')
+    } catch (e) {
+      console.log('ℹ️  Coluna regionAdvantages já existe')
+    }
+
+    // Remover coluna duplicada islancamento se existir
+    try {
+      await prisma.$executeRaw`ALTER TABLE properties DROP COLUMN islancamento`
+      console.log('✅ Coluna islancamento duplicada removida')
+    } catch (e) {
+      console.log('ℹ️  Coluna islancamento não existe ou já foi removida')
+    }
+    
     // Atualizar usuários com equipe padrão
     const result = await prisma.user.updateMany({
       where: {

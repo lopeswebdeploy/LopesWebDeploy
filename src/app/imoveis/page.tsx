@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import PropertyCard from '@/components/PropertyCard'
+import PremiumPropertyCard from '@/components/PremiumPropertyCard'
 import { Property } from '@/lib/types'
 import { Search, SlidersHorizontal, Loader2 } from 'lucide-react'
 
@@ -16,6 +17,7 @@ export default function ImoveisPage() {
     bedrooms: '',
     bathrooms: '',
     search: '',
+    isLancamento: '',
   })
   const [showFilters, setShowFilters] = useState(false)
 
@@ -29,7 +31,7 @@ export default function ImoveisPage() {
       // Construir query string
       const params = new URLSearchParams()
       params.append('visible', 'true') // Apenas propriedades visíveis
-      params.append('isLancamento', 'false') // Excluir lançamentos
+      // Não filtrar por lançamento - mostrar todas as propriedades visíveis
 
       if (filters.propertyType) params.append('propertyType', filters.propertyType)
       if (filters.transactionType) params.append('transactionType', filters.transactionType)
@@ -38,6 +40,7 @@ export default function ImoveisPage() {
       if (filters.bedrooms) params.append('bedrooms', filters.bedrooms)
       if (filters.bathrooms) params.append('bathrooms', filters.bathrooms)
       if (filters.search) params.append('search', filters.search)
+      if (filters.isLancamento !== '') params.append('isLancamento', filters.isLancamento)
 
       const response = await fetch(`/api/properties?${params}`)
       const data = await response.json()
@@ -66,12 +69,13 @@ export default function ImoveisPage() {
       bedrooms: '',
       bathrooms: '',
       search: '',
+      isLancamento: '',
     })
     setTimeout(() => fetchProperties(), 0)
   }
 
   return (
-    <main className="min-h-screen bg-gray-50 pt-24">
+    <main className="min-h-screen bg-gray-50 pt-22">
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <div className="mb-8">
@@ -79,7 +83,7 @@ export default function ImoveisPage() {
             Nossos Imóveis
           </h1>
           <p className="text-gray-600">
-            Explore nossa seleção completa de propriedades disponíveis
+            Explore nossa seleção completa de propriedades disponíveis, incluindo lançamentos e propriedades premium
           </p>
         </div>
 
@@ -116,7 +120,7 @@ export default function ImoveisPage() {
 
             {/* Filters */}
             {showFilters && (
-              <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4 pt-4 border-t">
+              <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-7 gap-4 pt-4 border-t">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     Tipo
@@ -131,6 +135,21 @@ export default function ImoveisPage() {
                     <option value="apartamento">Apartamento</option>
                     <option value="terreno">Terreno</option>
                     <option value="comercial">Comercial</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Lançamento
+                  </label>
+                  <select
+                    value={filters.isLancamento}
+                    onChange={(e) => setFilters({ ...filters, isLancamento: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="">Todos</option>
+                    <option value="true">Apenas Lançamentos</option>
+                    <option value="false">Excluir Lançamentos</option>
                   </select>
                 </div>
 
@@ -206,7 +225,7 @@ export default function ImoveisPage() {
                   />
                 </div>
 
-                <div className="md:col-span-3 lg:col-span-6">
+                <div className="md:col-span-3 lg:col-span-7">
                   <button
                     type="button"
                     onClick={clearFilters}
@@ -228,7 +247,11 @@ export default function ImoveisPage() {
         ) : properties.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {properties.map((property) => (
-              <PropertyCard key={property.id} property={property} />
+              property.isPremium ? (
+                <PremiumPropertyCard key={property.id} property={property} />
+              ) : (
+                <PropertyCard key={property.id} property={property} />
+              )
             ))}
           </div>
         ) : (

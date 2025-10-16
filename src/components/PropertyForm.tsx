@@ -48,6 +48,7 @@ export default function PropertyForm({ property, onSubmit, isLoading = false }: 
       ? (property.apartmentVariants as unknown as ApartmentVariant[])
       : [],
     isLancamento: property?.isLancamento || false,
+    regionAdvantages: property?.regionAdvantages || '',
   })
 
   const [showApartmentVariants, setShowApartmentVariants] = useState(
@@ -183,6 +184,7 @@ export default function PropertyForm({ property, onSubmit, isLoading = false }: 
               Marque se esta propriedade é um novo lançamento
             </p>
           </div>
+
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -430,6 +432,22 @@ export default function PropertyForm({ property, onSubmit, isLoading = false }: 
             />
             <p className="text-xs text-gray-500 mt-1">
               ⚠️ Importante: Acesse Google Maps em um computador, pesquise o local, clique em "Compartilhar" → "Incorporar um mapa" → Copie o código HTML completo
+            </p>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Vantagens da Região
+            </label>
+            <textarea
+              rows={4}
+              value={formData.regionAdvantages}
+              onChange={(e) => setFormData({ ...formData, regionAdvantages: e.target.value })}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              placeholder="Descreva as vantagens da região onde está localizada a propriedade (ex: próximo ao shopping, metrô, escolas, hospitais, etc.)"
+            />
+            <p className="text-xs text-gray-500 mt-1">
+              💡 Dica: Liste as principais vantagens da localização, separadas por quebras de linha
             </p>
           </div>
         </div>
