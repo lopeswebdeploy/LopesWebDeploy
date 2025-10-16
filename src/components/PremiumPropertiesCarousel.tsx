@@ -66,7 +66,6 @@ export default function PremiumPropertiesCarousel({ properties }: PremiumPropert
       {/* Propriedade Principal - 65% da largura */}
       <div className="w-2/3 relative">
         <div className="bg-gray-800 rounded-3xl h-full overflow-hidden relative group">
-          {/* Imagem principal - destaque maior */}
           <div className="h-4/5 relative">
             {currentProperty.galleryImages && currentProperty.galleryImages.length > 0 ? (
               <img
@@ -80,7 +79,6 @@ export default function PremiumPropertiesCarousel({ properties }: PremiumPropert
               </div>
             )}
             
-            {/* Overlay com informações na imagem */}
             <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 to-transparent p-6">
               <h3 className="text-white text-2xl font-bold mb-2 line-clamp-2">
                 {currentProperty.title}
@@ -98,8 +96,6 @@ export default function PremiumPropertiesCarousel({ properties }: PremiumPropert
               </div>
             </div>
           </div>
-          
-          {/* Faixa preta embaixo - sem informações */}
           <div className="h-1/5 bg-black rounded-b-3xl"></div>
         </div>
       </div>
@@ -107,7 +103,6 @@ export default function PremiumPropertiesCarousel({ properties }: PremiumPropert
       {/* Propriedade Preview - 35% da largura com blur */}
       <div className="w-1/3 relative">
         <div className="bg-gray-800 rounded-3xl h-full overflow-hidden relative group">
-          {/* Imagem preview com blur */}
           <div className="h-4/5 relative">
             {nextPropertyData.galleryImages && nextPropertyData.galleryImages.length > 0 ? (
               <img
@@ -121,11 +116,8 @@ export default function PremiumPropertiesCarousel({ properties }: PremiumPropert
               </div>
             )}
             
-            {/* Overlay escuro para criar efeito de preview */}
             <div className="absolute inset-0 bg-black/60 rounded-t-3xl"></div>
           </div>
-          
-          {/* Faixa preta embaixo */}
           <div className="h-1/5 bg-black rounded-b-3xl"></div>
         </div>
       </div>

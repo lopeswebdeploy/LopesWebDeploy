@@ -77,6 +77,27 @@ All colors MUST be HSL.
     /* Spacing scale for luxury layouts */
     --space-luxury: 6rem;
     --space-section: 4rem;
+    
+    /* Mobile-first spacing scale */
+    --mobile-space-xs: 0.5rem;    /* 8px */
+    --mobile-space-sm: 0.75rem;   /* 12px */
+    --mobile-space-md: 1rem;      /* 16px */
+    --mobile-space-lg: 1.5rem;    /* 24px */
+    --mobile-space-xl: 2rem;      /* 32px */
+    --mobile-space-2xl: 3rem;     /* 48px */
+    --mobile-space-3xl: 4rem;     /* 64px */
+    
+    /* Mobile typography scale */
+    --mobile-text-xs: 0.75rem;      /* 12px */
+    --mobile-text-sm: 0.875rem;     /* 14px */
+    --mobile-text-base: 1rem;       /* 16px */
+    --mobile-text-lg: 1.125rem;     /* 18px */
+    --mobile-text-xl: 1.25rem;      /* 20px */
+    --mobile-text-2xl: 1.5rem;      /* 24px */
+    --mobile-text-3xl: 1.875rem;    /* 30px */
+    --mobile-text-4xl: 2.25rem;     /* 36px */
+    --mobile-text-5xl: 3rem;        /* 48px */
+    --mobile-text-6xl: 3.75rem;     /* 60px */
 
     /* Sidebar (if needed) */
     --sidebar-background: 0 0% 98%;
@@ -232,5 +253,82 @@ All colors MUST be HSL.
 
   .glass-effect {
     @apply bg-white/80 backdrop-blur-md border border-white/20;
+  }
+
+  /* Mobile-first responsive utilities */
+  .mobile-container {
+    @apply px-4 mx-auto;
+  }
+  
+  .mobile-section {
+    @apply py-8;
+  }
+  
+  .mobile-text-responsive {
+    @apply text-base lg:text-lg;
+  }
+  
+  .mobile-heading-responsive {
+    @apply text-xl lg:text-2xl;
+  }
+  
+  .mobile-title-responsive {
+    @apply text-2xl lg:text-3xl;
+  }
+  
+  .mobile-hero-responsive {
+    @apply text-3xl lg:text-4xl;
+  }
+  
+  .mobile-spacing-responsive {
+    @apply space-y-6 lg:space-y-8;
+  }
+  
+  .mobile-padding-responsive {
+    @apply p-4 lg:p-6;
+  }
+  
+  .mobile-margin-responsive {
+    @apply m-4 lg:m-6;
+  }
+  
+  /* Mobile grid system */
+  .mobile-grid {
+    @apply grid grid-cols-1 gap-4;
+  }
+  
+  .mobile-grid-2 {
+    @apply grid grid-cols-1 sm:grid-cols-2 gap-4;
+  }
+  
+  .mobile-grid-3 {
+    @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4;
+  }
+  
+  /* Mobile card system */
+  .mobile-card {
+    @apply bg-white rounded-lg shadow-md p-4;
+  }
+  
+  .mobile-card-compact {
+    @apply bg-white rounded-lg shadow-sm p-3;
+  }
+  
+  /* Mobile button system */
+  .mobile-btn {
+    @apply px-4 py-2 rounded-lg text-sm font-medium;
+  }
+  
+  .mobile-btn-lg {
+    @apply px-6 py-3 rounded-lg text-base font-semibold;
+  }
+  
+  /* Mobile navigation */
+  .mobile-nav {
+    @apply flex flex-col space-y-2;
+  }
+  
+  .mobile-nav-item {
+    @apply text-base py-2 px-4 rounded-lg;
   }
 }
