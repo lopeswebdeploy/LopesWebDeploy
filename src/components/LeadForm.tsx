@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { LeadFormData } from '@/lib/types'
+import MobileForm, { MobileInput, MobileTextarea, MobileButton } from './MobileForm'
 
 interface LeadFormProps {
   propertyId?: number
@@ -61,9 +62,9 @@ export default function LeadForm({ propertyId, propertyTitle, onSuccess }: LeadF
 
   if (success) {
     return (
-      <div className="bg-green-50 border border-green-200 rounded-lg p-6 text-center">
-        <p className="text-green-700 font-semibold">Mensagem enviada com sucesso!</p>
-        <p className="text-green-600 text-sm mt-2">
+      <div className="mobile-card-md bg-green-50 border border-green-200 text-center">
+        <p className="mobile-text-sm font-semibold text-green-700">Mensagem enviada com sucesso!</p>
+        <p className="mobile-text-2xs text-green-600 mobile-mt-sm">
           Entraremos em contato em breve.
         </p>
       </div>
@@ -71,87 +72,65 @@ export default function LeadForm({ propertyId, propertyTitle, onSuccess }: LeadF
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <MobileForm onSubmit={handleSubmit}>
       {propertyTitle && (
-        <div className="bg-brand-coral-light border border-brand-coral rounded-lg p-4">
-          <p className="text-sm text-brand-coral-dark">
+        <div className="mobile-card-sm bg-brand-coral-light border border-brand-coral">
+          <p className="mobile-text-2xs text-brand-coral-dark">
             Tenho interesse em: <strong>{propertyTitle}</strong>
           </p>
         </div>
       )}
 
       {error && (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-          <p className="text-red-700">{error}</p>
+        <div className="mobile-card-sm bg-red-50 border border-red-200">
+          <p className="mobile-text-2xs text-red-700">{error}</p>
         </div>
       )}
 
-      <div>
-        <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
-          Nome *
-        </label>
-        <input
-          type="text"
-          id="name"
-          required
-          value={formData.name}
-          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-coral focus:border-transparent"
-          placeholder="Seu nome completo"
-        />
-      </div>
+      <MobileInput
+        type="text"
+        label="Nome"
+        required
+        value={formData.name}
+        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+        placeholder="Seu nome completo"
+      />
 
-      <div>
-        <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">
-          Telefone *
-        </label>
-        <input
-          type="tel"
-          id="phone"
-          required
-          value={formData.phone}
-          onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-coral focus:border-transparent"
-          placeholder="(00) 00000-0000"
-        />
-      </div>
+      <MobileInput
+        type="tel"
+        label="Telefone"
+        required
+        value={formData.phone}
+        onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+        placeholder="(00) 00000-0000"
+      />
 
-      <div>
-        <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-          Email
-        </label>
-        <input
-          type="email"
-          id="email"
-          value={formData.email}
-          onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-coral focus:border-transparent"
-          placeholder="seu@email.com"
-        />
-      </div>
+      <MobileInput
+        type="email"
+        label="Email"
+        value={formData.email}
+        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+        placeholder="seu@email.com"
+      />
 
-      <div>
-        <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-1">
-          Mensagem
-        </label>
-        <textarea
-          id="message"
-          rows={4}
-          value={formData.message}
-          onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-coral focus:border-transparent"
-          placeholder="Gostaria de mais informações sobre este imóvel..."
-        />
-      </div>
+      <MobileTextarea
+        label="Mensagem"
+        value={formData.message}
+        onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+        placeholder="Gostaria de mais informações sobre este imóvel..."
+        rows={4}
+      />
 
-      <button
+      <MobileButton
         type="submit"
         disabled={loading}
-        className="w-full bg-brand-coral text-white py-3 rounded-lg font-semibold hover:bg-brand-coral-dark transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
+        loading={loading}
+        size="lg"
+        className="w-full"
       >
         {loading ? 'Enviando...' : 'Enviar Mensagem'}
-      </button>
-    </form>
+      </MobileButton>
+    </MobileForm>
   )
 }
 

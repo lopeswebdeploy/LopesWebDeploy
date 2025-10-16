@@ -66,9 +66,9 @@ export default function PropertyCard({
   }
 
   return (
-    <div className="bg-white rounded-lg lg:rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
+    <div className="mobile-card-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
       {/* Galeria de Imagens */}
-      <div className="relative h-48 lg:h-64 bg-gray-200 group">
+      <div className="relative mobile-h-48 lg:h-64 bg-gray-200 group overflow-hidden">
         {images.length > 0 ? (
           <>
             <Image
@@ -83,25 +83,25 @@ export default function PropertyCard({
               <>
                 <button
                   onClick={prevImage}
-                  className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/50 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                  className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/50 text-white mobile-p-sm rounded-full opacity-0 group-hover:opacity-100 transition-opacity mobile-touch-target lg:p-2"
                   aria-label="Imagem anterior"
                 >
-                  <ChevronLeft className="w-5 h-5" />
+                  <ChevronLeft className="mobile-w-4 h-4 lg:w-5 lg:h-5" />
                 </button>
                 <button
                   onClick={nextImage}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/50 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/50 text-white mobile-p-sm rounded-full opacity-0 group-hover:opacity-100 transition-opacity mobile-touch-target lg:p-2"
                   aria-label="Próxima imagem"
                 >
-                  <ChevronRight className="w-5 h-5" />
+                  <ChevronRight className="mobile-w-4 h-4 lg:w-5 lg:h-5" />
                 </button>
 
                 {/* Indicadores */}
-                <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1">
+                <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex mobile-gap-xs">
                   {images.map((_img: string, index: number) => (
                     <div
                       key={index}
-                      className={`w-2 h-2 rounded-full ${
+                      className={`mobile-w-2 h-2 lg:w-2 lg:h-2 rounded-full transition-colors ${
                         index === currentImageIndex ? 'bg-white' : 'bg-white/50'
                       }`}
                     />
@@ -117,18 +117,18 @@ export default function PropertyCard({
         )}
 
         {/* Badges */}
-        <div className="absolute top-2 left-2 flex gap-1 lg:gap-2">
-          <span className="bg-brand-coral text-white px-2 lg:px-3 py-1 rounded-full text-mobile-xs lg:text-sm font-semibold">
+        <div className="absolute top-2 left-2 flex mobile-gap-xs">
+          <span className="bg-brand-coral text-white mobile-px-sm mobile-py-xs rounded-full mobile-text-2xs font-semibold">
             {getPropertyTypeLabel(property.propertyType)}
           </span>
-          <span className="bg-green-600 text-white px-2 lg:px-3 py-1 rounded-full text-mobile-xs lg:text-sm font-semibold">
+          <span className="bg-green-600 text-white mobile-px-sm mobile-py-xs rounded-full mobile-text-2xs font-semibold">
             {getTransactionTypeLabel(property.transactionType)}
           </span>
         </div>
 
         {property.featured && (
           <div className="absolute top-2 right-2">
-            <span className="bg-yellow-500 text-white px-2 lg:px-3 py-1 rounded-full text-mobile-xs lg:text-sm font-semibold">
+            <span className="bg-yellow-500 text-white mobile-px-sm mobile-py-xs rounded-full mobile-text-2xs font-semibold">
               Destaque
             </span>
           </div>
@@ -136,7 +136,7 @@ export default function PropertyCard({
 
         {showAdminActions && !property.visible && (
           <div className="absolute bottom-2 right-2">
-            <span className="bg-red-500 text-white px-2 lg:px-3 py-1 rounded-full text-mobile-xs lg:text-sm font-semibold">
+            <span className="bg-red-500 text-white mobile-px-sm mobile-py-xs rounded-full mobile-text-2xs font-semibold">
               Não Visível
             </span>
           </div>
@@ -144,54 +144,54 @@ export default function PropertyCard({
       </div>
 
       {/* Conteúdo */}
-      <div className="p-mobile-md lg:p-5">
-        <h3 className="text-mobile-lg lg:text-xl font-bold text-gray-900 mb-2">{property.title}</h3>
+      <div className="mobile-p-md">
+        <h3 className="mobile-text-lg font-bold text-gray-900 mobile-mb-sm">{property.title}</h3>
         
-        <p className="text-gray-600 text-mobile-sm lg:text-sm mb-3 line-clamp-2">
+        <p className="text-gray-600 mobile-text-sm mobile-mb-sm line-clamp-2">
           {property.shortDescription}
         </p>
 
         {/* Características */}
-        <div className="flex gap-2 lg:gap-4 mb-3 text-gray-600 text-mobile-xs lg:text-sm">
+        <div className="flex mobile-gap-sm mobile-mb-sm text-gray-600 mobile-text-2xs">
           {property.bedrooms > 0 && (
-            <div className="flex items-center gap-1">
-              <Bed className="w-3 h-3 lg:w-4 lg:h-4" />
+            <div className="flex items-center mobile-gap-xs">
+              <Bed className="mobile-w-3 h-3 lg:w-4 lg:h-4" />
               <span>{property.bedrooms}</span>
             </div>
           )}
           {property.bathrooms > 0 && (
-            <div className="flex items-center gap-1">
-              <Bath className="w-3 h-3 lg:w-4 lg:h-4" />
+            <div className="flex items-center mobile-gap-xs">
+              <Bath className="mobile-w-3 h-3 lg:w-4 lg:h-4" />
               <span>{property.bathrooms}</span>
             </div>
           )}
           {property.parkingSpaces > 0 && (
-            <div className="flex items-center gap-1">
-              <Car className="w-3 h-3 lg:w-4 lg:h-4" />
+            <div className="flex items-center mobile-gap-xs">
+              <Car className="mobile-w-3 h-3 lg:w-4 lg:h-4" />
               <span>{property.parkingSpaces}</span>
             </div>
           )}
           {property.area && (
-            <div className="flex items-center gap-1">
-              <Maximize className="w-3 h-3 lg:w-4 lg:h-4" />
+            <div className="flex items-center mobile-gap-xs">
+              <Maximize className="mobile-w-3 h-3 lg:w-4 lg:h-4" />
               <span>{Number(property.area)}m²</span>
             </div>
           )}
         </div>
 
         {/* Preço */}
-        <div className="mb-4">
-          <span className="text-mobile-xs lg:text-sm text-gray-500">A partir de</span>
-          <p className="text-mobile-xl lg:text-2xl font-bold text-brand-coral">{formatPrice(Number(property.price))}</p>
+        <div className="mobile-mb-md">
+          <span className="mobile-text-2xs text-gray-500">A partir de</span>
+          <p className="mobile-text-xl font-bold text-brand-coral">{formatPrice(Number(property.price))}</p>
         </div>
 
         {/* Ações */}
         {showAdminActions ? (
-          <div className="flex gap-1 lg:gap-2">
+          <div className="flex mobile-gap-xs">
             <button
               onClick={() => onEdit?.(property.id)}
               disabled={property.visible}
-              className={`flex-1 py-mobile-sm lg:py-2 rounded-lg transition-colors text-mobile-xs lg:text-sm ${
+              className={`flex-1 mobile-btn-sm mobile-touch-target mobile-focus-ring transition-colors ${
                 property.visible
                   ? 'bg-gray-400 text-gray-200 cursor-not-allowed'
                   : 'bg-brand-coral text-white hover:bg-brand-coral-dark'
@@ -202,7 +202,7 @@ export default function PropertyCard({
             </button>
             <button
               onClick={() => onToggleVisible?.(property.id, !property.visible)}
-              className={`flex-1 py-mobile-sm lg:py-2 rounded-lg transition-colors text-mobile-xs lg:text-sm ${
+              className={`flex-1 mobile-btn-sm mobile-touch-target mobile-focus-ring transition-colors ${
                 property.visible
                   ? 'bg-yellow-600 text-white hover:bg-yellow-700'
                   : 'bg-green-600 text-white hover:bg-green-700'
@@ -212,7 +212,7 @@ export default function PropertyCard({
             </button>
             <button
               onClick={() => onToggleFeatured?.(property.id, !property.featured)}
-              className={`flex-1 py-mobile-sm lg:py-2 rounded-lg transition-colors text-mobile-xs lg:text-sm ${
+              className={`flex-1 mobile-btn-sm mobile-touch-target mobile-focus-ring transition-colors ${
                 property.featured
                   ? 'bg-gray-600 text-white hover:bg-gray-700'
                   : 'bg-purple-600 text-white hover:bg-purple-700'
@@ -222,7 +222,7 @@ export default function PropertyCard({
             </button>
             <button
               onClick={() => onDelete?.(property.id)}
-              className="bg-red-600 text-white px-mobile-sm lg:px-4 py-mobile-sm lg:py-2 rounded-lg hover:bg-red-700 transition-colors text-mobile-xs lg:text-sm"
+              className="mobile-btn-sm bg-red-600 text-white hover:bg-red-700 transition-colors mobile-touch-target mobile-focus-ring"
             >
               Deletar
             </button>
@@ -230,7 +230,7 @@ export default function PropertyCard({
         ) : (
           <Link
             href={`/imoveis/${property.id}`}
-            className="block w-full bg-brand-coral text-white text-center py-mobile-sm lg:py-2 rounded-lg hover:bg-brand-coral-dark transition-colors text-mobile-sm lg:text-base"
+            className="block w-full mobile-btn-md bg-brand-coral text-white text-center hover:bg-brand-coral-dark transition-colors mobile-touch-target mobile-focus-ring"
           >
             Ver Mais
           </Link>

@@ -45,17 +45,17 @@ const Header = () => {
   };
 
   return (
-        <header className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-200 shadow-sm">
-          <div className="w-full max-w-7xl mx-auto px-mobile-md lg:px-6">
-        <div className="flex items-center justify-between h-16 lg:h-20">
+        <header className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-200 shadow-sm">
+          <div className="w-full max-w-7xl mx-auto mobile-container-lg">
+        <div className="flex items-center justify-between mobile-h-16 lg:h-20">
           {/* Logo */}
-          <Link href="/" className="flex-shrink-0">
+          <Link href="/" className="flex-shrink-0 mobile-touch-target">
             <Image
               src="/logo-preta.png"
               alt="Lopes Imóveis"
               width={120}
               height={40}
-              className="h-8 lg:h-10 w-auto"
+              className="mobile-h-8 lg:h-10 w-auto"
             />
           </Link>
 
@@ -139,25 +139,26 @@ const Header = () => {
 
           {/* Mobile menu button */}
           <button
-            className="lg:hidden p-2 text-gray-900 hover:text-gray-600"
+            className="mobile-only mobile-touch-target mobile-focus-ring text-gray-900 hover:text-gray-600 transition-colors"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
+            aria-label={isMenuOpen ? "Fechar menu" : "Abrir menu"}
           >
             {isMenuOpen ? (
-              <X className="h-6 w-6" />
+              <X className="mobile-h-6 w-6" />
             ) : (
-              <Menu className="h-6 w-6" />
+              <Menu className="mobile-h-6 w-6" />
             )}
           </button>
         </div>
 
         {/* Mobile Navigation */}
         {isMenuOpen && (
-          <div className="lg:hidden absolute top-full left-0 right-0 bg-white border-t border-gray-200 shadow-lg">
-            <nav className="mobile-nav p-mobile-lg">
+          <div className="mobile-only absolute top-full left-0 right-0 bg-white/98 backdrop-blur-md border-t border-gray-200 shadow-xl mobile-slide-up">
+            <nav className="mobile-nav mobile-p-lg mobile-space-y-sm">
               <Link 
                 href="/lancamentos" 
-                className={`mobile-nav-item text-gray-900 hover:text-gray-600 transition-colors duration-300 font-medium text-mobile-sm uppercase tracking-wide ${
-                  isActive('/lancamentos') ? 'text-gray-600' : ''
+                className={`mobile-nav-item mobile-touch-target mobile-focus-ring text-gray-900 hover:text-gray-600 hover:bg-gray-50 transition-all duration-300 font-medium mobile-text-sm uppercase tracking-wide rounded-lg ${
+                  isActive('/lancamentos') ? 'text-brand-coral bg-gray-50' : ''
                 }`}
                 onClick={() => setIsMenuOpen(false)}
               >
@@ -165,8 +166,8 @@ const Header = () => {
               </Link>
               <Link 
                 href="/imoveis" 
-                className={`mobile-nav-item text-gray-900 hover:text-gray-600 transition-colors duration-300 font-medium text-mobile-sm uppercase tracking-wide ${
-                  isActive('/imoveis') ? 'text-gray-600' : ''
+                className={`mobile-nav-item mobile-touch-target mobile-focus-ring text-gray-900 hover:text-gray-600 hover:bg-gray-50 transition-all duration-300 font-medium mobile-text-sm uppercase tracking-wide rounded-lg ${
+                  isActive('/imoveis') ? 'text-brand-coral bg-gray-50' : ''
                 }`}
                 onClick={() => setIsMenuOpen(false)}
               >
@@ -174,41 +175,43 @@ const Header = () => {
               </Link>
               <Link 
                 href="#" 
-                className="mobile-nav-item text-gray-900 hover:text-gray-600 transition-colors duration-300 font-medium text-mobile-sm uppercase tracking-wide"
+                className="mobile-nav-item mobile-touch-target mobile-focus-ring text-gray-900 hover:text-gray-600 hover:bg-gray-50 transition-all duration-300 font-medium mobile-text-sm uppercase tracking-wide rounded-lg"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Trabalhe Conosco
               </Link>
               <Link 
                 href="#" 
-                className="mobile-nav-item text-gray-900 hover:text-gray-600 transition-colors duration-300 font-medium text-mobile-sm uppercase tracking-wide"
+                className="mobile-nav-item mobile-touch-target mobile-focus-ring text-gray-900 hover:text-gray-600 hover:bg-gray-50 transition-all duration-300 font-medium mobile-text-sm uppercase tracking-wide rounded-lg"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Vender Meu Imóvel
               </Link>
               <Link 
                 href="#" 
-                className="mobile-nav-item text-gray-900 hover:text-gray-600 transition-colors duration-300 font-medium text-mobile-sm uppercase tracking-wide"
+                className="mobile-nav-item mobile-touch-target mobile-focus-ring text-gray-900 hover:text-gray-600 hover:bg-gray-50 transition-all duration-300 font-medium mobile-text-sm uppercase tracking-wide rounded-lg"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Aluguel
               </Link>
               
               {/* Mobile Search */}
-              <form onSubmit={handleSearch} className="flex items-center mt-mobile-md">
-                <input
-                  type="text"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Buscar imóveis..."
-                  className="bg-white text-gray-900 border border-gray-300 rounded-l-lg px-mobile-sm py-mobile-sm text-mobile-sm focus:outline-none focus:border-gray-400 flex-1"
-                />
-                <button
-                  type="submit"
-                  className="bg-gray-900 text-white border border-gray-900 border-l-0 rounded-r-lg px-mobile-md py-mobile-sm text-mobile-sm hover:bg-gray-800 transition-colors"
-                >
-                  Buscar
-                </button>
+              <form onSubmit={handleSearch} className="mobile-space-y-sm mobile-mt-md">
+                <div className="flex items-center mobile-gap-sm">
+                  <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="Buscar imóveis..."
+                    className="mobile-input flex-1 mobile-focus-ring"
+                  />
+                  <button
+                    type="submit"
+                    className="mobile-btn-md bg-brand-coral hover:bg-brand-coral-dark text-white mobile-touch-target mobile-focus-ring"
+                  >
+                    Buscar
+                  </button>
+                </div>
               </form>
             </nav>
           </div>
